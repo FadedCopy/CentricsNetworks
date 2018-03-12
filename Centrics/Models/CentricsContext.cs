@@ -209,6 +209,7 @@ namespace Centrics.Models
                     }
                 }
             }
+
             catch (MySqlException e)
             {
                 Debug.WriteLine(e);
@@ -218,6 +219,34 @@ namespace Centrics.Models
                 conn.Close();
             }
             return dummy;
+        }
+
+        public void RegisterUser(User model)
+        {
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                string AddQuery = "insert into users values (@userID, @firstName, @lastName, @username, @email, @password, @email)";
+                MySqlCommand c = new MySqlCommand(AddQuery, conn);
+
+                c.Parameters.AddWithValue("@userID", model.UserID);
+                c.Parameters.AddWithValue("@firstName", model.FirstName);
+                c.Parameters.AddWithValue("@lastName", model.LastName);
+                c.Parameters.AddWithValue("@username", model.Username);
+                c.Parameters.AddWithValue("@email", model.UserEmail);
+                c.Parameters.AddWithValue("@password", model.UserPassword);
+
+                c.ExecuteNonQuery();
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
         }
     }
 }
