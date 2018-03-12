@@ -1,0 +1,11 @@
+C:\Users\Intern1\source\repos\Centrics\Centrics\bin\Debug\netcoreapp2.0\Centrics.deps.json
+C:\Users\Intern1\source\repos\Centrics\Centrics\bin\Debug\netcoreapp2.0\Centrics.runtimeconfig.json
+C:\Users\Intern1\source\repos\Centrics\Centrics\bin\Debug\netcoreapp2.0\Centrics.runtimeconfig.dev.json
+C:\Users\Intern1\source\repos\Centrics\Centrics\bin\Debug\netcoreapp2.0\Centrics.dll
+C:\Users\Intern1\source\repos\Centrics\Centrics\bin\Debug\netcoreapp2.0\Centrics.pdb
+C:\Users\Intern1\source\repos\Centrics\Centrics\obj\Debug\netcoreapp2.0\Centrics.csproj.CoreCompileInputs.cache
+C:\Users\Intern1\source\repos\Centrics\Centrics\obj\Debug\netcoreapp2.0\Centrics.AssemblyInfoInputs.cache
+C:\Users\Intern1\source\repos\Centrics\Centrics\obj\Debug\netcoreapp2.0\Centrics.AssemblyInfo.cs
+C:\Users\Intern1\source\repos\Centrics\Centrics\obj\Debug\netcoreapp2.0\Centrics.dll
+C:\Users\Intern1\source\repos\Centrics\Centrics\obj\Debug\netcoreapp2.0\Centrics.pdb
+C:\Users\Intern1\source\repos\Centrics\Centrics\obj\Debug\netcoreapp2.0\Centrics.csprojResolveAssemblyReference.cache

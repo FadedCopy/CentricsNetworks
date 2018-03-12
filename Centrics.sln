@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Centrics", "Centrics\Centrics.csproj", "{11C23FAD-0FF2-4712-84BE-CDCC14DAAB43}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{11C23FAD-0FF2-4712-84BE-CDCC14DAAB43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11C23FAD-0FF2-4712-84BE-CDCC14DAAB43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11C23FAD-0FF2-4712-84BE-CDCC14DAAB43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11C23FAD-0FF2-4712-84BE-CDCC14DAAB43}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {78B072DA-4773-4A8A-8F48-B5340DB7E706}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,191 @@
+﻿@model Centrics.Models.ServiceReport
+
+@{
+    ViewData["Title"] = "Add New Report";
+}
+<style>
+    div.form-group {
+        margin-bottom: 10px;
+        margin: auto;
+    }
+</style>
+
+<h2 style="text-align:center;">Service Report</h2>
+
+@using (Html.BeginForm("AddServiceReport", "ServiceReport", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(m => m.SerialNumber, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.EditorFor(m => m.SerialNumber, new { @class = "form-control",@value = ViewData["SRN"], @readonly = "readonly" })
+        </div>
+    </div>
+
+    <h3> Client Details</h3>
+    <div class="form-group">
+        @Html.LabelFor(m => m.ClientCompanyName, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.ListBoxFor(m => m.ClientCompanyName, new SelectList((List<SelectListItem>)ViewData["ContractList"], "Value", "Text"))
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.ClientAddress, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.ClientAddress, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.ClientTel, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.ClientTel, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.ClientContactPerson, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.ClientContactPerson, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <h3>Visit Details</h3>
+    <div class="form-group">
+        @* MultiSelect need works *@
+        @Html.LabelFor(m => m.PurposeOfVisit, new { @class = "col-md-2 control-label chzn-select" })
+        <div class="col-md-10">
+            @Html.ListBoxFor(m => m.PurposeOfVisit,
+                          new MultiSelectList((List<SelectListItem>)ViewData["Purpose"], "Value", "Text"),
+                         new { style = "display:block;" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Description, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextAreaFor(m => m.Description, new { @class = "form-control", style = "width=200px;height=50px;" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Remarks, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", style = "width=200px;height=50px;" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @* manual regular expression or date picker?*@
+        @Html.LabelFor(m => m.Date, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Date, new { @class = "form-control", @value = "choose a way to type date" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.TimeStart, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.TimeStart, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.TimeEnd, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.TimeEnd, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.MSHUsed, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.MSHUsed, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <p> Acknowledgement?</p>
+
+    <p> Billing</p>
+@*
+    <div class="form-group">
+        @Html.LabelFor(m => m.Labour, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Labour, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Transport, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Transport, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Parts, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Parts, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Others, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Others, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.InvoiceNo, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.InvoiceNo, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.InvoiceDate, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.InvoiceDate, new { @class = "form-control" })
+        </div>
+    </div>
+    *@
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.JobStatus, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.ListBoxFor(m => m.JobStatus,
+                     new MultiSelectList((List<SelectListItem>)ViewData["JobStatusList"], "Value", "Text"),
+                          new { @class = "form-control" })
+        </div>
+    </div>
+
+    @*wait for controller wtf
+        <div class="form-group">
+            @Html.LabelFor(m => m.ServiceRating, new { @class = "col-md-2 control-label" })
+            <div class="col-md-10">
+                @Html.ListBoxFor(m => m.ServiceRating,
+               MultiSelectList(List<SelectListItem>)
+               new { @class = "form-control" })
+            </div>
+        </div>
+    *@
+
+    <input type="submit" value="Confirm" />
+    //Decide go back or reset
+    <input type="reset" value="Cancel" />
+
+    <p> top bottom of form confirm</p>
+    <p> reset button need confirm?</p>
+    <p> word count?</p>
+    <p>missing service rating due to client side? not needed on this form</p>
+    <p>confirm some listboxfor? design?</p>
+    <p>date time not done and need confirmation</p>
+    <p>model requires cleaning</p>
+    <p>Acknowledgement is missing details</p>
+    <p>convert pdf?</p>
+    <p>restyle this</p>
+
+}
