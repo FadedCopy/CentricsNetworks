@@ -1,45 +1,31 @@
 ﻿@model Centrics.Models.User
-
+@using Centrics.Models
 @{
-    ViewData["Title"] = "ViewUsers";
+    ViewData["Title"] = "View Users";
+    var UsersData = ViewBag.UsersData;
 }
 
-<h2>ViewUsers</h2>
+<h2>View All Users</h2>
 
 <div>
-    <h4>User</h4>
     <hr />
     <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.UserID)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.UserID)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Username)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Username)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.UserEmailAddress)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.UserEmailAddress)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.UserPassword)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.UserPassword)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.UserCfmPassword)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.UserCfmPassword)
-        </dd>
+        @for (int i = 0; i < UsersData.Count; i++)
+    {
+        <dt>@Html.DisplayNameFor(model => model.UserID)</dt>
+        <dd>@UsersData[i].UserID</dd>
+        <dt>@Html.DisplayNameFor(model => model.FirstName)</dt>
+        <dd>@UsersData[i].FirstName</dd>
+        <dt>@Html.DisplayNameFor(model => model.LastName)</dt>
+        <dd>@UsersData[i].LastName</dd>
+        <dt>@Html.DisplayNameFor(model => model.Username)</dt>
+        <dd>@UsersData[i].Username</dd>
+        <dt>@Html.DisplayNameFor(model => model.UserEmail)</dt>
+        <dd>@UsersData[i].UserEmail</dd>
+        <dt>@Html.DisplayNameFor(model => model.UserRole)</dt>
+        <dd>@UsersData[i].UserRole</dd>
+        <dd><br /></dd>
+    }
     </dl>
 </div>
 <div>
