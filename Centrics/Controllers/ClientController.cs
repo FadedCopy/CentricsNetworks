@@ -35,6 +35,7 @@ namespace Centrics.Controllers
                     context.AddClient(model);
                     
                     return RedirectToAction("ViewClient","Client");
+                
 
             }
             return View();

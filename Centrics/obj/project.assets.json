@@ -13483,23 +13483,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Intern2\\.nuget\\packages\\": {},
+    "C:\\Users\\Intern1\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Intern2\\Documents\\GitHub\\CentricsNetworks\\Centrics\\Centrics.csproj",
+      "projectUniqueName": "C:\\Users\\Intern1\\source\\repos\\Centrics\\Centrics\\Centrics.csproj",
       "projectName": "Centrics",
-      "projectPath": "C:\\Users\\Intern2\\Documents\\GitHub\\CentricsNetworks\\Centrics\\Centrics.csproj",
-      "packagesPath": "C:\\Users\\Intern2\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Intern2\\Documents\\GitHub\\CentricsNetworks\\Centrics\\obj\\",
+      "projectPath": "C:\\Users\\Intern1\\source\\repos\\Centrics\\Centrics\\Centrics.csproj",
+      "packagesPath": "C:\\Users\\Intern1\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Intern1\\source\\repos\\Centrics\\Centrics\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\Intern2\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Intern1\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [

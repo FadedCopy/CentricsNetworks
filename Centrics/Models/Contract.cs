@@ -8,6 +8,8 @@ namespace Centrics.Models
 {
     public class Contract
     {
+        public int idcontract { get; set; }
+
         [Display(Name = "Company"),Required]
         public string ClientCompany { get; set; }
 

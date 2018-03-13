@@ -12,8 +12,22 @@
 <table>
     <thead>Pending</thead>
     <tr>
-        <td></td>
+        <td>Serial Number:</td>
+        <td>Client Company:</td>
+        <td>Client Address:</td>
+        <td>Description: </td>
+        <td>Job Status: </td>
     </tr>
+    @foreach( var SR in ViewData["Pending"] as List<ServiceReport>)
+    {
+        <tr>
+            <td>SR.SerialNumber</td>
+            <td>SR.ClientCompanyName</td>
+            <td>SR.ClientAddress</td>
+            <td>SR.Description</td>
+            <td>SR.JobStatus</td>
+        </tr>
+    }
 </table>
 
 <table>
