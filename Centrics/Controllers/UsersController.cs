@@ -80,17 +80,11 @@ namespace Centrics.Controllers
             return View();
         }
 
-        [HttpGet]
-        public IActionResult DeleteUsers()
+        public IActionResult DeleteUser(int UserID)
         {
-            return View();
-        }
+            _context.DeleteUser(UserID);
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteUsers()
-        {
-
+            return RedirectToAction("ViewUsers");
         }
 
         [HttpGet]
@@ -100,12 +94,21 @@ namespace Centrics.Controllers
             return View();
         }
 
-        [HttpGet]
-        public IActionResult EditUsers()
+        public IActionResult EditUser(int UserID)
         {
-            return View();
+            User userEdited = new User();
+
+            userEdited = _context.getUser(UserID);
+
+            return RedirectToAction("ViewUsers");
         }
 
-
+        public IActionResult EditUserDetails(int UserID)
+        {
+            User userEdited = _context.getUser(UserID);
+            User userRoles = new User();
+            ViewData["Roles"] = userRoles.Roles;
+            return PartialView("EditUserDetails");
+        }
     }
 }

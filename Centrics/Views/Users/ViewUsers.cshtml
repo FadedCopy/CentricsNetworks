@@ -11,19 +11,39 @@
     <hr />
     <dl class="dl-horizontal">
         @for (int i = 0; i < UsersData.Count; i++)
-    {
-        <dt>@Html.DisplayNameFor(model => model.UserID)</dt>
-        <dd>@UsersData[i].UserID</dd>
-        <dt>@Html.DisplayNameFor(model => model.FirstName)</dt>
-        <dd>@UsersData[i].FirstName</dd>
-        <dt>@Html.DisplayNameFor(model => model.LastName)</dt>
-        <dd>@UsersData[i].LastName</dd>
-        <dt>@Html.DisplayNameFor(model => model.UserEmail)</dt>
-        <dd>@UsersData[i].UserEmail</dd>
-        <dt>@Html.DisplayNameFor(model => model.UserRole)</dt>
-        <dd>@UsersData[i].UserRole</dd>
-        @Html.ActionLink("DeleteUser", "Users", new { })
-        <dd><br /></dd>
-    }
+        {
+            <dt>@Html.DisplayNameFor(model => model.UserID)</dt>
+            <dd>@UsersData[i].UserID</dd>
+            <dt>@Html.DisplayNameFor(model => model.FirstName)</dt>
+            <dd>@UsersData[i].FirstName</dd>
+            <dt>@Html.DisplayNameFor(model => model.LastName)</dt>
+            <dd>@UsersData[i].LastName</dd>
+            <dt>@Html.DisplayNameFor(model => model.UserEmail)</dt>
+            <dd>@UsersData[i].UserEmail</dd>
+            <dt>@Html.DisplayNameFor(model => model.UserRole)</dt>
+            <dd>@UsersData[i].UserRole</dd>
+            @Html.ActionLink("Delete User", "DeleteUser", new { UserID = UsersData[i].UserID })
+
+            @Html.ActionLink("Edit User", "EditUserDetails", "Users", new { UserID = UsersData[i].UserID }, new
+            {
+                /**/
+                @* Needed to link to the html of the modal*@
+                /**/
+                data_target = "#modal-container",
+                /**/
+                @* Tells the bootstrap javascript to do its thing*@
+                /**/
+                data_toggle = "modal"
+            })
+            <dd><br /></dd>
+        }
     </dl>
+
+    <div id="modal-container" class="modal fade hidden-print" tabindex="1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+            </div>
+        </div>
+    </div>
 </div>

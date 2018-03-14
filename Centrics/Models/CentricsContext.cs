@@ -613,10 +613,50 @@ namespace Centrics.Models
                 }
             }
         }
+        //Get a single user by UserID
+        public User getUser(int UserID)
+        {
+            //Initialize User to place returned User object
+            User userRetrieved = new User();
 
+            //Establish connection to MySQL Database
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                string query = "select * from users";
+                MySqlCommand c = new MySqlCommand(query, conn);
+                using (MySqlDataReader r = c.ExecuteReader())
+                {
+                    //Loops for every row of the users table
+                    while (r.Read())
+                    {
+                        userRetrieved = new User()
+                        {
+                            UserID = Convert.ToInt32(r["userID"]),
+                            FirstName = r["firstName"].ToString(),
+                            LastName = r["lastName"].ToString(),
+                            UserEmail = r["email"].ToString(),
+                            UserRole = r["userRole"].ToString()
+                        };
+                    }
+                }
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return userRetrieved;
+        }
+
+        //Get ALL users
         public List<User> getUsers()
         {
-            //Initiaize List of Users to return
+            //Initialize List of Users to return
             List<User> ListofUsers = new List<User>();
 
             //Establish connection to MySQL Database
@@ -639,6 +679,7 @@ namespace Centrics.Models
                             UserEmail = r["email"].ToString(),
                             UserRole = r["userRole"].ToString()
                         };
+
                         ListofUsers.Add(user);
                     }
                 }
@@ -652,6 +693,53 @@ namespace Centrics.Models
                 conn.Close();
             }
             return ListofUsers;
+        }
+
+        public void DeleteUser(int UserID)
+        {
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                string query = "delete from users where userID = @UserID";
+                MySqlCommand c = new MySqlCommand(query, conn);
+                c.Parameters.AddWithValue("@UserID", UserID);
+                c.ExecuteNonQuery();
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        public void EditUser(User user)
+        {
+            MySqlConnection conn = GetConnection();
+
+            try
+            {
+                conn.Open();
+                string query = "update users set firstName=@firstName, lastName=@lastName, email=@email, role=@role";
+                MySqlCommand c = new MySqlCommand(query, conn);
+                c.Parameters.AddWithValue("@firstName", user.FirstName);
+                c.Parameters.AddWithValue("@lastName", user.LastName);
+                c.Parameters.AddWithValue("@email", user.UserEmail);
+                c.Parameters.AddWithValue("@role", user.UserRole);
+
+                c.ExecuteNonQuery();
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
         }
     }
 }
