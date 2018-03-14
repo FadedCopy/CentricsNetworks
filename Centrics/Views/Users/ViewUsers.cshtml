@@ -18,17 +18,12 @@
         <dd>@UsersData[i].FirstName</dd>
         <dt>@Html.DisplayNameFor(model => model.LastName)</dt>
         <dd>@UsersData[i].LastName</dd>
-        <dt>@Html.DisplayNameFor(model => model.Username)</dt>
-        <dd>@UsersData[i].Username</dd>
         <dt>@Html.DisplayNameFor(model => model.UserEmail)</dt>
         <dd>@UsersData[i].UserEmail</dd>
         <dt>@Html.DisplayNameFor(model => model.UserRole)</dt>
         <dd>@UsersData[i].UserRole</dd>
+        @Html.ActionLink("DeleteUser", "Users", new { })
         <dd><br /></dd>
     }
     </dl>
-</div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    <a asp-action="Index">Back to List</a>
 </div>

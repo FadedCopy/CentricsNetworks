@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Cryptography;
 
 namespace Centrics.Models
 {
@@ -479,6 +480,178 @@ namespace Centrics.Models
             }
 
             return SR;
+        }
+        public string HashPassword(string password)
+        {
+            byte[] salt;
+            new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);
+            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 10000);
+            byte[] hash = pbkdf2.GetBytes(20);
+
+            byte[] hashBytes = new byte[36];
+            Array.Copy(salt, 0, hashBytes, 0, 16);
+            Array.Copy(hash, 0, hashBytes, 16, 20);
+
+            string hashedPassword = Convert.ToBase64String(hashBytes);
+
+            return hashedPassword;
+        }
+
+        public Boolean CompareHashedPasswords(string loginPassword, string hashedPassword)
+        {
+            Boolean passwordMatch = false;
+
+            // Extract the bytes 
+            byte[] hashBytes = Convert.FromBase64String(hashedPassword);
+            // Get the salt 
+            byte[] salt = new byte[16];
+            Array.Copy(hashBytes, 0, salt, 0, 16);
+            // Compute the hash on the password the user entered 
+            var pbkdf2 = new Rfc2898DeriveBytes(loginPassword, salt, 10000);
+            byte[] hash = pbkdf2.GetBytes(20);
+            // Compare the results
+            for (int i = 0; i < 20; i++)
+                if (hashBytes[i + 16] != hash[i])
+                    passwordMatch = false;
+                else if (hashBytes[i + 16] == hash[i])
+                    passwordMatch = true;
+
+            return passwordMatch;
+        }
+
+        public Boolean CheckExistingEmail(User user)
+        {
+            Boolean validEmail = false;
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                string checkQuery = "select * from users where email = @registrationEmail";
+                MySqlCommand c = new MySqlCommand(checkQuery, conn);
+                c.Parameters.AddWithValue("@registrationEmail", user.UserEmail);
+
+                using (MySqlDataReader r = c.ExecuteReader())
+                {
+                    if (r.Read())
+                    {
+                        validEmail = false;
+                    }
+                    else
+                    {
+                        validEmail = true;
+                    }
+                }
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            conn.Close();
+
+            return validEmail;
+        }
+
+        public Boolean LoginUser(LoginViewModel user)
+        {
+            MySqlConnection conn = GetConnection();
+            Boolean matchPassword = false;
+            try
+            {
+                conn.Open();
+                string query = "select * from users where email = @email";
+                MySqlCommand c = new MySqlCommand(query, conn);
+                c.Parameters.AddWithValue("@email", user.UserEmail);
+
+                using (MySqlDataReader r = c.ExecuteReader())
+                {
+                    while (r.Read())
+                    {
+                        matchPassword = CompareHashedPasswords(user.UserPassword, r["password"].ToString());
+                    }
+                }
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return matchPassword;
+        }
+
+        public void RegisterUser(User model)
+        {
+            Boolean validEmail = CheckExistingEmail(model);
+
+            if (validEmail)
+            {
+                MySqlConnection conn = GetConnection();
+                try
+                {
+                    conn.Open();
+                    string AddQuery = "insert into users(firstName, lastName,  email, password, userRole) values (@firstName, @lastName, @email, @password, @role)";
+                    MySqlCommand c = new MySqlCommand(AddQuery, conn);
+                    string hashedPassword = HashPassword(model.UserPassword);
+                    c.Parameters.AddWithValue("@firstName", model.FirstName);
+                    c.Parameters.AddWithValue("@lastName", model.LastName);
+                    c.Parameters.AddWithValue("@email", model.UserEmail);
+                    c.Parameters.AddWithValue("@password", hashedPassword);
+                    c.Parameters.AddWithValue("@role", model.UserRole);
+
+                    c.ExecuteNonQuery();
+                }
+                catch (MySqlException e)
+                {
+                    Debug.WriteLine(e);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+        }
+
+        public List<User> getUsers()
+        {
+            //Initiaize List of Users to return
+            List<User> ListofUsers = new List<User>();
+
+            //Establish connection to MySQL Database
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                string query = "select * from users";
+                MySqlCommand c = new MySqlCommand(query, conn);
+                using (MySqlDataReader r = c.ExecuteReader())
+                {
+                    //Loops for every row of the users table
+                    while (r.Read())
+                    {
+                        User user = new User
+                        {
+                            UserID = Convert.ToInt32(r["userID"]),
+                            FirstName = r["firstName"].ToString(),
+                            LastName = r["lastName"].ToString(),
+                            UserEmail = r["email"].ToString(),
+                            UserRole = r["userRole"].ToString()
+                        };
+                        ListofUsers.Add(user);
+                    }
+                }
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return ListofUsers;
         }
     }
 }

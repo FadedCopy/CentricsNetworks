@@ -13489,11 +13489,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Intern1\\source\\repos\\Centrics\\Centrics\\Centrics.csproj",
+      "projectUniqueName": "C:\\Users\\Intern1\\source\\repos\\CentricsNetworks\\Centrics\\Centrics.csproj",
       "projectName": "Centrics",
-      "projectPath": "C:\\Users\\Intern1\\source\\repos\\Centrics\\Centrics\\Centrics.csproj",
+      "projectPath": "C:\\Users\\Intern1\\source\\repos\\CentricsNetworks\\Centrics\\Centrics.csproj",
       "packagesPath": "C:\\Users\\Intern1\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Intern1\\source\\repos\\Centrics\\Centrics\\obj\\",
+      "outputPath": "C:\\Users\\Intern1\\source\\repos\\CentricsNetworks\\Centrics\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

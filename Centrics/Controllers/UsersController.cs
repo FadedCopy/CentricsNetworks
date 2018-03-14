@@ -51,9 +51,46 @@ namespace Centrics.Controllers
         }
 
         [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Login(LoginViewModel model)
+        {
+            Boolean successfulLogin;
+            if (ModelState.IsValid)
+            {
+                successfulLogin = _context.LoginUser(model);
+
+                if (successfulLogin)
+                {
+                    ViewBag.Message = "Success.";
+                    return View();
+                }
+                else
+                {
+                    ViewBag.Message = "Failed.";
+                    return View();
+                }
+            }
+
+            return View();
+        }
+
+        [HttpGet]
         public IActionResult DeleteUsers()
         {
             return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteUsers()
+        {
+
         }
 
         [HttpGet]
