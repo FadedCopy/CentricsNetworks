@@ -23,10 +23,10 @@ namespace Centrics.Models
         public string UserEmail{ get; set; }
 
         [Display(Name = "Password"), Required, StringLength(30), DataType(DataType.Password), 
-        RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z])\S{8,15}$", ErrorMessage = "Password must contain: Minimum 8 characters at least 1 uppercase alphabet, 1 lowercase alphabet and 1 numerical value.")]
+        RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z])\S{8,15}$", ErrorMessage = "Password must contain: Minimum 8 characters at least 1 uppercase and 1 lowercase alphabet, 1 numerical value and 1 non-alphanumeric/symbol character.")]
         public string UserPassword { get; set; }
 
-        [Display(Name = "Confirm Password"), Required, StringLength(20), Compare("UserPassword", ErrorMessage = "Confirm password and password do not match"), DataType(DataType.Password)]
+        [Display(Name = "Confirm Password"), Required, StringLength(30), Compare("UserPassword", ErrorMessage = "Confirm password and password do not match"), DataType(DataType.Password)]
         public string UserCfmPassword { get; set; }
 
         [Display(Name = "Role"), Required, StringLength(40)]
