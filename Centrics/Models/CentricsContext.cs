@@ -551,6 +551,38 @@ namespace Centrics.Models
             return validEmail;
         }
 
+        public Boolean CheckEditExistingEmail(EditUserViewModel user)
+        {
+            Boolean validEmail = false;
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                string checkQuery = "select * from users where email = @registrationEmail";
+                MySqlCommand c = new MySqlCommand(checkQuery, conn);
+                c.Parameters.AddWithValue("@registrationEmail", user.UserEmail);
+
+                using (MySqlDataReader r = c.ExecuteReader())
+                {
+                    if (r.Read())
+                    {
+                        validEmail = false;
+                    }
+                    else
+                    {
+                        validEmail = true;
+                    }
+                }
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            conn.Close();
+
+            return validEmail;
+        }
+
         public Boolean LoginUser(LoginViewModel user)
         {
             MySqlConnection conn = GetConnection();
@@ -640,6 +672,8 @@ namespace Centrics.Models
                             UserRole = r["userRole"].ToString()
                         };
                     }
+                    Debug.WriteLine(userRetrieved.UserID);
+                    Debug.WriteLine(userRetrieved.FirstName);
                 }
             }
             catch (MySqlException e)
@@ -716,19 +750,21 @@ namespace Centrics.Models
             }
         }
 
-        public void EditUser(User user)
+        public void EditUser(EditUserViewModel user, int UserID)
         {
             MySqlConnection conn = GetConnection();
-
+            Debug.WriteLine("Edit" + UserID);
+            Debug.WriteLine("edit" + user.FirstName);
             try
             {
                 conn.Open();
-                string query = "update users set firstName=@firstName, lastName=@lastName, email=@email, role=@role";
+                string query = "update users set firstName=@firstName, lastName=@lastName, email=@email, userRole=@role where userID=@userID";
                 MySqlCommand c = new MySqlCommand(query, conn);
                 c.Parameters.AddWithValue("@firstName", user.FirstName);
                 c.Parameters.AddWithValue("@lastName", user.LastName);
                 c.Parameters.AddWithValue("@email", user.UserEmail);
                 c.Parameters.AddWithValue("@role", user.UserRole);
+                c.Parameters.AddWithValue("@userID", UserID);
 
                 c.ExecuteNonQuery();
             }

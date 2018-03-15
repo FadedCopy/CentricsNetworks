@@ -22,8 +22,8 @@
             <dd>@UsersData[i].UserEmail</dd>
             <dt>@Html.DisplayNameFor(model => model.UserRole)</dt>
             <dd>@UsersData[i].UserRole</dd>
-            @Html.ActionLink("Delete User", "DeleteUser", new { UserID = UsersData[i].UserID })
-
+            <dt>@Html.ActionLink("Delete User", "DeleteUser", new { UserID = UsersData[i].UserID })</dt>
+            <dd>
             @Html.ActionLink("Edit User", "EditUserDetails", "Users", new { UserID = UsersData[i].UserID }, new
             {
                 /**/
@@ -35,12 +35,13 @@
                 /**/
                 data_toggle = "modal"
             })
-            <dd><br /></dd>
+            </dd>
+            <dd><br/>       </dd>
         }
     </dl>
 
     <div id="modal-container" class="modal fade hidden-print" tabindex="1" role="dialog">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
 
             </div>

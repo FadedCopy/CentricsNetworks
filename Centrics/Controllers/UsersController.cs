@@ -94,21 +94,35 @@ namespace Centrics.Controllers
             return View();
         }
 
-        public IActionResult EditUser(int UserID)
+        [HttpPost]
+        public IActionResult EditUser(EditUserViewModel model, int UserID)
         {
-            User userEdited = new User();
-
-            userEdited = _context.getUser(UserID);
-
+            if (ModelState.IsValid)
+            {
+                Boolean validEmail = _context.CheckEditExistingEmail(model);
+                if (validEmail)
+                {
+                    _context.EditUser(model, Convert.ToInt32(TempData["UserID"]));
+                }
+            }
             return RedirectToAction("ViewUsers");
         }
 
+        [HttpGet]   
         public IActionResult EditUserDetails(int UserID)
         {
-            User userEdited = _context.getUser(UserID);
+            User retrieveUserEdited = _context.getUser(UserID);
             User userRoles = new User();
+            TempData["UserID"] = UserID;
             ViewData["Roles"] = userRoles.Roles;
-            return PartialView("EditUserDetails");
+            EditUserViewModel editedUser = new EditUserViewModel
+            {
+                FirstName = retrieveUserEdited.FirstName,
+                LastName = retrieveUserEdited.LastName,
+                UserEmail = retrieveUserEdited.UserEmail,
+                UserRole = retrieveUserEdited.UserRole
+            };
+            return PartialView("EditUserDetails", editedUser);
         }
     }
 }
