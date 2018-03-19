@@ -777,5 +777,10 @@ namespace Centrics.Models
                 conn.Close();
             }
         }
+
+        public void ChangePassword(string NewPassword, User user)
+        {
+
+        }
     }
 }

@@ -124,5 +124,22 @@ namespace Centrics.Controllers
             };
             return PartialView("EditUserDetails", editedUser);
         }
+
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult ChangePassword(ChangePasswordViewModel passwords)
+        {
+            string CurrentPassword = passwords.CurrentPassword;
+            string NewPassword = passwords.NewPassword;
+
+            User userChanged = _context.getUser(passwords.UserID);
+
+            _context.ChangePassword(NewPassword, userChanged);
+        }
     }
 }
