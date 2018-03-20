@@ -5,11 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FleekDeveloper.GoogleAuthenticator" Version="1.0.1" />
     <PackageReference Include="FluentEmail.Mailgun" Version="2.3.1" />
     <PackageReference Include="FluentEmail.Razor" Version="2.3.2" />
+    <PackageReference Include="GoogleAuthenticator" Version="1.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.2" />
     <PackageReference Include="MySql.Data" Version="6.10.6" />
+    <PackageReference Include="Twilio" Version="5.9.8" />
   </ItemGroup>
 
   <ItemGroup>

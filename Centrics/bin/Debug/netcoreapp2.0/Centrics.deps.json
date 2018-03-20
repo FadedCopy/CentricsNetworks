@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.0",
-    "signature": "4e1840acad86eead181c31b482c5928b45ac61e0"
+    "signature": "19d2df91c16ba53a995837e2775b1400744f4d27"
   },
   "compilationOptions": {
     "defines": [
@@ -23,18 +23,32 @@
     ".NETCoreApp,Version=v2.0": {
       "Centrics/1.0.0": {
         "dependencies": {
+          "FleekDeveloper.GoogleAuthenticator": "1.0.1",
           "FluentEmail.Mailgun": "2.3.1",
           "FluentEmail.Razor": "2.3.2",
+          "GoogleAuthenticator": "1.2.1",
           "Microsoft.AspNetCore.All": "2.0.5",
           "Microsoft.NETCore.App": "2.0.0",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "2.0.2",
-          "MySql.Data": "6.10.6"
+          "MySql.Data": "6.10.6",
+          "Twilio": "5.9.8"
         },
         "runtime": {
           "Centrics.dll": {}
         },
         "compile": {
           "Centrics.dll": {}
+        }
+      },
+      "FleekDeveloper.GoogleAuthenticator/1.0.1": {
+        "dependencies": {
+          "GoogleAuthenticator": "1.2.1"
+        },
+        "runtime": {
+          "lib/net461/FleekDeveloper.GoogleAuthenticator.dll": {}
+        },
+        "compile": {
+          "lib/net461/FleekDeveloper.GoogleAuthenticator.dll": {}
         }
       },
       "FluentEmail.Core/2.3.1": {
@@ -67,6 +81,14 @@
         },
         "compile": {
           "lib/netstandard2.0/FluentEmail.Razor.dll": {}
+        }
+      },
+      "GoogleAuthenticator/1.2.1": {
+        "runtime": {
+          "lib/net45/Google.Authenticator.dll": {}
+        },
+        "compile": {
+          "lib/net45/Google.Authenticator.dll": {}
         }
       },
       "Libuv/1.10.0": {
@@ -4123,6 +4145,22 @@
           "System.Xml.XPath": "4.3.0"
         }
       },
+      "Twilio/5.9.8": {
+        "dependencies": {
+          "Microsoft.IdentityModel.Logging": "1.1.4",
+          "Microsoft.IdentityModel.Tokens": "5.1.4",
+          "NETStandard.Library": "2.0.0",
+          "Newtonsoft.Json": "10.0.3",
+          "System.Collections.Specialized": "4.3.0",
+          "System.IdentityModel.Tokens.Jwt": "5.1.4"
+        },
+        "runtime": {
+          "lib/netstandard1.4/Twilio.dll": {}
+        },
+        "compile": {
+          "lib/netstandard1.4/Twilio.dll": {}
+        }
+      },
       "WindowsAzure.Storage/8.1.4": {
         "dependencies": {
           "Microsoft.Data.OData": "5.8.2",
@@ -4321,6 +4359,13 @@
       "serviceable": false,
       "sha512": ""
     },
+    "FleekDeveloper.GoogleAuthenticator/1.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-9jdRz40RVLAnE6uz8PXhZgElA2+2IDQZ++38X8Cux0200fC8jjqOvVSuzzcrW99dUQ6cVn3J2ofC/BuB2yGc8g==",
+      "path": "fleekdeveloper.googleauthenticator/1.0.1",
+      "hashPath": "fleekdeveloper.googleauthenticator.1.0.1.nupkg.sha512"
+    },
     "FluentEmail.Core/2.3.1": {
       "type": "package",
       "serviceable": true,
@@ -4341,6 +4386,13 @@
       "sha512": "sha512-725VkH/sFXR/vOMuk9uK+yAMFqUr+f7z+MMFNx0pfQNCwk9AacDU6KWy5h9TnXeHN2rqVRIW4BN0X8sOhMJp+Q==",
       "path": "fluentemail.razor/2.3.2",
       "hashPath": "fluentemail.razor.2.3.2.nupkg.sha512"
+    },
+    "GoogleAuthenticator/1.2.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+k+LNIXD1PPGHFLhh1ih3DRf7DVQPrpHn0whHVD5aPkUOi1uqNH/W/cAblvgvjZcLZfK02+AG8KO22hVDnawyA==",
+      "path": "googleauthenticator/1.2.1",
+      "hashPath": "googleauthenticator.1.2.1.nupkg.sha512"
     },
     "Libuv/1.10.0": {
       "type": "package",
@@ -6497,6 +6549,13 @@
       "sha512": "sha512-jw9oHHEIVW53mHY9PgrQa98Xo2IZ0ZjrpdOTmtvk+Rvg4tq7dydmxdNqUvJ5YwjDqhn75mBXWttWjiKhWP53LQ==",
       "path": "system.xml.xpath.xdocument/4.3.0",
       "hashPath": "system.xml.xpath.xdocument.4.3.0.nupkg.sha512"
+    },
+    "Twilio/5.9.8": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-q+yA4F6ru+nqf7on+2QhNtd8qQt05asIV733pV2AhPLdAVttsIiWc6nu7Poe0IsFSmk6MXC4ZRFhE96OIzybhw==",
+      "path": "twilio/5.9.8",
+      "hashPath": "twilio.5.9.8.nupkg.sha512"
     },
     "WindowsAzure.Storage/8.1.4": {
       "type": "package",

@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Cryptography;
+using FluentEmail.Core;
+using FluentEmail.Razor;
 
 namespace Centrics.Models
 {
@@ -583,10 +585,9 @@ namespace Centrics.Models
             return validEmail;
         }
 
-        public Boolean LoginUser(LoginViewModel user)
+        public LoginViewModel LoginUser(LoginViewModel user)
         {
             MySqlConnection conn = GetConnection();
-            Boolean matchPassword = false;
             try
             {
                 conn.Open();
@@ -598,7 +599,8 @@ namespace Centrics.Models
                 {
                     while (r.Read())
                     {
-                        matchPassword = CompareHashedPasswords(user.UserPassword, r["password"].ToString());
+                        user.UserID = Convert.ToInt32(r["userID"]);
+                        user.SuccessfulLogin = CompareHashedPasswords(user.UserPassword, r["password"].ToString());
                     }
                 }
             }
@@ -611,7 +613,7 @@ namespace Centrics.Models
                 conn.Close();
             }
 
-            return matchPassword;
+            return user;
         }
 
         public void RegisterUser(User model)
@@ -646,7 +648,7 @@ namespace Centrics.Models
             }
         }
         //Get a single user by UserID
-        public User getUser(int UserID)
+        public User GetUser(int UserID)
         {
             //Initialize User to place returned User object
             User userRetrieved = new User();
@@ -688,7 +690,7 @@ namespace Centrics.Models
         }
 
         //Get ALL users
-        public List<User> getUsers()
+        public List<User> GetUsers()
         {
             //Initialize List of Users to return
             List<User> ListofUsers = new List<User>();
@@ -778,9 +780,94 @@ namespace Centrics.Models
             }
         }
 
-        public void ChangePassword(string NewPassword, User user)
+        public Boolean ChangePassword(string CurrentPassword, string NewPassword, User user)
         {
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                string query = "select * from users where userID=@userID";
+                MySqlCommand c = new MySqlCommand(query, conn);
+                c.Parameters.AddWithValue("@userID", user.UserID);
+                Boolean passwordMatch = false;
+                using (MySqlDataReader r = c.ExecuteReader())
+                {
+                    //Loops for every row of the users table
+                    while (r.Read())
+                    {
+                        //Compare if old password is matching to the one in the database
+                        if (CompareHashedPasswords(CurrentPassword, r["password"].ToString()))
+                            passwordMatch = true;
+                        else return false;
+                    }
+                    r.Close();
+                }
+                if (passwordMatch)
+                {
+                    string updateQuery = "update users set password = @NewPassword where userID = @userID";
+                    MySqlCommand c2 = new MySqlCommand(updateQuery, conn);
+                    NewPassword = HashPassword(NewPassword);
+                    c2.Parameters.AddWithValue("@NewPassword", NewPassword);
+                    c2.Parameters.AddWithValue("@userID", user.UserID);
+                    c2.ExecuteNonQuery();
+                    return true;
+                }
+                else return false;
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
 
+            return false;
+        }
+
+        public Boolean SendResetLink(ForgotPasswordViewModel user)
+        {
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                string query = "select * from users where email=@email";
+                MySqlCommand c = new MySqlCommand(query, conn);
+                c.Parameters.AddWithValue("@email", user.UserEmail);
+                using (MySqlDataReader r = c.ExecuteReader())
+                {
+                    //Loops for every row of the users table
+                    while (r.Read())
+                    {
+                        Email.DefaultRenderer = new RazorRenderer();
+
+                        var template = "Hi @Model.Name, you've recently requested to reset your password. Click on this <a href = 'www.google.com'>link</a> to reset your password. " +
+                            "<p>Ignore this email if you did not request to reset your password.</p>";
+
+                        var email = Email
+                            .From("johnfoohw@gmail.com")
+                            .To(r["email"].ToString())
+                            .Subject("Reset Password")
+                            .UsingTemplate(template, new { Name = r["firstName"].ToString(), Email = r["email"].ToString(), Link = "www.google.com" });
+
+                        email.Send();
+                        return true;
+                    }
+                    r.Close();
+                }
+               
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close(); 
+            }
+
+            return false;
         }
     }
 }
