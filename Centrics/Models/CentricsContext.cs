@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Cryptography;
 using FluentEmail.Core;
 using FluentEmail.Razor;
+using System.Text;
+using Microsoft.AspNetCore.Http;
 
 namespace Centrics.Models
 {
@@ -752,13 +754,12 @@ namespace Centrics.Models
             }
         }
 
-        public void EditUser(EditUserViewModel user, int UserID)
+        public void EditUser(EditUserViewModel user)
         {
             MySqlConnection conn = GetConnection();
-            Debug.WriteLine("Edit" + UserID);
-            Debug.WriteLine("edit" + user.FirstName);
             try
             {
+                Debug.WriteLine("Hello"+user.UserID);
                 conn.Open();
                 string query = "update users set firstName=@firstName, lastName=@lastName, email=@email, userRole=@role where userID=@userID";
                 MySqlCommand c = new MySqlCommand(query, conn);
@@ -766,7 +767,7 @@ namespace Centrics.Models
                 c.Parameters.AddWithValue("@lastName", user.LastName);
                 c.Parameters.AddWithValue("@email", user.UserEmail);
                 c.Parameters.AddWithValue("@role", user.UserRole);
-                c.Parameters.AddWithValue("@userID", UserID);
+                c.Parameters.AddWithValue("@userID", user.UserID);
 
                 c.ExecuteNonQuery();
             }
@@ -837,19 +838,20 @@ namespace Centrics.Models
                 c.Parameters.AddWithValue("@email", user.UserEmail);
                 using (MySqlDataReader r = c.ExecuteReader())
                 {
-                    //Loops for every row of the users table
                     while (r.Read())
                     {
                         Email.DefaultRenderer = new RazorRenderer();
-
-                        var template = "Hi @Model.Name, you've recently requested to reset your password. Click on this <a href = 'www.google.com'>link</a> to reset your password. " +
+                        string ResetID = RandomString(20);
+                        int UserID = Convert.ToInt32(r["userID"]);
+                        SaveResetIDToDB(ResetID, UserID, DateTime.Now);
+                        var template = "Hi @Model.Name, you've recently requested to reset your password. Click on this <a href = '@Model.Link'>link</a> to reset your password. " +
                             "<p>Ignore this email if you did not request to reset your password.</p>";
 
                         var email = Email
                             .From("johnfoohw@gmail.com")
                             .To(r["email"].ToString())
                             .Subject("Reset Password")
-                            .UsingTemplate(template, new { Name = r["firstName"].ToString(), Email = r["email"].ToString(), Link = "www.google.com" });
+                            .UsingTemplate(template, new { Name = r["firstName"].ToString(), Email = r["email"].ToString(), Link = "http://localhost:57126/Users/ResetPassword?ResetID="+ResetID+"&UserID="+UserID});
 
                         email.Send();
                         return true;
@@ -868,6 +870,125 @@ namespace Centrics.Models
             }
 
             return false;
+        }
+
+        public void SaveResetIDToDB(string ResetID, int UserID, DateTime sendDate)
+        {
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                string query = "insert into resetpassword values (@resetID, @userID, @sendDate)";
+                MySqlCommand c2 = new MySqlCommand(query, conn);
+                c2.Parameters.AddWithValue("@resetID", ResetID);
+                c2.Parameters.AddWithValue("@userID", UserID);
+                c2.Parameters.AddWithValue("@sendDate", sendDate);
+                c2.ExecuteNonQuery();
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        public Boolean RetrieveResetIDFromDB(string ResetID)
+        {
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                string query = "select * from resetpassword where resetID = @resetID";
+                MySqlCommand c = new MySqlCommand(query, conn);
+                c.Parameters.AddWithValue("@resetID", ResetID);
+                using (MySqlDataReader r = c.ExecuteReader())
+                {
+                    if (r.Read())
+                    {
+                        DeleteResetIDInDB(r["resetID"].ToString());
+                        return true;
+                    }
+                    else
+                        return false;
+                }
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e); 
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return false;
+        }
+
+        public void DeleteResetIDInDB(string ResetID)
+        {
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                string query = "delete from resetpassword where resetID = @resetID";
+                MySqlCommand c2 = new MySqlCommand(query, conn);
+                c2.Parameters.AddWithValue("@resetID", ResetID);
+                c2.ExecuteNonQuery();
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        public string RandomString(int length)
+        {
+            const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+            StringBuilder res = new StringBuilder();
+            using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
+            {
+                byte[] uintBuffer = new byte[sizeof(uint)];
+
+                while (length-- > 0)
+                {
+                    rng.GetBytes(uintBuffer);
+                    uint num = BitConverter.ToUInt32(uintBuffer, 0);
+                    res.Append(valid[(int)(num % (uint)valid.Length)]);
+                }
+            }
+
+            return res.ToString();
+        }
+
+        public void ResetPassword(ResetPasswordViewModel model)
+        {
+            MySqlConnection conn = new MySqlConnection();
+
+            try
+            {
+                conn.Open();
+                string query = "update users set password = @NewPassword where userID = @UserID";
+                MySqlCommand c2 = new MySqlCommand(query, conn);
+                string NewPassword = HashPassword(model.NewPassword);
+                c2.Parameters.AddWithValue("@NewPassword", NewPassword);
+                c2.Parameters.AddWithValue("@UserID", model.UserID);
+                c2.ExecuteNonQuery();   
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();   
+            }
         }
     }
 }

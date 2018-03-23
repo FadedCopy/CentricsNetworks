@@ -12,8 +12,8 @@
     Manual Setup Code : @ViewBag.SetupCode
 </div>
 @using (@Html.BeginForm("Send2FA", "Users", FormMethod.Post))
-        {
-            @Html.TextBoxFor(m => m.CodeDigit, new { @class = "form control", @maxlength = 6})
+    {
+        @Html.TextBoxFor(m => m.CodeDigit, new { @class = "form control", @maxlength = 6})
 
-            <input type="submit" class="btn btn-success" />
-}
+        <input type="submit" class="btn btn-success" />
+    }
