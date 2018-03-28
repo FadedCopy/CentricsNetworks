@@ -1,0 +1,19 @@
+﻿@model Centrics.Models.TwoFactorAuth
+@{
+    ViewData["Title"] = "Send2FA";
+}
+
+<h2>Send 2FA</h2>
+<div> @ViewBag.Message </div>
+<div>
+    <img src="@ViewBag.BarcodeImageUrl" />
+</div>
+<div>
+    Manual Setup Code : @ViewBag.SetupCode
+</div>
+@using (@Html.BeginForm("Send2FA", "Users", FormMethod.Post))
+    {
+        @Html.TextBoxFor(m => m.CodeDigit, new { @class = "form control", @maxlength = 6})
+
+        <input type="submit" class="btn btn-success" />
+    }

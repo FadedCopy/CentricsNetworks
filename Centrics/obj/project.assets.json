@@ -2,6 +2,18 @@
   "version": 3,
   "targets": {
     ".NETCoreApp,Version=v2.0": {
+      "FleekDeveloper.GoogleAuthenticator/1.0.1": {
+        "type": "package",
+        "dependencies": {
+          "GoogleAuthenticator": "1.2.1"
+        },
+        "compile": {
+          "lib/net461/FleekDeveloper.GoogleAuthenticator.dll": {}
+        },
+        "runtime": {
+          "lib/net461/FleekDeveloper.GoogleAuthenticator.dll": {}
+        }
+      },
       "FluentEmail.Core/2.3.1": {
         "type": "package",
         "compile": {
@@ -37,6 +49,7 @@
           "lib/netstandard2.0/FluentEmail.Razor.dll": {}
         }
       },
+<<<<<<< HEAD
       "jsreport.AspNetCore/1.0.1": {
         "type": "package",
         "dependencies": {
@@ -121,6 +134,15 @@
         },
         "runtime": {
           "lib/netstandard1.6/jsreport.Types.dll": {}
+=======
+      "GoogleAuthenticator/1.2.1": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Google.Authenticator.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Google.Authenticator.dll": {}
+>>>>>>> master
         }
       },
       "Libuv/1.10.0": {
@@ -5256,6 +5278,23 @@
           "lib/netstandard1.3/System.Xml.XPath.XDocument.dll": {}
         }
       },
+      "Twilio/5.9.8": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.IdentityModel.Logging": "1.1.2",
+          "Microsoft.IdentityModel.Tokens": "5.1.2",
+          "NETStandard.Library": "1.6.1",
+          "Newtonsoft.Json": "9.0.1",
+          "System.Collections.Specialized": "4.3.0",
+          "System.IdentityModel.Tokens.Jwt": "5.1.2"
+        },
+        "compile": {
+          "lib/netstandard1.4/Twilio.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.4/Twilio.dll": {}
+        }
+      },
       "WindowsAzure.Storage/8.1.4": {
         "type": "package",
         "dependencies": {
@@ -5274,6 +5313,17 @@
     }
   },
   "libraries": {
+    "FleekDeveloper.GoogleAuthenticator/1.0.1": {
+      "sha512": "9jdRz40RVLAnE6uz8PXhZgElA2+2IDQZ++38X8Cux0200fC8jjqOvVSuzzcrW99dUQ6cVn3J2ofC/BuB2yGc8g==",
+      "type": "package",
+      "path": "fleekdeveloper.googleauthenticator/1.0.1",
+      "files": [
+        "fleekdeveloper.googleauthenticator.1.0.1.nupkg.sha512",
+        "fleekdeveloper.googleauthenticator.nuspec",
+        "lib/FleekDeveloper.GoogleAuthenticator.dll",
+        "lib/net461/FleekDeveloper.GoogleAuthenticator.dll"
+      ]
+    },
     "FluentEmail.Core/2.3.1": {
       "sha512": "JImvioiKq6IIour/p9TuJaMQdqiMmi6g4L2r78pQfM+zNdqS09uGs8nzZlxvBGQD4EShFJ09LMfuzh2757m3rQ==",
       "type": "package",
@@ -5304,6 +5354,7 @@
         "lib/netstandard2.0/FluentEmail.Razor.dll"
       ]
     },
+<<<<<<< HEAD
     "jsreport.AspNetCore/1.0.1": {
       "sha512": "/laKccbGCEZmOkqHOBkkJ3zckUXtgYgHZfjREViY2Gp+eMCRZUiLIZdej76lUeFGXe1grneh6y+KDX6iXhIwzg==",
       "type": "package",
@@ -5374,6 +5425,18 @@
         "lib/net45/jsreport.Types.xml",
         "lib/netstandard1.6/jsreport.Types.dll",
         "lib/netstandard1.6/jsreport.Types.xml"
+=======
+    "GoogleAuthenticator/1.2.1": {
+      "sha512": "+k+LNIXD1PPGHFLhh1ih3DRf7DVQPrpHn0whHVD5aPkUOi1uqNH/W/cAblvgvjZcLZfK02+AG8KO22hVDnawyA==",
+      "type": "package",
+      "path": "googleauthenticator/1.2.1",
+      "files": [
+        "googleauthenticator.1.2.1.nupkg.sha512",
+        "googleauthenticator.nuspec",
+        "lib/net35/Google.Authenticator.dll",
+        "lib/net40/Google.Authenticator.dll",
+        "lib/net45/Google.Authenticator.dll"
+>>>>>>> master
       ]
     },
     "Libuv/1.10.0": {
@@ -13568,6 +13631,21 @@
         "system.xml.xpath.xdocument.nuspec"
       ]
     },
+    "Twilio/5.9.8": {
+      "sha512": "q+yA4F6ru+nqf7on+2QhNtd8qQt05asIV733pV2AhPLdAVttsIiWc6nu7Poe0IsFSmk6MXC4ZRFhE96OIzybhw==",
+      "type": "package",
+      "path": "twilio/5.9.8",
+      "files": [
+        "lib/net35/Twilio.dll",
+        "lib/net35/Twilio.xml",
+        "lib/net451/Twilio.dll",
+        "lib/net451/Twilio.xml",
+        "lib/netstandard1.4/Twilio.dll",
+        "lib/netstandard1.4/Twilio.xml",
+        "twilio.5.9.8.nupkg.sha512",
+        "twilio.nuspec"
+      ]
+    },
     "WindowsAzure.Storage/8.1.4": {
       "sha512": "W6ZZ0/o7+3Qb77mRAQyLjPudHG3OMeeQ4p9yY13PUdJArmRCx2cLMm5F4tpIjJXxzHC0ew0oK7DMDGILMdfCnw==",
       "type": "package",
@@ -13593,8 +13671,10 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.0": [
+      "FleekDeveloper.GoogleAuthenticator >= 1.0.1",
       "FluentEmail.Mailgun >= 2.3.1",
       "FluentEmail.Razor >= 2.3.2",
+<<<<<<< HEAD
       "Microsoft.AspNetCore.All >= 2.0.6",
       "Microsoft.NETCore.App >= 2.0.0",
       "Microsoft.VisualStudio.Web.CodeGeneration.Design >= 2.0.3",
@@ -13602,6 +13682,14 @@
       "jsreport.AspNetCore >= 1.0.1",
       "jsreport.Binary >= 1.10.0",
       "jsreport.Local >= 1.1.2"
+=======
+      "GoogleAuthenticator >= 1.2.1",
+      "Microsoft.AspNetCore.All >= 2.0.5",
+      "Microsoft.NETCore.App >= 2.0.0",
+      "Microsoft.VisualStudio.Web.CodeGeneration.Design >= 2.0.2",
+      "MySql.Data >= 6.10.6",
+      "Twilio >= 5.9.8"
+>>>>>>> master
     ]
   },
   "packageFolders": {
@@ -13645,6 +13733,10 @@
     "frameworks": {
       "netcoreapp2.0": {
         "dependencies": {
+          "FleekDeveloper.GoogleAuthenticator": {
+            "target": "Package",
+            "version": "[1.0.1, )"
+          },
           "FluentEmail.Mailgun": {
             "target": "Package",
             "version": "[2.3.1, )"
@@ -13652,6 +13744,10 @@
           "FluentEmail.Razor": {
             "target": "Package",
             "version": "[2.3.2, )"
+          },
+          "GoogleAuthenticator": {
+            "target": "Package",
+            "version": "[1.2.1, )"
           },
           "Microsoft.AspNetCore.All": {
             "target": "Package",
@@ -13670,6 +13766,7 @@
             "target": "Package",
             "version": "[6.10.6, )"
           },
+<<<<<<< HEAD
           "jsreport.AspNetCore": {
             "target": "Package",
             "version": "[1.0.1, )"
@@ -13681,6 +13778,11 @@
           "jsreport.Local": {
             "target": "Package",
             "version": "[1.1.2, )"
+=======
+          "Twilio": {
+            "target": "Package",
+            "version": "[5.9.8, )"
+>>>>>>> master
           }
         },
         "imports": [
@@ -13690,5 +13792,27 @@
         "warn": true
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'FleekDeveloper.GoogleAuthenticator 1.0.1' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v2.0'. This package may not be fully compatible with your project.",
+      "libraryId": "FleekDeveloper.GoogleAuthenticator",
+      "targetGraphs": [
+        ".NETCoreApp,Version=v2.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'GoogleAuthenticator 1.2.1' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v2.0'. This package may not be fully compatible with your project.",
+      "libraryId": "GoogleAuthenticator",
+      "targetGraphs": [
+        ".NETCoreApp,Version=v2.0"
+      ]
+    }
+  ]
 }

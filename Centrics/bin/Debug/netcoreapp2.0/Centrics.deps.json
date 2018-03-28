@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.0",
-    "signature": "ac6a084abf37521c205f14d5629c53c8152a5898"
+    "signature": "19d2df91c16ba53a995837e2775b1400744f4d27"
   },
   "compilationOptions": {
     "defines": [
@@ -23,21 +23,32 @@
     ".NETCoreApp,Version=v2.0": {
       "Centrics/1.0.0": {
         "dependencies": {
+          "FleekDeveloper.GoogleAuthenticator": "1.0.1",
           "FluentEmail.Mailgun": "2.3.1",
           "FluentEmail.Razor": "2.3.2",
-          "Microsoft.AspNetCore.All": "2.0.6",
+          "GoogleAuthenticator": "1.2.1",
+          "Microsoft.AspNetCore.All": "2.0.5",
           "Microsoft.NETCore.App": "2.0.0",
-          "Microsoft.VisualStudio.Web.CodeGeneration.Design": "2.0.3",
+          "Microsoft.VisualStudio.Web.CodeGeneration.Design": "2.0.2",
           "MySql.Data": "6.10.6",
-          "jsreport.AspNetCore": "1.0.1",
-          "jsreport.Binary": "1.10.0",
-          "jsreport.Local": "1.1.2"
+          "Twilio": "5.9.8"
         },
         "runtime": {
           "Centrics.dll": {}
         },
         "compile": {
           "Centrics.dll": {}
+        }
+      },
+      "FleekDeveloper.GoogleAuthenticator/1.0.1": {
+        "dependencies": {
+          "GoogleAuthenticator": "1.2.1"
+        },
+        "runtime": {
+          "lib/net461/FleekDeveloper.GoogleAuthenticator.dll": {}
+        },
+        "compile": {
+          "lib/net461/FleekDeveloper.GoogleAuthenticator.dll": {}
         }
       },
       "FluentEmail.Core/2.3.1": {
@@ -72,84 +83,12 @@
           "lib/netstandard2.0/FluentEmail.Razor.dll": {}
         }
       },
-      "jsreport.AspNetCore/1.0.1": {
-        "dependencies": {
-          "Microsoft.AspNetCore.Http": "2.0.2",
-          "Microsoft.AspNetCore.Mvc": "2.0.3",
-          "jsreport.Shared": "1.0.1",
-          "jsreport.Types": "1.8.4"
-        },
+      "GoogleAuthenticator/1.2.1": {
         "runtime": {
-          "lib/netstandard2.0/jsreport.AspNetCore.dll": {}
+          "lib/net45/Google.Authenticator.dll": {}
         },
         "compile": {
-          "lib/netstandard2.0/jsreport.AspNetCore.dll": {}
-        }
-      },
-      "jsreport.Binary/1.10.0": {
-        "dependencies": {
-          "jsreport.Shared": "1.0.1"
-        },
-        "runtime": {
-          "lib/netstandard2.0/jsreport.Binary.dll": {}
-        },
-        "compile": {
-          "lib/netstandard2.0/jsreport.Binary.dll": {}
-        }
-      },
-      "jsreport.Client/2.0.2": {
-        "dependencies": {
-          "Microsoft.CSharp": "4.4.0",
-          "NETStandard.Library": "2.0.0",
-          "Newtonsoft.Json": "10.0.3",
-          "System.Net.Http": "4.3.2",
-          "jsreport.Shared": "1.0.1",
-          "jsreport.Types": "1.8.4"
-        },
-        "runtime": {
-          "lib/netstandard1.6/jsreport.Client.dll": {}
-        },
-        "compile": {
-          "lib/netstandard1.6/jsreport.Client.dll": {}
-        }
-      },
-      "jsreport.Local/1.1.2": {
-        "dependencies": {
-          "Newtonsoft.Json": "10.0.3",
-          "jsreport.Client": "2.0.2",
-          "jsreport.Shared": "1.0.1",
-          "jsreport.Types": "1.8.4"
-        },
-        "runtime": {
-          "lib/netstandard2.0/jsreport.Local.dll": {}
-        },
-        "compile": {
-          "lib/netstandard2.0/jsreport.Local.dll": {}
-        }
-      },
-      "jsreport.Shared/1.0.1": {
-        "dependencies": {
-          "NETStandard.Library": "2.0.0",
-          "Newtonsoft.Json": "10.0.3",
-          "jsreport.Types": "1.8.4"
-        },
-        "runtime": {
-          "lib/netstandard1.6/jsreport.Shared.dll": {}
-        },
-        "compile": {
-          "lib/netstandard1.6/jsreport.Shared.dll": {}
-        }
-      },
-      "jsreport.Types/1.8.4": {
-        "dependencies": {
-          "NETStandard.Library": "2.0.0",
-          "Newtonsoft.Json": "10.0.3"
-        },
-        "runtime": {
-          "lib/netstandard1.6/jsreport.Types.dll": {}
-        },
-        "compile": {
-          "lib/netstandard1.6/jsreport.Types.dll": {}
+          "lib/net45/Google.Authenticator.dll": {}
         }
       },
       "Libuv/1.10.0": {
@@ -4206,6 +4145,22 @@
           "System.Xml.XPath": "4.3.0"
         }
       },
+      "Twilio/5.9.8": {
+        "dependencies": {
+          "Microsoft.IdentityModel.Logging": "1.1.4",
+          "Microsoft.IdentityModel.Tokens": "5.1.4",
+          "NETStandard.Library": "2.0.0",
+          "Newtonsoft.Json": "10.0.3",
+          "System.Collections.Specialized": "4.3.0",
+          "System.IdentityModel.Tokens.Jwt": "5.1.4"
+        },
+        "runtime": {
+          "lib/netstandard1.4/Twilio.dll": {}
+        },
+        "compile": {
+          "lib/netstandard1.4/Twilio.dll": {}
+        }
+      },
       "WindowsAzure.Storage/8.1.4": {
         "dependencies": {
           "Microsoft.Data.OData": "5.8.2",
@@ -4404,6 +4359,13 @@
       "serviceable": false,
       "sha512": ""
     },
+    "FleekDeveloper.GoogleAuthenticator/1.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-9jdRz40RVLAnE6uz8PXhZgElA2+2IDQZ++38X8Cux0200fC8jjqOvVSuzzcrW99dUQ6cVn3J2ofC/BuB2yGc8g==",
+      "path": "fleekdeveloper.googleauthenticator/1.0.1",
+      "hashPath": "fleekdeveloper.googleauthenticator.1.0.1.nupkg.sha512"
+    },
     "FluentEmail.Core/2.3.1": {
       "type": "package",
       "serviceable": true,
@@ -4425,47 +4387,12 @@
       "path": "fluentemail.razor/2.3.2",
       "hashPath": "fluentemail.razor.2.3.2.nupkg.sha512"
     },
-    "jsreport.AspNetCore/1.0.1": {
+    "GoogleAuthenticator/1.2.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-/laKccbGCEZmOkqHOBkkJ3zckUXtgYgHZfjREViY2Gp+eMCRZUiLIZdej76lUeFGXe1grneh6y+KDX6iXhIwzg==",
-      "path": "jsreport.aspnetcore/1.0.1",
-      "hashPath": "jsreport.aspnetcore.1.0.1.nupkg.sha512"
-    },
-    "jsreport.Binary/1.10.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-DAoX5UNwYxHGmPePNTcuJRXBoGz/iXAENfXxI4dDTK3tDBrsqKPT/Jeik7HR5KjWKad15lnPN3EP0U5pPKcr6A==",
-      "path": "jsreport.binary/1.10.0",
-      "hashPath": "jsreport.binary.1.10.0.nupkg.sha512"
-    },
-    "jsreport.Client/2.0.2": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-gNwEjZQvjqebxeollbOvZfOIICNRTGd9DxaYiO0zcVEsMZRiyhTGoRjyrajPKUgCO4CoaXlGmFrSkeFgEkj9KA==",
-      "path": "jsreport.client/2.0.2",
-      "hashPath": "jsreport.client.2.0.2.nupkg.sha512"
-    },
-    "jsreport.Local/1.1.2": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-6yofoso4rjQ0O3orPdNS3Iw3pXPQ/k5n2V/g0eFChfN9UhA511PI2R22T1aPfIDtLh4zXUSzoOa1NCXIjjK+0w==",
-      "path": "jsreport.local/1.1.2",
-      "hashPath": "jsreport.local.1.1.2.nupkg.sha512"
-    },
-    "jsreport.Shared/1.0.1": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-z0nlRv+Ym1PdD8fvJoG2vXP+0D9dOAi/sSs6bYTrz2c8HqC4tX9lwWVitFKsfhPiIojMNdY/96dupnhP/46gsQ==",
-      "path": "jsreport.shared/1.0.1",
-      "hashPath": "jsreport.shared.1.0.1.nupkg.sha512"
-    },
-    "jsreport.Types/1.8.4": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-8uGloQlGxhsmwsx4AG+lNm9C9B2OqPfwKKFdW7hbTOgHq9sS5FFJExwdbCSHQGeqRR66QgLLQopFGF2yesRuJQ==",
-      "path": "jsreport.types/1.8.4",
-      "hashPath": "jsreport.types.1.8.4.nupkg.sha512"
+      "sha512": "sha512-+k+LNIXD1PPGHFLhh1ih3DRf7DVQPrpHn0whHVD5aPkUOi1uqNH/W/cAblvgvjZcLZfK02+AG8KO22hVDnawyA==",
+      "path": "googleauthenticator/1.2.1",
+      "hashPath": "googleauthenticator.1.2.1.nupkg.sha512"
     },
     "Libuv/1.10.0": {
       "type": "package",
@@ -6622,6 +6549,13 @@
       "sha512": "sha512-jw9oHHEIVW53mHY9PgrQa98Xo2IZ0ZjrpdOTmtvk+Rvg4tq7dydmxdNqUvJ5YwjDqhn75mBXWttWjiKhWP53LQ==",
       "path": "system.xml.xpath.xdocument/4.3.0",
       "hashPath": "system.xml.xpath.xdocument.4.3.0.nupkg.sha512"
+    },
+    "Twilio/5.9.8": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-q+yA4F6ru+nqf7on+2QhNtd8qQt05asIV733pV2AhPLdAVttsIiWc6nu7Poe0IsFSmk6MXC4ZRFhE96OIzybhw==",
+      "path": "twilio/5.9.8",
+      "hashPath": "twilio.5.9.8.nupkg.sha512"
     },
     "WindowsAzure.Storage/8.1.4": {
       "type": "package",

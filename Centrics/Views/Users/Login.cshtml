@@ -8,7 +8,7 @@
 @using (Html.BeginForm("Login", "Users", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
-
+    @ViewBag.Status
     <div class="form-group">
         @Html.LabelFor(m => m.UserEmail, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
@@ -23,8 +23,8 @@
         </div>
     </div>
 
-    @ViewBag.Message
     <input type="submit" value="Login" />
     <br />
     @Html.ActionLink("Forgot Password", "ForgotPassword")
 }
+

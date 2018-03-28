@@ -1,15 +1,21 @@
 ﻿using System;
+using System.Web;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Centrics.Models;
+using Google.Authenticator;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using System.Diagnostics;
+using System.Net.Http;
 
 namespace Centrics.Controllers
 {
     public class UsersController : Controller
     {
         private readonly CentricsContext _context;
+        private const string GoogleAuthKey = "CentricsNetworks123!@#"; //You can add your own Key
 
         public UsersController(CentricsContext context)
         {
@@ -28,15 +34,17 @@ namespace Centrics.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult RegisterUser(User model)
         {
-
+            model.UserRole = "User";
+            //If user input for registration is valid
             if (ModelState.IsValid)
             {
+                //Check whether email is already existing in the database
                 Boolean validEmail = _context.CheckExistingEmail(model);
                 if (validEmail)
                 {
                     _context.RegisterUser(model);
-
-                    return RedirectToAction("ViewUsers", "Users");
+                    ViewBag.Status = "Registration successful. Please login here.";
+                    return RedirectToAction("Login", "Users");
                 }
                 else
                 {
@@ -60,19 +68,34 @@ namespace Centrics.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Login(LoginViewModel model)
         {
-            Boolean successfulLogin;
             if (ModelState.IsValid)
             {
-                successfulLogin = _context.LoginUser(model);
-
+                string message = "";
+                bool status = false;
+                
+                LoginViewModel UserLogin = _context.LoginUser(model);
+                bool successfulLogin = UserLogin.SuccessfulLogin;
                 if (successfulLogin)
                 {
-                    ViewBag.Message = "Success.";
-                    return View();
+                    status = true;
+                    message = "Two Factor Authentication Verification";
+                    TempData["Email"] = model.UserEmail;
+                    //Two Factor Authentication Setup, QR Code and Manual Code
+                    TwoFactorAuthenticator TwoFacAuth = new TwoFactorAuthenticator();
+                    string UserUniqueKey = (model.UserEmail + GoogleAuthKey);
+                    TempData["UserUniqueKey"] = UserUniqueKey; //Session
+                    var setupInfo = TwoFacAuth.GenerateSetupCode("Centrics Network", model.UserEmail, UserUniqueKey, 300, 300);
+                    ViewBag.BarcodeImageUrl = setupInfo.QrCodeSetupImageUrl;
+                    ViewBag.SetupCode = setupInfo.ManualEntryKey;
+                    ViewBag.Message = message;  
+                    ViewBag.Status = status;
+                    TempData["LoginID"] = UserLogin.UserID;
+                    TempData["LoginEmail"] = UserLogin.UserEmail;
+                    return RedirectToAction("Send2FA");
                 }
                 else
                 {
-                    ViewBag.Message = "Failed.";
+                    ViewBag.Status = "Invalid username or password entered. Please try again.";
                     return View();
                 }
             }
@@ -90,20 +113,21 @@ namespace Centrics.Controllers
         [HttpGet]
         public IActionResult ViewUsers()
         {
-            ViewBag.UsersData = _context.getUsers();
-            return View();
+            User currentUser = _context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("UserID")));
+            if (_context.CheckUserPrivilege(currentUser))
+            {
+                ViewBag.UsersData = _context.GetUsers();
+                return View();
+            }
+            else return RedirectToAction("Error");
         }
 
         [HttpPost]
-        public IActionResult EditUser(EditUserViewModel model, int UserID)
+        public IActionResult EditUser(EditUserViewModel model)
         {
             if (ModelState.IsValid)
             {
-                Boolean validEmail = _context.CheckEditExistingEmail(model);
-                if (validEmail)
-                {
-                    _context.EditUser(model, Convert.ToInt32(TempData["UserID"]));
-                }
+                    _context.EditUser(model);
             }
             return RedirectToAction("ViewUsers");
         }
@@ -111,12 +135,13 @@ namespace Centrics.Controllers
         [HttpGet]   
         public IActionResult EditUserDetails(int UserID)
         {
-            User retrieveUserEdited = _context.getUser(UserID);
+            User retrieveUserEdited = _context.GetUser(UserID);
             User userRoles = new User();
             TempData["UserID"] = UserID;
             ViewData["Roles"] = userRoles.Roles;
             EditUserViewModel editedUser = new EditUserViewModel
             {
+                UserID = UserID,
                 FirstName = retrieveUserEdited.FirstName,
                 LastName = retrieveUserEdited.LastName,
                 UserEmail = retrieveUserEdited.UserEmail,
@@ -136,13 +161,130 @@ namespace Centrics.Controllers
         {
             string CurrentPassword = passwords.CurrentPassword;
             string NewPassword = passwords.NewPassword;
+            passwords.UserID = Convert.ToInt32(TempData["UserID"]);
+            if (ModelState.IsValid)
+            {
+                User userChanged = _context.GetUser(passwords.UserID);
+                if (_context.ChangePassword(CurrentPassword, NewPassword, userChanged))
+                {
+                    ViewBag.Message = "Password change successful!";
+                }
+                else
+                    ViewBag.Message = "Current password entered is incorrect, please try again.";
+            }
 
-            User userChanged = _context.getUser(passwords.UserID);
-
-            _context.ChangePassword(NewPassword, userChanged);
-
-            //remove this
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult ForgotPassword(ForgotPasswordViewModel model)
+        {
+            //Sends the Reset Link to the user's email
+            if (_context.SendResetLink(model))
+            {
+                //Initializes Viewbag so it will display on the View.
+                ViewBag.Message = "Email sent, check your email for future instructions.";
+                TempData["ForgotEmail"] = model.UserEmail;
+                return View();
+            }
+            
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult ResetPassword()
+        {
+            TempData["ResetID"] = HttpContext.Request.Query["ResetID"].ToString();
+            TempData["UserID"] = HttpContext.Request.Query["UserID"].ToString();
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult ResetPassword(ResetPasswordViewModel model)
+        {
+            model.ResetID = TempData["ResetID"].ToString();
+            model.UserID = Convert.ToInt32(TempData["UserID"]);
+            Debug.WriteLine("Blah" + model.ResetID + " "+ model.UserID);
+            if (_context.RetrieveResetIDFromDB(model.ResetID))
+            {
+                _context.ResetPassword(model);
+                ViewBag.Message = "Reset password successful.";
+            }
+            else
+            {
+                ViewBag.Message = "Password reset failed, please try again.";
+            }
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult Send2FA()
+        {
+            string email = TempData["Email"].ToString();
+            //Two Factor Authentication Setup
+            TwoFactorAuthenticator TwoFacAuth = new TwoFactorAuthenticator();
+            string UserUniqueKey = (email + GoogleAuthKey);
+            TempData["UserUniqueKey"] = UserUniqueKey; //Session
+            var setupInfo = TwoFacAuth.GenerateSetupCode("Centrics Network", email , UserUniqueKey, 300, 300);
+            ViewBag.BarcodeImageUrl = setupInfo.QrCodeSetupImageUrl;
+            ViewBag.SetupCode = setupInfo.ManualEntryKey;
+            TempData["Email"] = email;
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Send2FA(TwoFactorAuth model)
+        {
+            TwoFactorAuthenticator TwoFacAuth = new TwoFactorAuthenticator();
+            string UserUniqueKey = TempData["UserUniqueKey"].ToString();
+            bool isValid = TwoFacAuth.ValidateTwoFactorPIN(UserUniqueKey, model.CodeDigit.ToString());
+            if (isValid)
+            {
+                HttpContext.Session.SetString("IsValidTwoFactorAuthentication", "true");
+                HttpContext.Session.SetString("UserID", TempData["LoginID"].ToString());
+                Debug.WriteLine(HttpContext.Session.GetString("UserID"));
+                HttpContext.Session.SetString("LoginEmail", TempData["LoginEmail"].ToString());
+                return RedirectToAction("Profile", "Users");
+            }
+            else {
+                ModelState.AddModelError("","Invalid Code Entered");
+                string email = TempData["Email"].ToString();
+                TempData["Email"] = email;
+                UserUniqueKey = (email + GoogleAuthKey);
+                TempData["UserUniqueKey"] = UserUniqueKey; //Session
+                return View();
+            }   
+        }
+
+        [HttpGet]
+        public IActionResult Profile()
+        {
+            if (HttpContext.Session.GetString("UserID") != null)
+            {
+                User UserLoggedIn = _context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("UserID")));
+                ViewBag.UserID = UserLoggedIn.UserID;
+                ViewBag.Email = UserLoggedIn.UserEmail;
+                ViewBag.FirstName = UserLoggedIn.FirstName;
+                ViewBag.LastName = UserLoggedIn.LastName;
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login");
+            }
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            ViewBag.Status = "You have successfully logged out.";
+            return RedirectToAction("Login");
         }
     }
 }

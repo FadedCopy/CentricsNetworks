@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 
 namespace Centrics.Models
 {
-    public class ChangePasswordViewModel
+    public class ResetPasswordViewModel
     {
-
-        [Display(Name = "User ID")]
         public int UserID { get; set; }
 
-        [Display(Name = "Current Password"), Required, StringLength(30), DataType(DataType.Password)]
-        public string CurrentPassword { get; set; }
+        [Display(Name = "Reset ID")]
+        public string ResetID { get; set; }
 
         [Display(Name = "New Password"), Required, StringLength(30), DataType(DataType.Password),
         RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z])\S{8,15}$", ErrorMessage = "Password must contain: Minimum 8 characters at least 1 uppercase alphabet, 1 lowercase alphabet and 1 numerical value.")]

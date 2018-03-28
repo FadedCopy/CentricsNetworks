@@ -1,0 +1,10 @@
+﻿@{
+    ViewData["Title"] = "Profile";
+}
+
+<h2>Profile</h2>
+
+<p>User ID: @ViewBag.UserID</p>
+<p>Email: @ViewBag.Email</p>
+<p>Full Name: @ViewBag.FirstName @ViewBag.LastName</p>
+@Html.ActionLink("Change Password", "ChangePassword")

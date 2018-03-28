@@ -21,10 +21,12 @@ namespace Centrics
         {
             Configuration = configuration;
             var sender = new MailgunSender(
-    "sandbox25775aba365f4601ad62cbd09dae30da.mailgun.org", // Mailgun Domain
-    "key-7b134700351795bfc6149f9f84204e1a" // Mailgun API Key
-);
+                "sandbox25775aba365f4601ad62cbd09dae30da.mailgun.org", // Mailgun Domain
+                "key-7b134700351795bfc6149f9f84204e1a" // Mailgun API Key
+            );
             Email.DefaultSender = sender;
+
+                
         }
 
         public IConfiguration Configuration { get; }
@@ -34,6 +36,15 @@ namespace Centrics
         {
             services.AddMvc();
             services.Add(new ServiceDescriptor(typeof(CentricsContext), new CentricsContext(Configuration.GetConnectionString("DefaultConnection"))));
+            // Adds a default in-memory implementation of IDistributedCache.
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                // Set a short timeout for easy testing.
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.Cookie.HttpOnly = true;
+            });
             services.AddJsReport(new LocalReporting()
                 .UseBinary(JsReportBinary.GetBinary())
                 .AsUtility()
@@ -54,7 +65,7 @@ namespace Centrics
             }
 
             app.UseStaticFiles();
-
+            app.UseSession();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

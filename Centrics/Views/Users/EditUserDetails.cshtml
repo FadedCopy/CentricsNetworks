@@ -15,6 +15,7 @@
             <h4 class="modal-title" id="myModalLabel">User Details</h4>
         </div>
         <div class="modal-body">
+            @Html.TextBoxFor(m => m.UserID, new { @class = "form-control", @type = "hidden" })
             <div class="form-group">
                 @Html.LabelFor(m => m.FirstName, new { @class = "col-md-2 control-label" })
                 <div class="col-md-10">
