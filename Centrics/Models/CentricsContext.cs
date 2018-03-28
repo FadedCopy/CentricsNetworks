@@ -485,6 +485,8 @@ namespace Centrics.Models
 
             return SR;
         }
+
+        //Hashes password for database
         public string HashPassword(string password)
         {
             byte[] salt;
@@ -501,6 +503,7 @@ namespace Centrics.Models
             return hashedPassword;
         }
 
+        //Compares 2 strings to see whether they match
         public Boolean CompareHashedPasswords(string loginPassword, string hashedPassword)
         {
             Boolean passwordMatch = false;
@@ -523,6 +526,7 @@ namespace Centrics.Models
             return passwordMatch;
         }
 
+        //During registration, check if email is already existing in the database, returns false is email already exists
         public Boolean CheckExistingEmail(User user)
         {
             Boolean validEmail = false;
@@ -555,6 +559,7 @@ namespace Centrics.Models
             return validEmail;
         }
 
+        //While Editing User, check if the email is already existing, returns false if email already exists in database
         public Boolean CheckEditExistingEmail(EditUserViewModel user)
         {
             Boolean validEmail = false;
@@ -618,6 +623,7 @@ namespace Centrics.Models
             return user;
         }
 
+        //Creates a new user in the database
         public void RegisterUser(User model)
         {
             Boolean validEmail = CheckExistingEmail(model);
@@ -649,6 +655,7 @@ namespace Centrics.Models
                 }
             }
         }
+
         //Get a single user by UserID
         public User GetUser(int UserID)
         {
@@ -660,8 +667,9 @@ namespace Centrics.Models
             try
             {
                 conn.Open();
-                string query = "select * from users";
+                string query = "select * from users where userID = @userID";
                 MySqlCommand c = new MySqlCommand(query, conn);
+                c.Parameters.AddWithValue("@userID", UserID);
                 using (MySqlDataReader r = c.ExecuteReader())
                 {
                     //Loops for every row of the users table
@@ -676,8 +684,6 @@ namespace Centrics.Models
                             UserRole = r["userRole"].ToString()
                         };
                     }
-                    Debug.WriteLine(userRetrieved.UserID);
-                    Debug.WriteLine(userRetrieved.FirstName);
                 }
             }
             catch (MySqlException e)
@@ -733,6 +739,7 @@ namespace Centrics.Models
             return ListofUsers;
         }
 
+        //Deletes User from the database
         public void DeleteUser(int UserID)
         {
             MySqlConnection conn = GetConnection();
@@ -754,6 +761,7 @@ namespace Centrics.Models
             }
         }
 
+        //Updates to Database the user changes
         public void EditUser(EditUserViewModel user)
         {
             MySqlConnection conn = GetConnection();
@@ -895,6 +903,7 @@ namespace Centrics.Models
             }
         }
 
+        //Retrieves the Reset ID from database to compare
         public Boolean RetrieveResetIDFromDB(string ResetID)
         {
             MySqlConnection conn = GetConnection();
@@ -927,6 +936,7 @@ namespace Centrics.Models
             return false;
         }
 
+        //Deletes reset ID from database
         public void DeleteResetIDInDB(string ResetID)
         {
             MySqlConnection conn = GetConnection();
@@ -967,6 +977,7 @@ namespace Centrics.Models
             return res.ToString();
         }
 
+        //Updates database with new password keyed in by user
         public void ResetPassword(ResetPasswordViewModel model)
         {
             MySqlConnection conn = new MySqlConnection();
@@ -990,5 +1001,18 @@ namespace Centrics.Models
                 conn.Close();   
             }
         }
+
+
+        //Returns a true if user is an admin/super admin, otherwise returns false
+        public Boolean CheckUserPrivilege(User userChecked)
+        {
+            if (userChecked.UserRole == "Admin" || userChecked.UserRole == "Super Admin")
+            {
+                return true;
+            }
+            else return false;
+        }
+
+        
     }
 }

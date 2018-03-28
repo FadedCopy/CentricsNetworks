@@ -29,7 +29,7 @@ namespace Centrics.Models
         [Display(Name = "Confirm Password"), Required, StringLength(30), Compare("UserPassword", ErrorMessage = "Confirm password and password do not match"), DataType(DataType.Password)]
         public string UserCfmPassword { get; set; }
 
-        [Display(Name = "Role"), Required, StringLength(40)]
+        [Display(Name = "Role"), StringLength(40)]
         public string UserRole { get; set; }
 
         public List<SelectListItem> Roles { get; } = new List<SelectListItem>
@@ -38,6 +38,5 @@ namespace Centrics.Models
             new SelectListItem { Value = "Admin", Text = "Admin" },
             new SelectListItem { Value = "Super Admin", Text = "Super Admin"},
         };
-
     }
 }

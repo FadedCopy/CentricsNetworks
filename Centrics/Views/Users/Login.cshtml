@@ -4,46 +4,27 @@
 }
 
 <h2>Login</h2>
-@if (ViewBag.Status == null || !ViewBag.Status)
+
+@using (Html.BeginForm("Login", "Users", FormMethod.Post))
 {
-    @using (Html.BeginForm("Login", "Users", FormMethod.Post))
-    {
-        @Html.AntiForgeryToken()
-
-        <div class="form-group">
-            @Html.LabelFor(m => m.UserEmail, new { @class = "col-md-2 control-label" })
-            <div class="col-md-10">
-                @Html.TextBoxFor(m => m.UserEmail, new { @class = "form-control" })
-            </div>
+    @Html.AntiForgeryToken()
+    @ViewBag.Status
+    <div class="form-group">
+        @Html.LabelFor(m => m.UserEmail, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.UserEmail, new { @class = "form-control" })
         </div>
+    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(m => m.UserPassword, new { @class = "col-md-2 control-label" })
-            <div class="col-md-10">
-                @Html.TextBoxFor(m => m.UserPassword, new { @class = "form-control", @type = "password" })
-            </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.UserPassword, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.UserPassword, new { @class = "form-control", @type = "password" })
         </div>
+    </div>
 
-        <input type="submit" value="Login" />
-        <br />
-        @Html.ActionLink("Forgot Password", "ForgotPassword")
-    }
+    <input type="submit" value="Login" />
+    <br />
+    @Html.ActionLink("Forgot Password", "ForgotPassword")
 }
-else
-{
-    <div> @ViewBag.Message </div>
-    <div>
-        <img src = "@ViewBag.BarcodeImageUrl" />
-    </div>
-    <div>
-        Manual Setup Code : @ViewBag.SetupCode
-    </div>
-    <div>
-        @using(Html.BeginForm("TwoFactorAuthenticate", "Users", FormMethod.Post))
-        {
-            <input type = "text" name = "CodeDigit" />
 
-            <input type = "submit" class="btn btn-success" />
-        }
-    </div>
-}
