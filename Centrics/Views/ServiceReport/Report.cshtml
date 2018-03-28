@@ -1,0 +1,109 @@
+﻿@model Centrics.Models.ServiceReport
+
+@{
+    ViewData["Title"] = "Service Report";
+    var Report = Model;
+    var starttime = Report.TimeStart.ToShortTimeString();
+    var endtime = Report.TimeEnd.ToShortTimeString();
+    var dateofvisit = Report.Date.ToShortDateString();
+
+}
+<style>
+    td{padding-top:10px;
+       padding-bottom:10px;
+    }
+</style>
+<h2 style="text-align:center;">Service Report</h2>
+@if (TempData["error"] != null)
+{
+
+    <div style="color:red;">@TempData["error"]</div>
+}
+<p> Report Number: @Report.SerialNumber</p>
+<table>
+    <thead><bold>Client Details</bold></thead>
+    <tr>
+        <td>Company Name:</td>
+        <td>@Report.ClientCompanyName</td>
+    </tr>
+
+    <tr>
+        <td>Address:</td>
+        <td>@Report.ClientAddress</td>
+    </tr>
+
+    <tr 
+        <td>Tel/Hp:</td>
+        <td>@Report.ClientTel</td>
+    </tr>
+
+    <tr>
+        <td>Contact Person:</td>
+        <td>@Report.ClientContactPerson</td>
+    </tr>
+</table>
+
+<table>
+    <thead>Visit Detail</thead>
+    <tr>
+        <td>Purpose of Visit:</td>
+        <td>@Report.Purpose</td>
+    </tr>
+
+    <tr>
+        <td>Description:</td>
+        <td>@Html.Raw(Report.Description)</td>
+    </tr>
+
+    <tr>
+        <td>Remarks:</td>
+        <td>@Html.Raw(Report.Remarks)</td>
+    </tr>
+
+    <tr>
+        <td>Date Of Visit:</td>
+        <td>@dateofvisit</td>
+    </tr>
+
+    <tr>
+        <td>Start Time:</td>
+        <td>@starttime</td>
+    </tr>
+
+    <tr>
+        <td>End Time:</td>
+        <td>@endtime</td>
+    </tr>
+
+    <tr>
+        <td>MSH Used:</td>
+        <td>@Report.MSHUsed</td>
+    </tr>
+
+    <tr>
+        <td>Job Status:</td>
+        <td>@Report.JobStat</td>
+    </tr>
+</table>
+<!-- if role? -->
+<!-- should it be confirmed?-->
+@if (Report.ReportStatus == "Confirmed")
+{
+    @Html.ActionLink("Print Report(PDF)", "PrintReport", "ServiceReport", new { id = Report.SerialNumber }, null)
+}
+@*@using (Html.BeginForm("ReportConfirm","ServiceReport", FormMethod.Post))
+    {
+        @Html.HiddenFor(m=> m.SerialNumber)
+        <input type="submit" value="Confirm report" class="btn btn-success" />
+    }*@
+@if (Report.ReportStatus != "Confirmed")
+{
+    @Html.ActionLink("Confirm Report", "ReportConfirm", "ServiceReport", new { id = Report.SerialNumber }, new { @onclick = "return confirm('Once confirmed, Report cannot be edited/deleted. Are you sure?')" })
+    @Html.ActionLink("Delete Report", "DeleteReport", "ServiceReport", new { id = Report.SerialNumber })
+    @Html.ActionLink("Edit Report", "EditReport", "ServiceReport", new { id = Report.SerialNumber }, null)
+    //test this down
+    @Html.ActionLink("Add Billing", "AddBilling", "ServiceReport", new { id = Report.SerialNumber }, null)
+}
+
+
+<p>Missing Acknowledgement</p>

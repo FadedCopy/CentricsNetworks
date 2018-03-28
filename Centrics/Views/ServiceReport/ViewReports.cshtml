@@ -1,13 +1,15 @@
 ﻿
 @{
     ViewData["Title"] = "ViewReports";
+
 }
 
 <h2>View Service Reports</h2>
 
 <p> arrange report to view</p>
-<p> add in the values of the report?</p>
 <p> export to pdf?</p>
+
+
 
 <table>
     <thead>Pending</thead>
@@ -20,20 +22,37 @@
     </tr>
     @foreach( var SR in ViewData["Pending"] as List<ServiceReport>)
     {
-        <tr>
-            <td>SR.SerialNumber</td>
-            <td>SR.ClientCompanyName</td>
-            <td>SR.ClientAddress</td>
-            <td>SR.Description</td>
-            <td>SR.JobStatus</td>
-        </tr>
+        var description = SR.Description;
+    <tr>
+        <td>@SR.SerialNumber</td>
+        <td>@SR.ClientCompanyName</td>
+        <td>@SR.ClientAddress</td>
+        <td>@Html.Raw(description):</td>
+        <td>@SR.JobStat</td>
+        <td>@Html.ActionLink("View Report", "Report", "ServiceReport", new { id = SR.SerialNumber }, null)</td>
+        
+    </tr>
     }
 </table>
 
 <table>
     <thead>Confirmed</thead>
+    
     <tr>
-        <td></td>
-        <td></td>
+        <td>Serial Number:</td>
+        <td>Client Company:</td>
+        <td>Client Address:</td>
+        <td>Description: </td>
+        <td>Job Status: </td>
     </tr>
+    @foreach (var SR in ViewData["Confirmed"] as List<ServiceReport>)
+    {
+        <tr>
+            <td>@SR.SerialNumber</td>
+            <td>@SR.ClientCompanyName</td>
+            <td>@SR.ClientAddress</td>
+            <td>@Html.Raw(SR.Description)</td>
+            <td>@SR.JobStat</td>
+        </tr>
+    }
 </table>

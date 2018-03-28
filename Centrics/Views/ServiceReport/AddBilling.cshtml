@@ -1,0 +1,87 @@
+﻿@model ServiceReport
+
+<h2>Add Billing</h2>
+
+@using (@Html.BeginForm("AddBilling", "ServiceReport", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.ClientCompanyName, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.ClientCompanyName, new { @class = "form-control", @readonly = "readonly" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.ClientAddress, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.ClientAddress, new { @class = "form-control", @readonly = "readonly" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Description, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.Raw(Model.Description);
+            @Html.HiddenFor(m => m.Description)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Date, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Date, new { @class = "form-control", @readonly = "readonly" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Labour, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Labour, new { @class = "form-control", @maxlength = "8" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Transport, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Transport, new { @class = "form-control", @maxlength = "8" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Parts, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Parts, new { @class = "form-control", @maxlength = "8" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Others, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Others, new { @class = "form-control", @maxlength = "8" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.InvoiceNo, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.InvoiceNo, new { @class = "form-control", @maxlength = "16" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.InvoiceDate, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.EditorFor(m => m.InvoiceDate, new { @class = "date-picker"})
+        </div>
+    </div>
+
+    @Html.HiddenFor(m => m.AttendedByStaffName)
+    @Html.HiddenFor(m => m.JobStatus)
+    @Html.HiddenFor(m=> m.PurposeOfVisit )
+    @Html.HiddenFor(m => m.SerialNumber)
+    
+
+    <input type="submit" value="Add Billing" />
+    <input type="reset" value="Cancel" />
+}    
+
+<script>
+    $('.date-picker').val('');
+</script>

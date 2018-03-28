@@ -1,15 +1,117 @@
-﻿
+﻿@model Contract
 @{
     ViewData["Title"] = "ViewContract";
 }
-
+<style>
+    td{ padding-left:5px;
+        padding-right:5px;
+    }
+</style>
 <h2>ViewContract</h2>
-<table>
-    <tablehead>Exisiting Contracts</tablehead>
-    <tr>
-        <td>Serial No.</td>
-    </tr>
-    
-</table>
 
-<h2>Expired Contract</h2>
+@if (!(ViewData.ContainsKey("Valid") || ViewData.ContainsKey("Expired") || ViewData.ContainsKey("Future") || ViewData.ContainsKey("Finished")))
+{
+    <p> No records of Contracts found</p>
+}
+@if (ViewData.ContainsKey("Valid"))
+{
+    <table>
+        <caption>Exisiting Contracts</caption>
+        <tr>
+            <td>Contract ID</td>
+            <td>Company</td>
+            <td>Remaining MSH</td>
+            <td>Start of Validity</td>
+            <td>End of Validity</td>
+        </tr>
+        @foreach (var SR in ViewData["Valid"] as List<Contract>)
+        {
+
+            <tr>
+                <td>@SR.idcontract</td>
+                <td>@SR.ClientCompany</td>
+                <td>@SR.MSH</td>
+                <td>@SR.StartValid.ToShortDateString()</td>
+                <td>@SR.EndValid.ToShortDateString()</td>
+                <td>@Html.ActionLink("Edit Contract", "ModifyContract", "Contract", new { contractid = SR.idcontract }, null)</td>
+            </tr>
+        }
+
+    </table>
+}
+@if (ViewData.ContainsKey("Finished"))
+{
+    <table>
+        <caption>Exisiting Contracts</caption>
+        <tr>
+            <td>Contract ID</td>
+            <td>Company</td>
+            <td>Remaining MSH</td>
+            <td>Start of Validity</td>
+            <td>End of Validity</td>
+        </tr>
+        @foreach (var SR in ViewData["Finished"] as List<Contract>)
+        {
+
+            <tr>
+                <td>@SR.idcontract</td>
+                <td>@SR.ClientCompany</td>
+                <td>@SR.MSH</td>
+                <td>@SR.StartValid.ToShortDateString()</td>
+                <td>@SR.EndValid.ToShortDateString()</td>
+                <td>@Html.ActionLink("Edit Contract", "ModifyContract", "Contract", new { contractid = SR.idcontract }, null)</td>
+            </tr>
+        }
+
+    </table>
+}
+@if (ViewData.ContainsKey("Expired"))
+{
+    <table>
+        <caption>Expired Contract</caption>
+        <tr>
+            <td>Contract ID</td>
+            <td>Company</td>
+            <td>Remaining MSH</td>
+            <td>Start of Validity</td>
+            <td>End of Validity</td>
+        </tr>
+        @foreach (var SR in ViewData["Expired"] as List<Contract>)
+        {
+
+            <tr>
+                <td>@SR.idcontract</td>
+                <td>@SR.ClientCompany</td>
+                <td>@SR.MSH</td>
+                <td>@SR.StartValid.ToShortDateString()</td>
+                <td>@SR.EndValid.ToShortDateString()</td>
+                <td>@Html.ActionLink("Edit Contract", "ModifyContract", "Contract", new { contractid = SR.idcontract }, null)</td>
+            </tr>
+        }
+    </table>
+}
+@if (ViewData.ContainsKey("Future"))
+{
+    <table>
+        <caption>Future Contract</caption>
+        <tr>
+            <td>Contract ID</td>
+            <td>Company</td>
+            <td>Remaining MSH</td>
+            <td>Start of Validity</td>
+            <td>End of Validity</td>
+        </tr>
+        @foreach (var SR in ViewData["Future"] as List<Contract>)
+        {
+
+            <tr>
+                <td>@SR.idcontract</td>
+                <td>@SR.ClientCompany</td>
+                <td>@SR.MSH</td>
+                <td>@SR.StartValid.ToShortDateString()</td>
+                <td>@SR.EndValid.ToShortDateString()</td>
+                <td>@Html.ActionLink("Edit Contract", "ModifyContract", "Contract", new { contractid = SR.idcontract }, null)</td>
+            </tr>
+        }
+    </table>
+}

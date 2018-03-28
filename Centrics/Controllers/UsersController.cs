@@ -140,6 +140,9 @@ namespace Centrics.Controllers
             User userChanged = _context.getUser(passwords.UserID);
 
             _context.ChangePassword(NewPassword, userChanged);
+
+            //remove this
+            return View();
         }
     }
 }

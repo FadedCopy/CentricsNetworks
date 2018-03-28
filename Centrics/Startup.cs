@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using Centrics.Models;
 using FluentEmail.Core;
 using FluentEmail.Mailgun;
+using jsreport.AspNetCore;
+using jsreport.Binary;
+using jsreport.Local;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -31,6 +34,10 @@ namespace Centrics
         {
             services.AddMvc();
             services.Add(new ServiceDescriptor(typeof(CentricsContext), new CentricsContext(Configuration.GetConnectionString("DefaultConnection"))));
+            services.AddJsReport(new LocalReporting()
+                .UseBinary(JsReportBinary.GetBinary())
+                .AsUtility()
+                .Create());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

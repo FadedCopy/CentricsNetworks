@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Cryptography;
+using FluentEmail.Core;
+using FluentEmail.Razor;
 
 namespace Centrics.Models
 {
@@ -23,6 +25,7 @@ namespace Centrics.Models
         {
             return new MySqlConnection(ConnectionString);
         }
+       
 
         public void AddServiceReport(ServiceReport model)
         {
@@ -55,10 +58,7 @@ namespace Centrics.Models
                 {
                     combinedpurpose = model.PurposeOfVisit[0];
                 }
-                Debug.WriteLine(model.TimeStart);
-                Debug.WriteLine(model.TimeEnd);
-                Debug.WriteLine(model.AttendedOnDate);
-
+     
                 String jobcombined = "";
                 if(model.JobStatus.Length > 1)
                 {                   
@@ -137,6 +137,38 @@ namespace Centrics.Models
             }
         }
 
+        public double GetRemainingMSHByCompany(ServiceReport model)
+        {
+            double totalmsh = 0.0;
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                string Query = "select * from centrics.contract where endvalid > @today and startvalid < @tod and companyname = @companyname ";
+                MySqlCommand c = new MySqlCommand(Query, conn);
+                string todau = DateTime.Today.ToString("yyyy/MM/dd");
+                c.Parameters.AddWithValue("@companyname", model.ClientCompanyName);
+                c.Parameters.AddWithValue("@today", todau);
+                c.Parameters.AddWithValue("@tod", todau);
+                using (MySqlDataReader r = c.ExecuteReader())
+                {
+                    while (r.Read())
+                    {
+                        totalmsh += int.Parse(r["msh"].ToString());
+                    }
+                }
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return totalmsh;
+        }
+
         public List<SelectListItem> GetClientByContract()
         {
             List<SelectListItem> listOfClient = new List<SelectListItem>();
@@ -144,10 +176,13 @@ namespace Centrics.Models
             try
             {
                 conn.Open();
-                string Query = "select distinct companyname from contract where endvalid > @today";
+                string Query = "select distinct companyname from centrics.contract where endvalid > @today and startvalid < @tod ";
                 MySqlCommand c = new MySqlCommand(Query, conn);
-                c.Parameters.AddWithValue("@today", " ' " + DateTime.Today + " ' " );
-
+                string todau = DateTime.Today.ToString("yyyy/MM/dd");
+                Debug.WriteLine(todau + " que?");
+                Debug.WriteLine("'" + todau + "'");
+                c.Parameters.AddWithValue("@today",todau);
+                c.Parameters.AddWithValue("@tod",todau);
                 using (MySqlDataReader r = c.ExecuteReader() )
                 {
                     while (r.Read())
@@ -212,7 +247,8 @@ namespace Centrics.Models
                     {
                         Contract dummy = new Contract
                         {
-                            ClientCompany = r["clientcompany"].ToString(),
+                            idcontract = int.Parse(r["idcontract"].ToString()),
+                            ClientCompany = r["companyname"].ToString(),
                             MSH = double.Parse(r["msh"].ToString()),
                             StartValid = DateTime.Parse(r["startvalid"].ToString()),
                             EndValid = DateTime.Parse(r["endvalid"].ToString())
@@ -232,9 +268,13 @@ namespace Centrics.Models
             return ExpiringContracts;
         }
 
-        public void SubtractMSHUsingSR(ServiceReport model)
+        internal object GeneratePdf()
         {
-            
+            throw new NotImplementedException();
+        }
+
+        public void SubtractRemains(double remains, ServiceReport model)
+        {
             MySqlConnection conn = GetConnection();
             try
             {
@@ -243,9 +283,79 @@ namespace Centrics.Models
                 string Query = "update contract set msh = @msh where idcontract = @idcontract";
                 MySqlCommand c = new MySqlCommand(Query, conn);
 
-                c.Parameters.AddWithValue("@msh",cont.MSH - model.MSHUsed);
+                c.Parameters.AddWithValue("@msh", cont.MSH - remains);
                 c.Parameters.AddWithValue("@idcontract", cont.idcontract);
 
+                c.ExecuteNonQuery();
+                
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        public double SubtractMSHUsingSR(ServiceReport model)
+        {
+            double remains = 0.0;
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                Contract cont = GetLatestContractBySRModel(model);
+                conn.Open();
+                string Query = "update contract set msh = @msh where idcontract = @idcontract";
+                MySqlCommand c = new MySqlCommand(Query, conn);
+                
+                if (cont.MSH - model.MSHUsed < 0)
+                {
+                    c.Parameters.AddWithValue("@msh",cont.MSH - cont.MSH);
+                     remains = model.MSHUsed - cont.MSH;
+                }
+                else
+                {
+                    c.Parameters.AddWithValue("@msh",cont.MSH - model.MSHUsed);
+                    remains = 0;
+                }
+
+                
+                c.Parameters.AddWithValue("@idcontract", cont.idcontract);
+
+                c.ExecuteNonQuery();
+                return remains;
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return remains;
+        }
+
+        public void AddBilling(ServiceReport model) {
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                string AddQuery = "update centrics.servicereport set labour = @labour,transport =@transport,parts = @parts, others= @others, invoiceno = @invoiceno, invoiceDate = @invoicedate where id = @id";
+                
+                MySqlCommand c = new MySqlCommand(AddQuery, conn);
+
+                c.Parameters.AddWithValue("@labour", model.Labour);
+                c.Parameters.AddWithValue("@transport", model.Transport);
+                c.Parameters.AddWithValue("@parts", model.Parts);
+                c.Parameters.AddWithValue("@others", model.Others);
+                c.Parameters.AddWithValue("@invoiceno", model.InvoiceNo);
+                c.Parameters.AddWithValue("@invoicedate", model.InvoiceDate);
+                c.Parameters.AddWithValue("@id", model.SerialNumber);
+
+                Debug.WriteLine("before me is king");
                 c.ExecuteNonQuery();
             }
             catch (MySqlException e)
@@ -296,52 +406,69 @@ namespace Centrics.Models
                 conn.Close();
             }
             Contract returner = new Contract();
-            if (listcont.Count() > 1) {
-                DateTime lowest = listcont[0].EndValid;
-                DateTime thisone = new DateTime();
-                for (int i = 0; i < listcont.Count(); i++)
+            List<Contract> contracts = new List<Contract>();
+            if (listcont.Count() > 1)
+            {
+                for(int i = 0; i < listcont.Count(); i++)
                 {
-                    thisone = listcont[i].EndValid;
+                    if (listcont[i].StartValid.CompareTo(DateTime.Today) < 0 && listcont[i].EndValid.CompareTo(DateTime.Today)> 0)
+                    {
+                        if (listcont[i].MSH > 0)
+                        {
+                            contracts.Add(listcont[i]);
+                        }
+                        
+                    }
+                }
+                DateTime lowest = contracts[0].EndValid;
+                DateTime thisone = new DateTime();
+                for (int i = 0; i < contracts.Count(); i++)
+                {
+                    thisone = contracts[i].EndValid;
                     if (thisone.CompareTo(lowest) < 0)
                     {
                         lowest = thisone;
                     }
                 }
-                for(int i =0;i<listcont.Count(); i++)
+                for (int i = 0; i < contracts.Count(); i++)
                 {
-                    if (listcont[i].EndValid == lowest) {
-                        returner = listcont[i];
+                    if (contracts[i].EndValid == lowest)
+                    {
+                        returner = contracts[i];
                     }
                 }
-            } else if (listcont.Count() == 1)
+            }else if(listcont.Count() == 1)
             {
-                returner = listcont[0];
+                if (listcont[0].StartValid.CompareTo(DateTime.Today) < 0 && listcont[0].EndValid.CompareTo(DateTime.Today) > 0)
+                {
+                    returner = listcont[0];
+                }
+                //if empty do the check at service report pulling data for the companies
             }
+            Debug.WriteLine(returner.EndValid);
             return returner;
         }
 
-        public Contract getContract(Contract model)
+        public Contract getContract(int idcontract)
         {
             MySqlConnection conn = GetConnection();
             Contract dummy = new Contract();
             try
             {
                 conn.Open();
-                string Query = "select * from contract where companyname =@companyname, msh = @msh, startvalid = @startvalid, endvalid = @endvalid";
+                string Query = "select * from contract where idcontract= @idcontract";
 
                 MySqlCommand c = new MySqlCommand(Query, conn);
-                c.Parameters.AddWithValue("@companyname", model.ClientCompany);
-                c.Parameters.AddWithValue("@msh", model.MSH);
-                c.Parameters.AddWithValue("@startvalid", model.StartValid);
-                c.Parameters.AddWithValue("@endvalid", model.EndValid);
-
+                c.Parameters.AddWithValue("@idcontract", idcontract);
+                
                 using (MySqlDataReader r = c.ExecuteReader())
                 {
                     while (r.Read())
                     {
                         dummy = new Contract
                         {
-                            ClientCompany = r["clientcompany"].ToString(),
+                            idcontract = int.Parse(r["idcontract"].ToString()),
+                            ClientCompany = r["companyname"].ToString(),
                             MSH = double.Parse(r["msh"].ToString()),
                             StartValid = DateTime.Parse(r["startvalid"].ToString()),
                             EndValid = DateTime.Parse(r["endvalid"].ToString())
@@ -360,6 +487,30 @@ namespace Centrics.Models
             return dummy;
         }
         
+        public void ModifyContract(Contract model) {
+
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                string query = "update centrics.contract set endvalid=@endvalid,msh=@msh where idcontract =@idcontract";
+                MySqlCommand c = new MySqlCommand(query, conn);
+                Debug.WriteLine("this is msh: " + model.MSH + ";" + model.EndValid + ";" + model.idcontract );
+                c.Parameters.AddWithValue("@endvalid", model.EndValid);
+                c.Parameters.AddWithValue("@msh", model.MSH);
+                c.Parameters.AddWithValue("@idcontract",model.idcontract);
+
+                c.ExecuteNonQuery();
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
 
         public List<ServiceReport> getPendingReports()
         {
@@ -380,8 +531,7 @@ namespace Centrics.Models
                             ClientCompanyName = r["clientcompanyname"].ToString(),
                             ClientAddress = r["clientaddress"].ToString(),
                             Description = r["description"].ToString(),
-                            JobStatus = r["jobstatus"].ToString().Split(","),
-                            
+                            JobStat = r["jobstatus"].ToString()                            
                         });
                     }
                 }
@@ -404,7 +554,7 @@ namespace Centrics.Models
             try
             {
                 conn.Open();
-                string query = "select * from centrics.servicereport where reportstatus ='Confimed' order by daterecorded desc";
+                string query = "select * from centrics.servicereport where reportstatus ='Confirmed' order by daterecorded desc";
 
                 MySqlCommand c = new MySqlCommand(query, conn);
 
@@ -418,8 +568,7 @@ namespace Centrics.Models
                             ClientCompanyName = r["clientcompanyname"].ToString(),
                             ClientAddress = r["clientaddress"].ToString(),
                             Description = r["description"].ToString(),
-                            JobStatus = r["jobstatus"].ToString().Split(","),
-
+                            JobStat = r["jobstatus"].ToString()
                         });
                     }
                 }
@@ -435,7 +584,56 @@ namespace Centrics.Models
             return getReports;
         }
 
-        public ServiceReport getServiceReport(ServiceReport model)
+        public int getReportCounts()
+        {
+            MySqlConnection conn = GetConnection();
+            int count = 0;
+            try
+            {
+                conn.Open();
+                string query = "select count(*) as count from centrics.servicereport";
+
+                MySqlCommand c = new MySqlCommand(query, conn);
+
+                using (MySqlDataReader r = c.ExecuteReader())
+                {
+                    while (r.Read())
+                    {
+                        count = int.Parse(r["count"].ToString());
+                    }
+                }
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return count;
+        }
+        
+        public void SendEmailRegardingExpiry()
+        {
+            Email.DefaultRenderer = new RazorRenderer();
+
+            var template = "Dear @Model.Company"+"<br/>"+"Your Company, @Model.Company, Service Contract with Centrics Network has is expiring soon." + "<br/>"
+                + "The Contract Details are as follows: <br/> Company Name: @Model.Company <br/> Start of Validity: @Model.StartValid <br/> End of Validity: @Model.EndValid <br/> Remaning Service Hours: @Model.Remains <br/>" + 
+                "Please contact us at 999 if you want to continue using our service"+"<br/>This is an auto-generated. Do not reply this email." + "<br/><img src='http://centricsnetworks.com.sg/wp-content/uploads/2015/12/logo1.png'/>" ;
+
+            var email = Email
+                .From("ai.permacostt@gmail.com")
+                .To("johnfoohw@gmail.com")
+                .Subject("You can be king again")
+                .UsingTemplate(template, new { Company = "KFC", StartValid = "1/4/2017", EndValid = "1/4/2018", Remains = "15", });
+
+            Debug.WriteLine(email);
+            email.Send();
+        }
+
+        //maybe status? Comfirmed or Pending for the print?
+        public ServiceReport getServiceReport(int serial)
         {
             ServiceReport SR = new ServiceReport();
             MySqlConnection conn = GetConnection();
@@ -444,7 +642,7 @@ namespace Centrics.Models
                 conn.Open();
                 String query = "Select * from servicereport where id = @id";
                 MySqlCommand c = new MySqlCommand(query, conn);
-                c.Parameters.AddWithValue("@id",model.SerialNumber);
+                c.Parameters.AddWithValue("@id",serial);
                 
                 using (MySqlDataReader r = c.ExecuteReader())
                 {
@@ -452,6 +650,7 @@ namespace Centrics.Models
                     {
                         SR = new ServiceReport
                         {
+                            SerialNumber = int.Parse(r["id"].ToString()),
                             ClientCompanyName = r["clientcompanyname"].ToString(),
                             ClientAddress = r["clientaddress"].ToString(),
                             ClientTel = int.Parse(r["clienttel"].ToString()),
@@ -465,10 +664,83 @@ namespace Centrics.Models
                             MSHUsed = double.Parse(r["mshused"].ToString()),
                             AttendedByStaffName = r["mshused"].ToString(),
                             AttendedOnDate = DateTime.Parse(r["attendedondate"].ToString()),
-                            JobStatus = r["jobstatus"].ToString().Split(',')
+                            JobStatus = r["jobstatus"].ToString().Split(','),
+                            ReportStatus = r["reportstatus"].ToString()
+                            
                         };
+                        if (!DBNull.Value.Equals(r["labour"]))
+                        {
+                            SR.Labour = Double.Parse(r["labour"].ToString());
+                        }
+                        if (!DBNull.Value.Equals(r["transport"]))
+                        {
+                            SR.Transport = Double.Parse(r["transport"].ToString());
+                        }
+                        if (!DBNull.Value.Equals(r["parts"]))
+                        {
+                            SR.Parts = Double.Parse(r["parts"].ToString());
+                        }
+                        if (!DBNull.Value.Equals(r["others"]))
+                        {
+                            SR.Others = Double.Parse(r["others"].ToString());
+                        }
+                        if (!DBNull.Value.Equals(r["invoiceno"]))
+                        {
+                            SR.InvoiceNo = int.Parse(r["invoiceno"].ToString());
+                        }
+                        if (!DBNull.Value.Equals(r["invoicedate"]))
+                        {
+                            SR.InvoiceDate = DateTime.Parse(r["invoicedate"].ToString());
+                        }
+
                     }
                 };
+                String jobcombined = "";
+                if (SR.JobStatus.Length > 1)
+                {
+                    for (int i = 0; i < SR.JobStatus.Length; i++)
+                    {
+                        if (SR.JobStatus[i] != SR.JobStatus.Last())
+                        {
+                            jobcombined += SR.JobStatus[i] + ",";
+                        }
+                        else
+                        {
+                            jobcombined += SR.JobStatus[i];
+                        }
+
+                    }
+
+                }
+                else if (SR.JobStatus.Length == 1)
+                {
+                    jobcombined = SR.JobStatus[0];
+                }
+                SR.JobStat = jobcombined;
+
+                string[] listpurpose = SR.PurposeOfVisit;
+                string combinedpurpose = "";
+                if (SR.PurposeOfVisit.Length > 1)
+                {
+                    for (int i = 0; i < listpurpose.Length; i++)
+                    {
+                        if (listpurpose[i] != listpurpose.Last())
+                        {
+                            combinedpurpose += listpurpose[i] + ",";
+                        }
+                        else
+                        {
+                            combinedpurpose += listpurpose[i];
+                        }
+                    }
+                }
+                else if (SR.PurposeOfVisit.Length == 1)
+                {
+                    combinedpurpose = SR.PurposeOfVisit[0];
+                }
+                SR.Purpose = combinedpurpose;
+                
+
             }
             catch (MySqlException e)
             {
@@ -481,6 +753,119 @@ namespace Centrics.Models
 
             return SR;
         }
+        
+        public void ReportEdit(ServiceReport model)
+        {
+            MySqlConnection conn = GetConnection();
+
+            try
+            {
+                conn.Open();
+                //missing query
+                string query = "Update centrics.servicereport set clienttel = @clienttel, clientcontactperson = @clientcontactperson, purposeofvisit = @purposeofvisit, description = @description, remarks = @remarks, date= @date, timestart=@timestart, timeend = @timeend,mshused = @mshused, attendedbystaffname = @attendedbystaffname, attendedondate = @attendedondate, jobstatus = @jobstatus where id = @id";
+
+                MySqlCommand c = new MySqlCommand(query, conn);
+
+                Debug.WriteLine("this is a item: " + model.AttendedOnDate);
+
+                string[] listpurpose = model.PurposeOfVisit;
+                string combinedpurpose = "";
+                if (model.PurposeOfVisit.Length > 1)
+                {
+                    for (int i = 0; i < listpurpose.Length; i++)
+                    {
+                        if (listpurpose[i] != listpurpose.Last())
+                        {
+                            combinedpurpose += listpurpose[i] + ",";
+                        }
+                        else
+                        {
+                            combinedpurpose += listpurpose[i];
+                        }
+                    }
+                }
+                else if (model.PurposeOfVisit.Length == 1)
+                {
+                    combinedpurpose = model.PurposeOfVisit[0];
+                }
+
+                String jobcombined = "";
+                if (model.JobStatus.Length > 1)
+                {
+                    for (int i = 0; i < model.JobStatus.Length; i++)
+                    {
+                        if (model.JobStatus[i] != model.JobStatus.Last())
+                        {
+                            jobcombined += model.JobStatus[i] + ",";
+                        }
+                        else
+                        {
+                            jobcombined += model.JobStatus[i];
+                        }
+
+                    }
+
+                }
+                else if (model.JobStatus.Length == 1)
+                {
+                    jobcombined = model.JobStatus[0];
+                }
+
+                c.Parameters.AddWithValue("@id",model.SerialNumber);
+                c.Parameters.AddWithValue("@clienttel",model.ClientTel);
+                c.Parameters.AddWithValue("@clientcontactperson",model.ClientContactPerson);
+                c.Parameters.AddWithValue("@purposeofvisit", combinedpurpose);
+                c.Parameters.AddWithValue("@description", model.Description);
+                c.Parameters.AddWithValue("@remarks", model.Remarks);
+                c.Parameters.AddWithValue("@date", model.Date);
+                c.Parameters.AddWithValue("@timestart", model.TimeStart);
+                c.Parameters.AddWithValue("@timeend", model.TimeEnd);
+                c.Parameters.AddWithValue("@mshused", model.MSHUsed);
+                c.Parameters.AddWithValue("@attendedbystaffname", model.AttendedByStaffName);
+                c.Parameters.AddWithValue("@attendedondate", model.AttendedOnDate);
+                c.Parameters.AddWithValue("@jobstatus", jobcombined);
+
+                c.ExecuteNonQuery();
+
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            
+        }
+
+        public void ReportConfirm(int id)
+        {
+            MySqlConnection conn = GetConnection();
+            
+            try
+            {
+                conn.Open();
+                string query = "Update centrics.servicereport set reportstatus = @Confirmed where id = @id";
+
+                MySqlCommand c = new MySqlCommand(query, conn);
+                string confirmed = "Confirmed";
+                c.Parameters.AddWithValue("@id",id);
+                c.Parameters.AddWithValue("@Confirmed", confirmed);
+
+                c.ExecuteNonQuery();
+                
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
         public string HashPassword(string password)
         {
             byte[] salt;

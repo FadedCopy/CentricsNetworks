@@ -29,18 +29,113 @@ namespace Centrics.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (!DateComparer(model.StartValid, model.EndValid))
+                {
+                    ModelState.AddModelError("","End Date should be set to a date after the start date. ");
+                    return View(model);
+                }
+                if (!(model.EndValid.CompareTo(DateTime.Today) > 0))
+                {
+                    ModelState.AddModelError("", "The Contract you are trying to add has an End Date that expired already");
+                    return View(model);
+                }
+
                 CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
+                
                 context.AddContract(model);
+                return RedirectToAction("ViewContract");
             }
-            return View();
+            return View(model);
         }
         
         [HttpGet]
-        public IActionResult ModifyContract()
+        public IActionResult ModifyContract(int contractid)
+        {
+            if (contractid == 0)
+            {
+                return RedirectToAction("ViewContract");
+            }
+
+            CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
+            Contract model = context.getContract(contractid);
+            
+            Debug.WriteLine(model.ClientCompany + "Que");
+
+            return View(model);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ModifyContract(Contract meh)
         {
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
+            context.ModifyContract(meh);
+            return RedirectToAction("ViewContract");
+        }
 
+        [HttpGet]
+        public IActionResult ViewContract()
+        {
+            CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
+            List<Contract> contractlist = context.getContracts();
+            List<Contract> ValidContract = new List<Contract>();
+            List<Contract> ExpiredContract = new List<Contract>();
+            List<Contract> FutureContract = new List<Contract>();
+            List<Contract> FinishedContract = new List<Contract>();
+            int counter = contractlist.Count();
+            int i = 0;
+            while(counter != 0)
+            {
+                if (contractlist[i].EndValid.CompareTo(DateTime.Today) > 0 && (contractlist[i].StartValid.CompareTo(DateTime.Today)) < 0)
+                {
+                    if (contractlist[i].MSH != 0)
+                    {
+                        ValidContract.Add(contractlist[i]);
+                    }
+                    else
+                    {
+                        FinishedContract.Add(contractlist[i]);
+                    }
+                }else if(contractlist[i].EndValid.CompareTo(DateTime.Today) < 0)
+                {
+                    ExpiredContract.Add(contractlist[i]);
+                }else if(contractlist[i].StartValid.CompareTo(DateTime.Today) > 0)
+                {
+                    FutureContract.Add(contractlist[i]);
+                }
+                i++;
+                counter--;
+            }
+            if(FinishedContract.Count != 0)
+            {
+                ViewData["Finished"] = FinishedContract;
+            }
+            if (ExpiredContract.Count != 0)
+            {
+                ViewData["Expired"] = ExpiredContract;
+            }
+            if (ValidContract.Count != 0)
+            {
+                ViewData["Valid"] = ValidContract;
+            }
+            if (FutureContract.Count != 0)
+            {
+                ViewData["Future"] = FutureContract;
+                Debug.WriteLine("This is the future:" + ViewData["Future"]);
+            }
             return View();
+        }
+
+        public Boolean DateComparer(DateTime t1, DateTime t2)
+        {
+            int diff = DateTime.Compare(t1, t2);
+            if(diff < 1)
+            {
+                return true;
+            }else if(diff == 0 || diff > 1)
+            {
+                return false;
+            }
+            return false;
         }
 
         public void CheckContractExpiryWarning()

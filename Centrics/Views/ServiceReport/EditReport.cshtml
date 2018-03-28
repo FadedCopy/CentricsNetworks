@@ -29,17 +29,16 @@
 <script src="//cdn.ckeditor.com/4.9.0/basic/ckeditor.js"></script>
 
 <h2 style="text-align:center;">Service Report</h2>
-
-@using (Html.BeginForm("AddNewReport", "ServiceReport", FormMethod.Post))
+    @using (Html.BeginForm("EditReport", "ServiceReport", FormMethod.Post))
 {
-    @Html.AntiForgeryToken()
+        @Html.AntiForgeryToken()
     @Html.ValidationSummary("", new { @class = "text-danger" })
 
     @*Questionably needed to display this here maybe? for reference*@
     <div class="form-group">
         @Html.LabelFor(m => m.SerialNumber, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.SerialNumber, new { @class = "form-control", @value = "45", @readonly = "readonly" })
+            @Html.TextBoxFor(m => m.SerialNumber, new { @class = "form-control", @readonly = "readonly" })
         </div>
     </div>
 
@@ -48,14 +47,15 @@
     <div class="form-group">
         @Html.LabelFor(m => m.ClientCompanyName, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.DropDownListFor(m => m.ClientCompanyName, (List<SelectListItem>)ViewData["Companies"], "Select Company", new { @class = "form-control" })
+            @*@Html.DropDownListFor(m => m.ClientCompanyName, (List<SelectListItem>)ViewData["Companies"], "Select Company", new { @class = "form-control" })*@
+            @Html.TextBoxFor(m => m.ClientCompanyName, new { @class="form-control", @readonly = "readonly"})
         </div>
     </div>
 
     <div class="form-group">
         @Html.LabelFor(m => m.ClientAddress, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.ClientAddress, new { @class = "form-control" })
+            @Html.TextBoxFor(m => m.ClientAddress, new { @class = "form-control", @readonly = "readonly" })
             <br />
         </div>
     </div>
@@ -108,8 +108,7 @@
         @* manual regular expression or date picker?*@
         @Html.LabelFor(m => m.Date, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.EditorFor(m => m.Date, new { @class = "date-picker" })
-            <br />
+            @Html.EditorFor(m => m.Date, new { @class = "form-control" })
         </div>
     </div>
 

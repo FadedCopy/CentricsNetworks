@@ -1,0 +1,194 @@
+﻿@model ServiceReport
+@{ 
+    string CombPurpose = "";
+
+    for (int i = 0; i < Model.PurposeOfVisit.Count(); i++)
+    {
+        if (Model.PurposeOfVisit[i] != Model.PurposeOfVisit.Last())
+        {
+            CombPurpose += Model.PurposeOfVisit[i] + ", ";
+        }
+        else
+        {
+            CombPurpose += Model.PurposeOfVisit[i];
+        }
+    }
+}
+
+<style>
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+    th{
+        text-align:left;
+        width:30%;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+</style>
+
+<table>
+    <tr >
+        <td rowspan="4"><img src= "http://centricsnetworks.com.sg/wp-content/uploads/2015/12/logo1.png" /></td>
+        <td> Centrics Networks Pte Ltd</td>
+        <td rowspan="4">SRN:</td>
+        <td rowspan="4" style="font:20px">@Html.DisplayFor(m => m.SerialNumber)</td>
+    </tr>
+    <tr>
+        <td>26 Sin Ming Lane, #08-115 Midview City Singapore 573971</td>
+    </tr>
+    <tr>
+       <td>Tel:6833-7898 | Fax:6833-7897</td>
+    </tr>
+    <tr><td>Web: www.centricsnetworks.com.sg</td></tr>
+
+</table>
+<h3 style="text-align:center">Service Report </h3>
+
+<table style="border-collapse:collapse;width:100%">
+    <tr>
+        <th>Company Name:</th>
+        <td>@Html.DisplayFor(m => m.ClientCompanyName)</td>
+    </tr>
+    <tr>
+        <th>Address:</th>
+        <td>@Html.DisplayFor(m => m.ClientAddress)</td>
+    </tr>
+    <tr>
+        <th>Tel/HP:</th>
+        <td>@Html.DisplayFor(m => m.ClientTel)</td>
+    </tr>
+    <tr>
+        <th>Contact Person: </th>
+        <td>@Html.DisplayFor(m => m.ClientContactPerson)</td>
+    </tr>
+</table>
+
+<br />
+
+<table style="border-collapse:collapse;width:100%">
+    <tr>
+        <th>Purpose of Visit:</th>
+        <td colspan="7">@CombPurpose<br /></td>
+    </tr>
+    
+    <tr>
+        <th>Description:</th>
+        <td colspan="7"> @Html.Raw(Model.Description)</td>
+    </tr>
+   
+    <tr>
+        <th>Remarks:</th>
+        <td colspan="7">@Html.Raw(Model.Remarks)</td>
+    </tr>
+    <tr>
+        <th>Date:</th>
+        <td>@Html.DisplayFor(m => m.Date)</td>
+        <th>Time Start:</th>
+        <td>@Html.DisplayFor(m => m.TimeStart)</td>
+        <th>Time End:</th>
+        <td>@Html.DisplayFor(m => m.TimeEnd)</td>
+        <th>MSH Used:</th>
+        <td>@Html.DisplayFor(m => m.MSHUsed)</td>
+    </tr>
+</table>
+<br />
+<table>
+    <tr>
+        <th colspan="2">Attended By</th>
+        
+        <th colspan="2">Client Acknowledgement</th>
+        
+        <th colspan="3">For Billing Details</th>
+       
+        <th colspan="1">Cost ($)</th>
+    </tr>
+    <tr>
+        <td rowspan="4" colspan="2"></td>
+        <td rowspan="4" colspan="2"></td>
+        <td colspan="1">Labour:</td>
+        <td colspan="2"></td>
+        <td>@Html.DisplayFor(m => m.Labour)</td>
+    </tr>
+    <tr>
+        <td>Transport:</td>
+        <td colspan="2"></td>
+        <td>@Html.DisplayFor(m => m.Transport)</td>
+    </tr>
+    <tr>
+        <td>Parts:</td>
+        <td colspan="2"></td>
+        <td>@Html.DisplayFor(m=>m.Parts)</td>
+    </tr>
+    <tr>
+        <td>Others:</td>
+        <td colspan="2"></td>
+        <td>@Html.DisplayFor(m => m.Others)</td>
+    </tr>
+    <tr>
+        <td colspan="2"><strong>Centrics Networks Pte Ltd</strong></td>
+        <td colspan="2">Name:</td>
+        <td>Invoice No:</td>
+        <td colspan="2"></td>
+        <td>@Html.DisplayFor(m => m.InvoiceNo)</td>
+    </tr>
+    <tr>
+        <td colspan="2">Name:</td>
+        <td colspan="2">Date:</td>
+        <td>Invoice Date:</td>
+        <td colspan="2"></td>
+        @if (Model.InvoiceDate.CompareTo(DateTime.Parse("01/01/0001")) != 0)
+        {
+            <td>@Html.DisplayFor(m => m.InvoiceDate)</td>
+        }
+        else
+        {
+            <td></td>
+        }
+
+    </tr>
+    <tr>
+        <td colspan="2">Date:</td>
+        <td colspan="2">Company Status:</td>
+        <td></td>
+        <td colspan="2"></td>
+        <td></td>
+    </tr>
+</table>
+
+<br/>
+
+<table>
+    <tr><td style="text-align:center; border-bottom:hidden"><strong>Job Status</strong></td></tr>
+    <tr>
+        <td style="text-align:center">@Html.DisplayFor(m=>m.JobStat)</td>
+    </tr>
+</table>
+<br/>
+
+<table>
+    <tr>
+        <td colspan="4"><strong>Please rate out service:</strong></td>
+    </tr>
+    <tr>
+        <td>
+            <input type="checkbox" name="love"> Excellent
+        </td>
+        <td>
+            <input type="checkbox" name="dont"> Good
+        </td>
+        <td>
+            <input type="checkbox" name="I"> Average
+        </td>
+        <td>
+            <input type="checkbox" name="hi"> Poor
+        </td>
+        
+    </tr>
+</table>
