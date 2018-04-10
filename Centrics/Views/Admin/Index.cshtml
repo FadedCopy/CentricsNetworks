@@ -1,10 +1,9 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Index";
 }
 
 <h2>Dashboard</h2>
 
-<p>@Html.ActionLink("View Users", "Users");</p>
-<p>Action Logs</p>
+<p>@Html.ActionLink("View Users", "ViewUsers", "Users")</p>
+<p>@Html.ActionLink("Action Logs", "Logs", "Admin")</p>
 

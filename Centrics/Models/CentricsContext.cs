@@ -974,7 +974,8 @@ namespace Centrics.Models
 
             return validEmail;
         }
-
+        
+        //Logs in the user
         public LoginViewModel LoginUser(LoginViewModel user)
         {
             MySqlConnection conn = GetConnection();
@@ -1039,7 +1040,50 @@ namespace Centrics.Models
             }
         }
 
-        //Get a single user by UserID
+
+        //Get a single user by Email, returns a User Object
+        public User GetUserByEmail(string email)
+        {
+            //Initialize User to place returned User object
+            User userRetrieved = new User();
+
+            //Establish connection to MySQL Database
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                string query = "select * from users where email = @email";
+                MySqlCommand c = new MySqlCommand(query, conn);
+                c.Parameters.AddWithValue("@email", email);
+                using (MySqlDataReader r = c.ExecuteReader())
+                {
+                    //Loops for every row of the users table
+                    while (r.Read())
+                    {
+                        userRetrieved = new User()
+                        {
+                            UserID = Convert.ToInt32(r["userID"]),
+                            FirstName = r["firstName"].ToString(),
+                            LastName = r["lastName"].ToString(),
+                            UserEmail = r["email"].ToString(),
+                            UserRole = r["userRole"].ToString()
+                        };
+                    }
+                }
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return userRetrieved;
+        }
+
+
+        //Get a single user by UserID, returns the user retrieved as a User Object
         public User GetUser(int UserID)
         {
             //Initialize User to place returned User object
@@ -1172,6 +1216,7 @@ namespace Centrics.Models
             }
         }
 
+        //Not working, check for errors
         public Boolean ChangePassword(string CurrentPassword, string NewPassword, User user)
         {
             MySqlConnection conn = GetConnection();
@@ -1229,7 +1274,7 @@ namespace Centrics.Models
                 c.Parameters.AddWithValue("@email", user.UserEmail);
                 using (MySqlDataReader r = c.ExecuteReader())
                 {
-                    while (r.Read())
+                    if (r.Read())
                     {
                         Email.DefaultRenderer = new RazorRenderer();
                         string ResetID = RandomString(20);
@@ -1247,7 +1292,10 @@ namespace Centrics.Models
                         email.Send();
                         return true;
                     }
-                    r.Close();
+                    else
+                    {
+                        return false;
+                    }
                 }
                
             }
@@ -1363,7 +1411,7 @@ namespace Centrics.Models
         //Updates database with new password keyed in by user
         public void ResetPassword(ResetPasswordViewModel model)
         {
-            MySqlConnection conn = new MySqlConnection();
+            MySqlConnection conn = GetConnection();
 
             try
             {
@@ -1385,10 +1433,11 @@ namespace Centrics.Models
             }
         }
 
-
         //Returns a true if user is an admin/super admin, otherwise returns false
         public Boolean CheckUserPrivilege(User userChecked)
         {
+            
+            Debug.WriteLine("Role: " + userChecked.UserRole);
             if (userChecked.UserRole == "Admin" || userChecked.UserRole == "Super Admin")
             {
                 return true;
@@ -1396,6 +1445,167 @@ namespace Centrics.Models
             else return false;
         }
 
-        
+        //Retrieves all logs for admin view
+        public List<Log> GetAllLogs()
+        {
+            MySqlConnection conn = GetConnection();
+            List<Log> logList = new List<Log>();
+            
+            try
+            {
+                conn.Open();
+                string query = "select * from actionlogs";
+                MySqlCommand c = new MySqlCommand(query, conn);
+                using (MySqlDataReader r = c.ExecuteReader())
+                {
+                    while (r.Read())
+                    {
+                        Log retrievedLog = new Log
+                        {
+                            LogID = Convert.ToInt32(r["logID"]),
+                            Type = r["type"].ToString(),
+                            UserID = Convert.ToInt32(r["userID"]),
+                            UserEmail = r["email"].ToString(),
+                            ActionPerformed = r["action"].ToString(),
+                            DateTimePerformed = Convert.ToDateTime(r["dateTimePerformed"])
+                        };
+
+                        logList.Add(retrievedLog);
+                    }
+                }
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return logList;
+        }
+
+        //Logs the action based on the type
+        public void LogAction(string type, string action, Object user)
+        {
+            
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                if (type == "Login")
+                {
+                    LoginViewModel loginUser = (LoginViewModel)user;
+                    string query = "insert into actionlogs(type, userID, email, action, dateTimePerformed) values (@type, @userID, @email, @action, @dateTime)";
+                    MySqlCommand c2 = new MySqlCommand(query, conn);
+                    c2.Parameters.AddWithValue("@type", type);
+                    c2.Parameters.AddWithValue("@action", action);
+                    c2.Parameters.AddWithValue("@userID", loginUser.UserID);
+                    c2.Parameters.AddWithValue("@email", loginUser.UserEmail);
+                    c2.Parameters.AddWithValue("@dateTime", DateTime.Now);
+                    c2.ExecuteNonQuery();
+                }
+
+                if (type == "Registration")
+                {
+                    User registeredUser = (User)user;
+                    string query = "insert into actionlogs(type, userID, email, action, dateTimePerformed) values (@type, @userID, @email, @action, @dateTime)";
+                    MySqlCommand c2 = new MySqlCommand(query, conn);
+                    c2.Parameters.AddWithValue("@type", type);
+                    c2.Parameters.AddWithValue("@action", action);
+                    c2.Parameters.AddWithValue("@userID", registeredUser.UserID);
+                    c2.Parameters.AddWithValue("@email", registeredUser.UserEmail);
+                    c2.Parameters.AddWithValue("@dateTime", DateTime.Now);
+                    c2.ExecuteNonQuery();
+                }
+
+                if (type == "2 Factor Authentication")
+                {
+                    User loggedUser = (User)user;
+                    string query = "insert into actionlogs(type, userID, email, action, dateTimePerformed) values (@type, @userID, @email, @action, @dateTime)";
+                    MySqlCommand c2 = new MySqlCommand(query, conn);
+                    c2.Parameters.AddWithValue("@type", type);
+                    c2.Parameters.AddWithValue("@action", action);
+                    c2.Parameters.AddWithValue("@userID", loggedUser.UserID);
+                    c2.Parameters.AddWithValue("@email", loggedUser.UserEmail);
+                    c2.Parameters.AddWithValue("@dateTime", DateTime.Now);
+                    c2.ExecuteNonQuery();
+                }
+
+                if (type == "Password Change")
+                {
+                    User userChanged = (User)user;
+                    string query = "insert into actionlogs(type, userID, email, action, dateTimePerformed) values (@type, @userID, @email, @action, @dateTime)";
+                    MySqlCommand c2 = new MySqlCommand(query, conn);
+                    c2.Parameters.AddWithValue("@type", type);
+                    c2.Parameters.AddWithValue("@action", action);
+                    c2.Parameters.AddWithValue("@userID", userChanged.UserID);
+                    c2.Parameters.AddWithValue("@email", userChanged.UserEmail);
+                    c2.Parameters.AddWithValue("@dateTime", DateTime.Now);
+                    c2.ExecuteNonQuery();
+                }
+
+                if (type == "Logout")
+                {
+                    User userLoggedOut = (User)user;
+                    string query = "insert into actionlogs(type, userID, email, action, dateTimePerformed) values (@type, @userID, @email, @action, @dateTime)";
+                    MySqlCommand c2 = new MySqlCommand(query, conn);
+                    c2.Parameters.AddWithValue("@type", type);
+                    c2.Parameters.AddWithValue("@action", action);
+                    c2.Parameters.AddWithValue("@userID", userLoggedOut.UserID);
+                    c2.Parameters.AddWithValue("@email", userLoggedOut.UserEmail);
+                    c2.Parameters.AddWithValue("@dateTime", DateTime.Now);
+                    c2.ExecuteNonQuery();
+                }
+
+                if (type == "User Deleted")
+                {
+                    User userLoggedOut = (User)user;
+                    string query = "insert into actionlogs(type, userID, email, action, dateTimePerformed) values (@type, @userID, @email, @action, @dateTime)";
+                    MySqlCommand c2 = new MySqlCommand(query, conn);
+                    c2.Parameters.AddWithValue("@type", type);
+                    c2.Parameters.AddWithValue("@action", action);
+                    c2.Parameters.AddWithValue("@userID", userLoggedOut.UserID);
+                    c2.Parameters.AddWithValue("@email", userLoggedOut.UserEmail);
+                    c2.Parameters.AddWithValue("@dateTime", DateTime.Now);
+                    c2.ExecuteNonQuery();
+                }
+
+                if (type == "User Edited")
+                {
+                    User userWhoEdited = (User)user;
+                    string query = "insert into actionlogs(type, userID, email, action, dateTimePerformed) values (@type, @userID, @email, @action, @dateTime)";
+                    MySqlCommand c2 = new MySqlCommand(query, conn);
+                    c2.Parameters.AddWithValue("@type", type);
+                    c2.Parameters.AddWithValue("@action", action);
+                    c2.Parameters.AddWithValue("@userID", userWhoEdited.UserID);
+                    c2.Parameters.AddWithValue("@email", userWhoEdited.UserEmail);
+                    c2.Parameters.AddWithValue("@dateTime", DateTime.Now);
+                    c2.ExecuteNonQuery();
+                }
+
+                if (type == "Forgot Password")
+                {
+                    User userWhoForgotPassword = (User)user;
+                    string query = "insert into actionlogs(type, userID, email, action, dateTimePerformed) values (@type, @userID, @email, @action, @dateTime)";
+                    MySqlCommand c2 = new MySqlCommand(query, conn);
+                    c2.Parameters.AddWithValue("@type", type);
+                    c2.Parameters.AddWithValue("@action", action);
+                    c2.Parameters.AddWithValue("@userID", userWhoForgotPassword.UserID);
+                    c2.Parameters.AddWithValue("@email", userWhoForgotPassword.UserEmail);
+                    c2.Parameters.AddWithValue("@dateTime", DateTime.Now);
+                    c2.ExecuteNonQuery();
+                }
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
     }
 }

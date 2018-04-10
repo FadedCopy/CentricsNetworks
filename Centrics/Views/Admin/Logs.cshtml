@@ -1,0 +1,31 @@
+﻿@model Centrics.Models.Log
+@using Centrics.Models
+@{
+    ViewData["Title"] = "Logs";
+    var LogData = ViewBag.LogsData;
+}
+
+<h2>Action Logs</h2>
+
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        @for (int i = 0; i < LogData.Count; i++)
+        {
+            <dt>@Html.DisplayNameFor(model => model.LogID)</dt>
+            <dd>@LogData[i].LogID</dd>
+            <dt>@Html.DisplayNameFor(model => model.UserID)</dt>
+            <dd>@LogData[i].UserID</dd>
+            <dt>@Html.DisplayNameFor(model => model.Type)</dt>
+            <dd>@LogData[i].Type</dd>
+            <dt>@Html.DisplayNameFor(model => model.UserEmail)</dt>
+            <dd>@LogData[i].UserEmail</dd>
+            <dt>@Html.DisplayNameFor(model => model.ActionPerformed)</dt>
+            <dd>@LogData[i].ActionPerformed</dd>
+            <dt>@Html.DisplayNameFor(model => model.DateTimePerformed)</dt>
+            <dd>@LogData[i].DateTimePerformed</dd>
+            <dt><br/></dt>
+            <dd><br/></dd>
+        }
+    </dl>
+</div>

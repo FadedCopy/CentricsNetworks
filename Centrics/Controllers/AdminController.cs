@@ -17,14 +17,28 @@ namespace Centrics.Controllers
             _context = context;
         }
 
+        [HttpGet]
         public IActionResult Index()
         {
-            User user = _context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("UserID")));
-            if (_context.CheckUserPrivilege(user))
+            User user = _context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID")));
+            if (HttpContext.Session.GetString("AdminValidity") == "True")
             {
                 return View();
             }
             else return View("Error");
+        }
+
+        [HttpGet]
+        public IActionResult Logs()
+        {
+            User user = _context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID")));
+            if (HttpContext.Session.GetString("AdminValidity") == "True")
+            {
+                ViewBag.LogsData = _context.GetAllLogs();
+                return View();
+            }
+            ViewBag.LogsData = _context.GetAllLogs();
+            return View();
         }
     }
 }

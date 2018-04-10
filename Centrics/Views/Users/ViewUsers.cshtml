@@ -10,6 +10,7 @@
 <div>
     <hr />
     <dl class="dl-horizontal">
+        @TempData["Status"]
         @for (int i = 0; i < UsersData.Count; i++)
         {
             <dt>@Html.DisplayNameFor(model => model.UserID)</dt>
