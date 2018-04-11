@@ -1007,6 +1007,28 @@ namespace Centrics.Models
             return user;
         }
 
+        //Sets user as Authenticated after they have keyed in their 2FA for the first time
+        public void SetUserAsAuthenticated (String UserLoggingInEmail)
+        {
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                string query = "update users(authenticated) set authenticated = 1 where email = @email";
+                MySqlCommand c = new MySqlCommand(query, conn);
+                c.Parameters.AddWithValue("@email", UserLoggingInEmail);
+                c.ExecuteNonQuery();
+                
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
         //Creates a new user in the database
         public void RegisterUser(User model)
         {
@@ -1018,7 +1040,7 @@ namespace Centrics.Models
                 try
                 {
                     conn.Open();
-                    string AddQuery = "insert into users(firstName, lastName,  email, password, userRole) values (@firstName, @lastName, @email, @password, @role)";
+                    string AddQuery = "insert into users(firstName, lastName,  email, password, userRole, authenticated) values (@firstName, @lastName, @email, @password, @role, @authenticated)";
                     MySqlCommand c = new MySqlCommand(AddQuery, conn);
                     string hashedPassword = HashPassword(model.UserPassword);
                     c.Parameters.AddWithValue("@firstName", model.FirstName);
@@ -1026,7 +1048,7 @@ namespace Centrics.Models
                     c.Parameters.AddWithValue("@email", model.UserEmail);
                     c.Parameters.AddWithValue("@password", hashedPassword);
                     c.Parameters.AddWithValue("@role", model.UserRole);
-
+                    c.Parameters.AddWithValue("@authenticated", 0);
                     c.ExecuteNonQuery();
                 }
                 catch (MySqlException e)
@@ -1066,7 +1088,8 @@ namespace Centrics.Models
                             FirstName = r["firstName"].ToString(),
                             LastName = r["lastName"].ToString(),
                             UserEmail = r["email"].ToString(),
-                            UserRole = r["userRole"].ToString()
+                            UserRole = r["userRole"].ToString(),
+                            Authenticated = Convert.ToBoolean(r["authenticated"])
                         };
                     }
                 }
@@ -1108,7 +1131,8 @@ namespace Centrics.Models
                             FirstName = r["firstName"].ToString(),
                             LastName = r["lastName"].ToString(),
                             UserEmail = r["email"].ToString(),
-                            UserRole = r["userRole"].ToString()
+                            UserRole = r["userRole"].ToString(),
+                            Authenticated = Convert.ToBoolean(r["authenticated"])
                         };
                     }
                 }
@@ -1436,7 +1460,6 @@ namespace Centrics.Models
         //Returns a true if user is an admin/super admin, otherwise returns false
         public Boolean CheckUserPrivilege(User userChecked)
         {
-            
             Debug.WriteLine("Role: " + userChecked.UserRole);
             if (userChecked.UserRole == "Admin" || userChecked.UserRole == "Super Admin")
             {

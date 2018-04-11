@@ -32,12 +32,14 @@ namespace Centrics.Models
         [Display(Name = "Role"), StringLength(40)]
         public string UserRole { get; set; }
 
+        public Boolean Authenticated { get; set; }
+
         public List<SelectListItem> Roles { get; } = new List<SelectListItem>
         {
             new SelectListItem { Value = "User", Text = "User" },
             new SelectListItem { Value = "Admin", Text = "Admin" },
             new SelectListItem { Value = "Super Admin", Text = "Super Admin"},
         };
-    }
 
+    }
 }

@@ -4,28 +4,420 @@
     ViewData["Title"] = "Logs";
     var LogData = ViewBag.LogsData;
 }
+<script>
+    function SearchFunction() {
+        var input, filter, table, tr, td, i;
+        LoginFilter = document.getElementById("LoginFilter");
+        TwoFAFilter = document.getElementById("2FAFilter");
+        ChangePassFilter = document.getElementById("ChangePassFilter");
+        DeleteFilter = document.getElementById("DeleteFilter");
+        EditFilter = document.getElementById("EditFilter");
+        ForgotFilter = document.getElementById("ForgotFilter");
+        RegisterFilter = document.getElementById("RegisterFilter");
+        input = document.getElementById("SearchInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("LogTable");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 0; i < tr.length; i++) {
+            if (LoginFilter.checked == true) {
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[2];
+                    if (td) {
+                        if (td.innerHTML == "Login" || td.innerHTML == "Logout") {
+                            td2 = tr[i].getElementsByTagName("td")[3];
+                            if (td2.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                                tr[i].style.display = "";
+                            } else {
+                                tr[i].style.display = "none";
+                            }
+                        }
+                    }
+                }
+            } else if (LoginFilter.checked == false) {
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[2];
+                    if (td) {
+                        if (td.innerHTML == "Login" || td.innerHTML == "Logout") {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+            if (TwoFAFilter.checked == true) {
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[2];
+                    if (td) {
+                        if (td.innerHTML == "2 Factor Authentication") {
+                            td2 = tr[i].getElementsByTagName("td")[3];
+                            if (td2.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                                tr[i].style.display = "";
+                            } else {
+                                tr[i].style.display = "none";
+                            }
+                        }
+                    }
+                }
+            } else if (TwoFAFilter.checked == false) {
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[2];
+                    if (td) {
+                        if (td.innerHTML == "2 Factor Authentication") {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+            if (ChangePassFilter.checked == true) {
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[2];
+                    if (td) {
+                        if (td.innerHTML == "Password Change") {
+                            td2 = tr[i].getElementsByTagName("td")[3];
+                            if (td2.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                                tr[i].style.display = "";
+                            } else {
+                                tr[i].style.display = "none";
+                            }
+                        }
+                    }
+                }
+            } else if (ChangePassFilter.checked == false) {
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[2];
+                    if (td) {
+                        if (td.innerHTML == "Password Change") {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+            if (DeleteFilter.checked == true) {
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[2];
+                    if (td) {
+                        if (td.innerHTML == "User Deleted") {
+                            td2 = tr[i].getElementsByTagName("td")[3];
+                            if (td2.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                                tr[i].style.display = "";
+                            } else {
+                                tr[i].style.display = "none";
+                            }
+                        }
+                    }
+                }
+            } else if (DeleteFilter.checked == false) {
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[2];
+                    if (td) {
+                        if (td.innerHTML == "User Deleted") {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+            if (EditFilter.checked == true) {
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[2];
+                    if (td) {
+                        if (td.innerHTML == "User Edited") {
+                            td2 = tr[i].getElementsByTagName("td")[3];
+                            if (td2.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                                tr[i].style.display = "";
+                            } else {
+                                tr[i].style.display = "none";
+                            }
+                        }
+                    }
+                }
+            } else if (EditFilter.checked == false) {
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[2];
+                    if (td) {
+                        if (td.innerHTML == "User Edited") {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+            if (ForgotFilter.checked == true) {
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[2];
+                    if (td) {
+                        if (td.innerHTML == "Forgot Password") {
+                            td2 = tr[i].getElementsByTagName("td")[3];
+                            if (td2.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                                tr[i].style.display = "";
+                            } else {
+                                tr[i].style.display = "none";
+                            }
+                        }
+                    }
+                }
+            } else if (ForgotFilter.checked == false) {
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[2];
+                    if (td) {
+                        if (td.innerHTML == "Forgot Password") {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+            if (RegisterFilter.checked == true) {
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[2];
+                    if (td) {
+                        if (td.innerHTML == "Registration") {
+                            td2 = tr[i].getElementsByTagName("td")[3];
+                            if (td2.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                                tr[i].style.display = "";
+                            } else {
+                                tr[i].style.display = "none";
+                            }
+                        }
+                    }
+                }
+            } else if (RegisterFilter.checked == false) {
+                for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[2];
+                    if (td) {
+                        if (td.innerHTML == "Registration") {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    function FilterLogs() {
+        var checkbox;
+        var table = document.getElementById("LogTable");
+        var tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            tr[i].style.display = "none";
+        }
+        LoginFilter = document.getElementById("LoginFilter");
+        TwoFAFilter = document.getElementById("2FAFilter");
+        ChangePassFilter = document.getElementById("ChangePassFilter");
+        DeleteFilter = document.getElementById("DeleteFilter");
+        EditFilter = document.getElementById("EditFilter");
+        ForgotFilter = document.getElementById("ForgotFilter");
+        RegisterFilter = document.getElementById("RegisterFilter");
+
+        if (LoginFilter.checked == true) {
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML == "Login" || td.innerHTML == "Logout") {
+                        tr[i].style.display = "";
+                    }
+                }
+            }
+        } else if (LoginFilter.checked == false) {
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML == "Login" || td.innerHTML == "Logout") {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        if (TwoFAFilter.checked == true) {
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML == "2 Factor Authentication") {
+                        tr[i].style.display = "";
+                    }
+                }
+            }
+        } else if (TwoFAFilter.checked == false) {
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML == "2 Factor Authentication") {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        if (RegisterFilter.checked == true) {
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML == "Registration") {
+                        tr[i].style.display = "";
+                    }
+                }
+            }
+        } else if (RegisterFilter.checked == false) {
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML == "Registration") {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        if (ChangePassFilter.checked == true) {
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML == "Password Change") {
+                        tr[i].style.display = "";
+                    }
+                }
+            }
+        } else if (ChangePassFilter.checked == false) {
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML == "Password Change") {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        if (DeleteFilter.checked == true) {
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML == "User Deleted") {
+                        tr[i].style.display = "";
+                    }
+                }
+            }
+        } else if (DeleteFilter.checked == false) {
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML == "User Deleted") {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        if (EditFilter.checked == true) {
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML == "User Edited") {
+                        tr[i].style.display = "";
+                    }
+                }
+            }
+        } else if (EditFilter.checked == false) {
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML == "User Edited") {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        if (ForgotFilter.checked == true) {
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML == "Forgot Password") {
+                        tr[i].style.display = "";
+                    }
+                }
+            }
+        } else if (ForgotFilter.checked == false) {
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML == "Forgot Password") {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+    }
+</script>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    #SearchInput {
+        background-image: url('../../images/search_icon.jpg');
+        background-position: 10px 10px;
+        background-repeat: no-repeat;
+        width: 100%;
+        font-size: 16px;
+        padding: 12px 20px 12px 40px;
+        border: 1px solid #ddd;
+        margin-bottom: 12px;
+    }
+
+    #LogTable {
+        border-collapse: collapse;
+        width: 100%;
+        border: 1px solid #ddd;
+        font-size: 16px;
+    }
+
+        #LogTable th, #LogTable td {
+            text-align: left;
+            padding: 12px;
+        }
+
+        #LogTable tr {
+            border-bottom: 1px solid #ddd;
+        }
+
+            #LogTable tr.header, #LogTable tr:hover {
+                background-color: #f1f1f1;
+            }
+</style>
 
 <h2>Action Logs</h2>
 
+<input type="text" id="SearchInput" onkeyup="SearchFunction()" placeholder="Search for logs" title="Log Search">
+<h3><strong>Filters</strong></h3>
+<label name="filterLabel"><input type="checkbox" onchange="FilterLogs()" name="filterBox" id="LoginFilter">Login & Logout</label> <br />
+<label name="filterLabel"><input type="checkbox" onchange="FilterLogs()" name="filterBox" id="RegisterFilter">Registration</label><br />
+<label name="filterLabel"><input type="checkbox" onchange="FilterLogs()" name="filterBox" id="2FAFilter">2 Factor Authentication</label><br />
+<label name="filterLabel"><input type="checkbox" onchange="FilterLogs()" name="filterBox" id="ForgotFilter">Forgot Password</label><br />
+<label name="filterLabel"><input type="checkbox" onchange="FilterLogs()" name="filterBox" id="ChangePassFilter">Password Change</label><br />
+<label name="filterLabel"><input type="checkbox" onchange="FilterLogs()" name="filterBox" id="DeleteFilter">User Deleted</label><br />
+<label name="filterLabel"><input type="checkbox" onchange="FilterLogs()" name="filterBox" id="EditFilter">User Edited</label><br />
+
 <div>
     <hr />
-    <dl class="dl-horizontal">
+    <table id="LogTable">
+        <tr class="header">
+            <th style="width:8%;">Log ID:</th>
+            <th style="width:8%;">User ID:</th>
+            <th style="width:17.5%;">Type:</th>
+            <th style="width:20.5%;">Email:</th>
+            <th style="width:30%;">Action Performed:</th>
+            <th style="width:16%;">Date & Time Performed:</th>
+        </tr>
         @for (int i = 0; i < LogData.Count; i++)
         {
-            <dt>@Html.DisplayNameFor(model => model.LogID)</dt>
-            <dd>@LogData[i].LogID</dd>
-            <dt>@Html.DisplayNameFor(model => model.UserID)</dt>
-            <dd>@LogData[i].UserID</dd>
-            <dt>@Html.DisplayNameFor(model => model.Type)</dt>
-            <dd>@LogData[i].Type</dd>
-            <dt>@Html.DisplayNameFor(model => model.UserEmail)</dt>
-            <dd>@LogData[i].UserEmail</dd>
-            <dt>@Html.DisplayNameFor(model => model.ActionPerformed)</dt>
-            <dd>@LogData[i].ActionPerformed</dd>
-            <dt>@Html.DisplayNameFor(model => model.DateTimePerformed)</dt>
-            <dd>@LogData[i].DateTimePerformed</dd>
-            <dt><br/></dt>
-            <dd><br/></dd>
+            <tr>
+                <td>@LogData[i].LogID</td>
+                <td>@LogData[i].UserID</td>
+                <td>@LogData[i].Type</td>
+                <td>@LogData[i].UserEmail</td>
+                <td>@LogData[i].ActionPerformed</td>
+                <td>@LogData[i].DateTimePerformed</td>
+            </tr>
         }
-    </dl>
+    </table>
 </div>

@@ -4,42 +4,118 @@
     ViewData["Title"] = "View Users";
     var UsersData = ViewBag.UsersData;
 }
+<style>
+    * {
+        box-sizing: border-box;
+    }
 
+    #SearchInput {
+        background-position: 10px 10px;
+        background-repeat: no-repeat;
+        width: 100%;
+        font-size: 16px;
+        padding: 12px 20px 12px 40px;
+        border: 1px solid #ddd;
+        margin-bottom: 12px;
+    }
+
+    #UserTable {
+        border-collapse: collapse;
+        width: 100%;
+        border: 1px solid #ddd;
+        font-size: 16px;
+    }
+
+        #UserTable th, #UserTable td {
+            text-align: left;
+            padding: 12px;
+        }
+
+        #UserTable tr {
+            border-bottom: 1px solid #ddd;
+        }
+
+            #UserTable tr.header, #UserTable tr:hover {
+                background-color: #f1f1f1;
+            }
+</style>
+<script>
+    function SearchFunction() {
+        var input, filter, table, tr, td, i;
+        input = document.getElementById("SearchInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("UserTable");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    function FilterFunction() {
+        var input, filter, table, tr, td, i;
+        input = document.getElementById("SearchInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("UserTable");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
 <h2>View All Users</h2>
+<input type="text" id="SearchInput" onkeyup="SearchFunction()" placeholder="Search for users" title="User Search">
+<input type="radio" class="SearchFilters" id="IDFilter" value="User ID" /> <br />
+<input type="radio" class="SearchFilters" id="NameFilter" value="Name" /> <br />
+<input type="radio" class="SearchFilters" id="EmailFilter" value="Email" /> <br />
 
 <div>
     <hr />
-    <dl class="dl-horizontal">
-        @TempData["Status"]
+    @TempData["Status"]
+    <table id="UserTable">
+        <tr class="header">
+            <th style="width:10%;">User ID:</th>
+            <th style="width:15%;">First Name:</th>
+            <th style="width:15%;">Last Name:</th>
+            <th style="width:30%;">Email:</th>
+            <th style="width:12.5%;">Role:</th>
+            <th style="width:12.5%;">Actions:</th>
+        </tr>
         @for (int i = 0; i < UsersData.Count; i++)
         {
-            <dt>@Html.DisplayNameFor(model => model.UserID)</dt>
-            <dd>@UsersData[i].UserID</dd>
-            <dt>@Html.DisplayNameFor(model => model.FirstName)</dt>
-            <dd>@UsersData[i].FirstName</dd>
-            <dt>@Html.DisplayNameFor(model => model.LastName)</dt>
-            <dd>@UsersData[i].LastName</dd>
-            <dt>@Html.DisplayNameFor(model => model.UserEmail)</dt>
-            <dd>@UsersData[i].UserEmail</dd>
-            <dt>@Html.DisplayNameFor(model => model.UserRole)</dt>
-            <dd>@UsersData[i].UserRole</dd>
-            <dt>@Html.ActionLink("Delete User", "DeleteUser", new { UserID = UsersData[i].UserID })</dt>
-            <dd>
-            @Html.ActionLink("Edit User", "EditUserDetails", "Users", new { UserID = UsersData[i].UserID }, new
-            {
-                /**/
-                @* Needed to link to the html of the modal*@
-                /**/
-                data_target = "#modal-container",
-                /**/
-                @* Tells the bootstrap javascript to do its thing*@
-                /**/
-                data_toggle = "modal"
-            })
-            </dd>
-            <dd><br/>       </dd>
+            <tr>
+                <td>@UsersData[i].UserID</td>
+                <td>@UsersData[i].FirstName</td>
+                <td>@UsersData[i].LastName</td>
+                <td>@UsersData[i].UserEmail</td>
+                <td>@UsersData[i].UserRole</td>
+                <td>
+                    @Html.ActionLink("Delete User", "DeleteUser", "Users", new { UserID = UsersData[i].UserID }, new { onclick = "return confirm('Are you sure you want to delete this user?')" })
+                    <br />
+                    @Html.ActionLink("Edit User", "EditUserDetails", "Users", new { UserID = UsersData[i].UserID }, new
+                    {
+                        data_target = "#modal-container",
+                        data_toggle = "modal"
+                    })
+                </td>
+            </tr>
         }
-    </dl>
+    </table>
+
+
 
     <div id="modal-container" class="modal fade hidden-print" tabindex="1" role="dialog">
         <div class="modal-dialog modal-lg">

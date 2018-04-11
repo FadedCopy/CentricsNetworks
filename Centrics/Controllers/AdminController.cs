@@ -37,8 +37,7 @@ namespace Centrics.Controllers
                 ViewBag.LogsData = _context.GetAllLogs();
                 return View();
             }
-            ViewBag.LogsData = _context.GetAllLogs();
-            return View();
+            else return View("Error");
         }
     }
 }

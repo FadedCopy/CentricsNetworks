@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Security.Cryptography;
 
 namespace Centrics.Controllers
 {
@@ -96,7 +97,7 @@ namespace Centrics.Controllers
         {
             User userDeleted = _context.GetUser(UserID);
             User userWhoDeleted = _context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID")));
-            _context.LogAction("User Deleted", "User " + userDeleted.FirstName + " " + userDeleted.LastName + " (User ID: " + userDeleted.UserID + " has been deleted by User " + userWhoDeleted.FirstName + " " + userWhoDeleted.LastName + ".", userWhoDeleted);
+            _context.LogAction("User Deleted", "User " + userDeleted.FirstName + " " + userDeleted.LastName + " (User ID: " + userDeleted.UserID + ") has been deleted by User " + userWhoDeleted.FirstName + " " + userWhoDeleted.LastName + ".", userWhoDeleted);
             _context.DeleteUser(UserID);
             return RedirectToAction("ViewUsers");
         }
@@ -236,13 +237,23 @@ namespace Centrics.Controllers
             string email = TempData["LoginEmail"].ToString();
             //Two Factor Authentication Setup
             TwoFactorAuthenticator TwoFacAuth = new TwoFactorAuthenticator();
+            User loggingIn = _context.GetUserByEmail(email);
             string UserUniqueKey = (email + GoogleAuthKey);
             TempData["UserUniqueKey"] = UserUniqueKey; //Session
-            var setupInfo = TwoFacAuth.GenerateSetupCode("Centrics Network", email , UserUniqueKey, 300, 300);
-            ViewBag.BarcodeImageUrl = setupInfo.QrCodeSetupImageUrl;
-            ViewBag.SetupCode = setupInfo.ManualEntryKey;
-            TempData["LoginEmail"] = email;
-            
+            var setupInfo = TwoFacAuth.GenerateSetupCode("Centrics Network", email, UserUniqueKey, 300, 300);
+            ViewBag.Message = "Enter your code displayed in Google Authenticator.";
+            if (loggingIn.Authenticated == false)
+            {
+                ViewBag.BarcodeImageUrl = setupInfo.QrCodeSetupImageUrl;
+                ViewBag.SetupCode = setupInfo.ManualEntryKey;
+                TempData["LoginEmail"] = email;
+            }
+            else if (loggingIn.Authenticated == true)
+            {
+                ViewBag.BarcodeImageUrl = null;
+                ViewBag.SetupCode = null;
+                TempData["LoginEmail"] = email;
+            }
             return View();
         }
 
@@ -263,6 +274,9 @@ namespace Centrics.Controllers
                 {
                     HttpContext.Session.SetString("AdminValidity", "True");
                 }
+                if (userLoggedIn.Authenticated == false)
+                    _context.SetUserAsAuthenticated(HttpContext.Session.GetString("LoginEmail"));
+
                 return RedirectToAction("Profile", "Users");
             }
             else {
