@@ -1,0 +1,36 @@
+﻿@model ClientAddress
+@{
+    ViewData["Title"] = "Company";
+    ClientAddress clientAddress = new ClientAddress();
+
+    if (ViewData.ContainsKey("CompanyName")) {
+        clientAddress.ClientCompany = ViewData["CompanyName"].ToString();
+    }
+    if (ViewData.ContainsKey("AddressList"))
+    {
+        clientAddress.Addresslist  = (List<string>)ViewData["AddressList"];
+    }
+    List<string> Listy = clientAddress.Addresslist;
+    var counter = 1;
+    }
+
+
+<h2>@clientAddress.ClientCompany</h2>
+
+<table>
+    @if (ViewData.ContainsKey("AddressList"))
+    {
+        @for (int i = 0; i < clientAddress.Addresslist.Count(); i++)
+        {
+        <tr>
+            <th>Address @counter: </th>
+            <td>@Listy[i]</td>
+            <td>@Html.ActionLink("Delete", "DeleteAddress", "ClientAddress", new { name = clientAddress.ClientCompany, address = Listy[i] }, null)</td>
+        </tr>
+            counter++;
+        }
+    }
+</table>
+@*<button id="">Add new Address</button>*@
+@Html.ActionLink("Add new address", null, null, new{ name = @clientAddress.ClientCompany}, new { id = "Add"})
+<div id="byebye"></div>

@@ -11,7 +11,7 @@
 
 
 
-<table>
+<table border="1">
     <thead>Pending</thead>
     <tr>
         <td>Serial Number:</td>
@@ -27,7 +27,7 @@
         <td>@SR.SerialNumber</td>
         <td>@SR.ClientCompanyName</td>
         <td>@SR.ClientAddress</td>
-        <td>@Html.Raw(description):</td>
+        <td>@Html.Raw(description)</td>
         <td>@SR.JobStat</td>
         <td>@Html.ActionLink("View Report", "Report", "ServiceReport", new { id = SR.SerialNumber }, null)</td>
         
@@ -35,7 +35,7 @@
     }
 </table>
 
-<table>
+<table border="1">
     <thead>Confirmed</thead>
     
     <tr>

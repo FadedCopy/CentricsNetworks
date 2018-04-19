@@ -1,12 +1,16 @@
 ﻿using Centrics.Models;
+using Geocoding.Google;
+using Hangfire;
 using jsreport.AspNetCore;
 using jsreport.Types;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace Centrics.Controllers
@@ -25,8 +29,12 @@ namespace Centrics.Controllers
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             ServiceReport model = new ServiceReport();
             ViewData["Companies"] = context.GetClientByContract();
+            //TempData["address"] = "false";
+            context.Selfcaller();
+            
 
-            List <SelectListItem> PurposeList = new List<SelectListItem>();
+
+            List<SelectListItem> PurposeList = new List<SelectListItem>();
             PurposeList.Add(new SelectListItem { Value = "Project", Text = "Project" });
             PurposeList.Add(new SelectListItem { Value = "Installation", Text = "Installation" });
             PurposeList.Add(new SelectListItem { Value = "M.S.A", Text = "M.S.A" });
@@ -84,6 +92,32 @@ namespace Centrics.Controllers
             ViewData["JobStatusList"] = JobStatusList;
 
             model.SerialNumber = context.getReportCounts() + 1;
+            string name = "";
+            if (((TempData.Peek("dataishere") != null).ToString().ToLower()) == "true")
+            {
+                name = TempData.Peek("dataishere").ToString();
+            }
+            
+            if (name != "" )
+            {
+                ClientAddress cA = context.GetClientAddressList(name);
+                List<string> aList = cA.Addresslist;
+                List<SelectListItem> AddressList = new List<SelectListItem>();
+                if (aList != null)
+                {
+                    for (int i = 0; i < aList.Count(); i++)
+                    {
+                        AddressList.Add(new SelectListItem { Value = aList[i], Text = aList[i] });
+                    }
+                }
+                ViewData["AddressList"] = AddressList;
+                
+            }
+            else
+            {
+                ModelState.AddModelError("", "A error occured. Important");
+                return View(model);
+            }
             #endregion
             if (!ModelState.IsValid)
             {
@@ -93,25 +127,92 @@ namespace Centrics.Controllers
             if (ModelState.IsValid)
             {
                 double totalmshremain = context.GetRemainingMSHByCompany(model);
-                if (totalmshremain < model.MSHUsed)
+                double calculatedhours = context.CalculateMSH(model.TimeStart, model.TimeEnd);
+                //ModelState.AddModelError("", "The calculated MSH:" + calculatedhours);
+                //return View(model);
+                if (totalmshremain < calculatedhours)
                 {
-                    ModelState.AddModelError("","The company you have selected does not have enough remaining MSH, Please contact your Boss immediately regarding this issue.");
+                    ModelState.AddModelError("", "The company you have selected does not have enough remaining MSH, Please contact your Boss immediately regarding this issue.");
                     return View(model);
 
                 }
+                if (context.CheckExisitingReportID(model.SerialNumber))
+                {
+                    ModelState.AddModelError("", "Contact Application Developer");
+                    return View(model);
+                }
+
+                if (model.TimeStart > DateTime.Now || model.TimeEnd > DateTime.Now)
+                {
+                    ModelState.AddModelError("", "Please enter a report after the service is rendered");
+                    return View(model);
+                }
                 //questionable
-                //if(!(model.TimeStart.CompareTo(model.TimeEnd) < 0))
-                //{
-                //    ModelState.AddModelError("", "your start time should be before your end time");
-                //    return View(model);
-                //}
+                if (!(model.TimeStart.CompareTo(model.TimeEnd) <= 0))
+                {
+                    ModelState.AddModelError("", "your start time should be before your end time");
+                    return View(model);
+                }
                 context.AddServiceReport(model);
-                return RedirectToAction("ViewReports","ServiceReport");
+                TempData.Remove("dataishere");
+                return RedirectToAction("ViewReports", "ServiceReport");
             }
 
             return View(model);
         }
+        [HttpPost]
+        public IActionResult ChangeAddressInput([FromBody]string name)
+        {
+            Debug.WriteLine("debug is here");
+            TempData["dataishere"] = name;
+            return Json(new { Url = Url.Action("ChangeAddressInput", "ServiceReport") });
+        }
+        [HttpGet]
+        public IActionResult ChangeAddressInput()
+        {
+            string name = "";
+            if (((TempData.Peek("dataishere") != null).ToString().ToLower()) == "true")
+            {
+                name = TempData.Peek("dataishere").ToString();
+            }
 
+            if (name == "" || name == null)
+            {
+                return View();
+            }
+            CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
+            ClientAddress cA = context.GetClientAddressList(name);
+            List<string> aList = new List<string>();
+            aList = cA.Addresslist;
+            Debug.WriteLine(name + "SPARTA");
+
+            if (aList == null || aList.Count() == 0)
+            {
+
+            }
+            else
+            {
+                List<SelectListItem> AddressList = new List<SelectListItem>();
+                for (int i = 0; i < aList.Count(); i++)
+                {
+                    AddressList.Add(new SelectListItem { Value = aList[i], Text = aList[i] });
+                }
+                ViewData["AddressList"] = AddressList;
+
+            }
+            Debug.WriteLine(Url.Action("ChangeAddressInput", "ServiceReport"));
+            Debug.WriteLine("muahaahahah pelase?");
+            return PartialView("ChangeAddressInput",new ServiceReport());
+        }
+       
+        [HttpGet]
+        public void Unloader()
+        {
+            if(((TempData.Peek("dataishere") != null).ToString().ToLower()) == "true")
+            {
+                TempData.Remove("dataishere");
+            }
+        }
         [HttpGet]
         public IActionResult ViewReports()
         {
@@ -136,7 +237,7 @@ namespace Centrics.Controllers
                 return RedirectToAction("ViewReports");
             }
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
-ServiceReport model = context.getServiceReport(id);
+            ServiceReport model = context.getServiceReport(id);
             
             return View(model);
         }
@@ -174,6 +275,7 @@ ServiceReport model = context.getServiceReport(id);
             #endregion
             //pull db
             model = context.getServiceReport(id);
+            Debug.WriteLine("edit report" + model.TimeEnd  + model.TimeStart) ;
             return View(model);
         }
 
@@ -181,18 +283,61 @@ ServiceReport model = context.getServiceReport(id);
         [ValidateAntiForgeryToken]
         public IActionResult EditReport(ServiceReport report)
         {
+            List<SelectListItem> PurposeList = new List<SelectListItem>();
+            PurposeList.Add(new SelectListItem { Value = "Project", Text = "Project" });
+            PurposeList.Add(new SelectListItem { Value = "Installation", Text = "Installation" });
+            PurposeList.Add(new SelectListItem { Value = "M.S.A", Text = "M.S.A" });
+            PurposeList.Add(new SelectListItem { Value = "Chargable", Text = "Chargable" });
+            PurposeList.Add(new SelectListItem { Value = "P.O.C", Text = "P.O.C" });
+            PurposeList.Add(new SelectListItem { Value = "Delivery", Text = "Delivery" });
+            PurposeList.Add(new SelectListItem { Value = "Return", Text = "Return" });
+            PurposeList.Add(new SelectListItem { Value = "Others", Text = "Others" });
+            ViewData["Purpose"] = PurposeList;
+
+            List<SelectListItem> JobStatusList = new List<SelectListItem>();
+            JobStatusList.Add(new SelectListItem { Value = "Completed", Text = "Completed" });
+            JobStatusList.Add(new SelectListItem { Value = "Followup Required", Text = "Followup Required" });
+            JobStatusList.Add(new SelectListItem { Value = "Recommendation Requied", Text = "Recommendation Required" });
+            JobStatusList.Add(new SelectListItem { Value = "Escalated to Ext. Support", Text = "Escalated to Ext. Support" });
+            ViewData["JobStatusList"] = JobStatusList;
             //update database
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
-            
-            double totalmshremain = context.GetRemainingMSHByCompany(report);
-            if (totalmshremain < report.MSHUsed)
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "The company you are trying to edit does not have enough remaining MSH, Please contact your Boss immediately regarding this issue.");
                 return View(report);
-
             }
+
+            if (ModelState.IsValid)
+            {
+                double totalmshremain = context.GetRemainingMSHByCompany(report);
+                double calculatedhours = context.CalculateMSH(report.TimeStart, report.TimeEnd);
+                //ModelState.AddModelError("", "The calculated MSH:" + calculatedhours);
+                //return View(model);
+                if (totalmshremain < calculatedhours)
+                {
+                    ModelState.AddModelError("", "The company you have selected does not have enough remaining MSH, Please contact your Boss immediately regarding this issue.");
+                    return View(report);
+
+                }
+                
+
+                if (report.TimeStart > DateTime.Now || report.TimeEnd > DateTime.Now)
+                { 
+                    ModelState.AddModelError("", "Please enter a report after the service is rendered");
+                    return View(report);
+                }
+                //questionable
+                if (!(report.TimeStart.CompareTo(report.TimeEnd) <= 0))
+                {
+                    ModelState.AddModelError("", "your start time should be before your end time");
+                    return View(report);
+                }
+            Debug.WriteLine("This is submitting" + report.TimeEnd);
             context.ReportEdit(report);
-            return RedirectToAction("Report", report.SerialNumber);
+            return RedirectToAction("Report", new { id = report.SerialNumber });
+            }
+            
+            return View(report);
         }
 
         
@@ -228,13 +373,11 @@ ServiceReport model = context.getServiceReport(id);
         }
 
         [HttpPost]
-        public IActionResult ReportDelete(int id, string confirm)
+        public IActionResult ReportDelete(int id)
         {
-            if(confirm == id + "Confirm".ToUpper())
-            {
-                //DB set status to remove/ remove from db
-                return RedirectToAction("ViewReports");
-            }
+            //checkowner
+            CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
+            //enter user
 
             return RedirectToAction("Report", id);
         }
@@ -246,7 +389,7 @@ ServiceReport model = context.getServiceReport(id);
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             ServiceReport model = context.getServiceReport(id);
             string[] m = model.JobStatus;
-            
+
             string jobcombined = "";
             if (model.JobStatus.Length > 1)
             {
@@ -269,12 +412,27 @@ ServiceReport model = context.getServiceReport(id);
                 jobcombined = model.JobStatus[0];
             }
             model.JobStat = jobcombined;
-            HttpContext.JsReportFeature().Recipe(Recipe.PhantomPdf);
-            
+            HttpContext.JsReportFeature()
+                .Recipe(Recipe.PhantomPdf);
+
             return View(model);
         }
 
         
+        [HttpPost]
+        public async System.Threading.Tasks.Task<string> ReturnPostalAsync (string postal, GoogleAddressType type){
+            Debug.WriteLine("postal" + postal);
+            GoogleGeocoder geocoder = new GoogleGeocoder();
+            geocoder.ApiKey = "AIzaSyCY8FWydp6zky0N4TVk44x5xao2JjBFios";
+            IEnumerable<GoogleAddress> addresses = await geocoder.GeocodeAsync("Singapore" + postal);
+            Debug.WriteLine(addresses.First().Coordinates.Latitude + ": :" + addresses.First().Coordinates.Longitude); 
+            IEnumerable<GoogleAddress> reverse = await geocoder.ReverseGeocodeAsync(addresses.First().Coordinates.Latitude,addresses.First().Coordinates.Longitude);
+            Debug.WriteLine(addresses.First().FormattedAddress);
+            Debug.WriteLine(reverse.First().FormattedAddress);
+            return reverse.First().FormattedAddress;
+
+        }
+
         [HttpGet]
         public IActionResult AddBilling(int id)
         {

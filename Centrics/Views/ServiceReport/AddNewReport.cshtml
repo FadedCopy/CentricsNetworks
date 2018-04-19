@@ -11,35 +11,54 @@
     }
 </style>
 
-<!-- jQuery UI CSS Reference -->
-<link href="@Url.Content("~/Content/themes/base/minified/jquery-ui.min.css")" rel="stylesheet" />
-<!-- Required jQuery and jQuery UI Javascript references -->
-<script src="@Url.Content("~/Scripts/jquery-1.7.1.min.js")"></script>
-<script src="@Url.Content("~/Scripts/jquery-ui-1.10.4.min.js")"></script>
-
-<!-- Code to wire up your DatePicker -->
+@*<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-3.1.1.min.js"></script>
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+<link href="~/Content/jquery-ui-timepicker-addon.min.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-ui-timepicker-addon.min.js"></script>
 <script type="text/javascript">
-    $(function () {
-        // This will make every element with the class "date-picker" into a DatePicker element
-        $('.date-picker').datepicker();
-    })
-</script>
+    $(document).ready(function () {
+        $(function () {
+            $(".date-picker").datetimepicker({
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-100:+0",
+                dateFormat: 'dd-M-yy',
+                controlType: 'select',
+                timeFormat: 'hh:mm TT'
+            });
+
+        });
+
+        jQuery.validator.methods.date = function (value, element) {
+            var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+            if (isChrome) {
+                var d = new Date();
+                return this.optional(element) || !/Invalid|NaN/.test(new Date(d.toLocaleDateString(value)));
+            } else {
+                return this.optional(element) || !/Invalid|NaN/.test(new Date(value));
+            }
+        };
+
+    });
+
+</script>*@
 
 <!-- Textbox-->
 <script src="//cdn.ckeditor.com/4.9.0/basic/ckeditor.js"></script>
 
 <h2 style="text-align:center;">Service Report</h2>
 
-@using (Html.BeginForm("AddNewReport", "ServiceReport", FormMethod.Post))
+@using (Html.BeginForm("AddNewReport", "ServiceReport", FormMethod.Post,new { id = "serviceform"}))
 {
-    @Html.AntiForgeryToken()
+
     @Html.ValidationSummary("", new { @class = "text-danger" })
 
     @*Questionably needed to display this here maybe? for reference*@
     <div class="form-group">
         @Html.LabelFor(m => m.SerialNumber, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.SerialNumber, new { @class = "form-control", @value = "45", @readonly = "readonly" })
+            @Html.TextBoxFor(m => m.SerialNumber, new { @class = "form-control", @readonly = "readonly" })
         </div>
     </div>
 
@@ -52,18 +71,36 @@
         </div>
     </div>
 
-    <div class="form-group">
-        @Html.LabelFor(m => m.ClientAddress, new { @class = "col-md-2 control-label" })
+    <div id="loadoutautobots" ></div>
+
+    @*<div class="form-group">
+        @Html.LabelFor(m => m.PostalCode, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.ClientAddress, new { @class = "form-control" })
+            @Html.TextBoxFor(m => m.PostalCode, new { @class = "form-control", @id = "postal", @onchange = "fun();" })
             <br />
         </div>
     </div>
 
     <div class="form-group">
+        @Html.LabelFor(m => m.ClientAddress, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.ClientAddress, new { @class = "form-control", @id = "address" })
+            <br />
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.ClientAddress2, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.ClientAddress2, new { @class = "form-control" })
+            <br />
+        </div>
+    </div>*@
+
+    @*<div class="form-group">
         @Html.LabelFor(m => m.ClientTel, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.ClientTel, new { @class = "form-control", @MaxLength = 8})
+            @Html.TextBoxFor(m => m.ClientTel, new { @class = "form-control", @MaxLength = 8 })
             <br />
         </div>
     </div>
@@ -74,7 +111,7 @@
             @Html.TextBoxFor(m => m.ClientContactPerson, new { @class = "form-control" })
             <br />
         </div>
-    </div>
+    </div>*@
 
     <h3> &nbsp; Visit Details</h3>
     <div class="form-group">
@@ -82,8 +119,8 @@
         @Html.LabelFor(m => m.PurposeOfVisit, new { @class = "col-md-2 control-label chzn-select" })
         <div class="col-md-10">
             @Html.ListBoxFor(m => m.PurposeOfVisit,
-                                    new MultiSelectList((List<SelectListItem>)ViewData["Purpose"], "Value", "Text"),
-                                   new { style = "display:block;" })
+                                                                  new MultiSelectList((List<SelectListItem>)ViewData["Purpose"], "Value", "Text"),
+                                                                 new { style = "display:block;", @class = "form-control" })
             <br />
         </div>
     </div>
@@ -91,7 +128,7 @@
     <div class="form-group">
         @Html.LabelFor(m => m.Description, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextAreaFor(m => m.Description, new { @class = "form-control", style = "width=200px;height=50px;"})
+            @Html.TextAreaFor(m => m.Description, new { @class = "form-control", style = "width=200px;height=50px;" })
             <br />
         </div>
     </div>
@@ -99,16 +136,7 @@
     <div class="form-group">
         @Html.LabelFor(m => m.Remarks, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", style = "height:80px;"})
-            <br />
-        </div>
-    </div>
-
-    <div class="form-group">
-        @* manual regular expression or date picker?*@
-        @Html.LabelFor(m => m.Date, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.EditorFor(m => m.Date, new { @class = "date-picker" })
+            @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control" })
             <br />
         </div>
     </div>
@@ -116,7 +144,7 @@
     <div class="form-group">
         @Html.LabelFor(m => m.TimeStart, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.EditorFor(m => m.TimeStart, new { @class = "form-control"})
+            @Html.EditorFor(m => m.TimeStart, new { @class = "date-picker" })
             <br />
         </div>
     </div>
@@ -124,35 +152,35 @@
     <div class="form-group">
         @Html.LabelFor(m => m.TimeEnd, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.EditorFor(m => m.TimeEnd, new { @class = "form-control"})
+            @Html.EditorFor(m => m.TimeEnd, new { @class = "date-picker" })
             <br />
         </div>
     </div>
 
-    <div class="form-group">
+    @*<div class="form-group">
         @Html.LabelFor(m => m.MSHUsed, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
             @Html.TextBoxFor(m => m.MSHUsed, new { @class = "form-control" })
             <br />
         </div>
-    </div>
+    </div>*@
 
     <p> Acknowledgement?</p>
     <div class="form-group">
         @Html.LabelFor(m => m.AttendedByStaffName, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.AttendedByStaffName, new { @class = "form-control"})
+            @Html.TextBoxFor(m => m.AttendedByStaffName, new { @class = "form-control" })
             <br />
         </div>
     </div>
 
-    <div class="form-group">
+    @*<div class="form-group">
         @Html.LabelFor(m => m.AttendedOnDate, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.EditorFor(m => m.AttendedOnDate, new { @class = "form-control"})
+            @Html.EditorFor(m => m.AttendedOnDate, new { @class = "form-control" })
             <br />
         </div>
-    </div>
+    </div>*@
 
     <p> Billing</p>
     @*
@@ -203,8 +231,8 @@
         @Html.LabelFor(m => m.JobStatus, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
             @Html.ListBoxFor(m => m.JobStatus,
-                               new MultiSelectList((List<SelectListItem>)ViewData["JobStatusList"], "Value", "Text"),
-                                    new { @class = "form-control" })
+                                                             new MultiSelectList((List<SelectListItem>)ViewData["JobStatusList"], "Value", "Text"),
+                                                                  new { @class = "form-control" })
         </div>
     </div>
 
@@ -237,4 +265,29 @@
 <script>
     CKEDITOR.replace("Description");
     CKEDITOR.replace("Remarks");
+</script>
+
+<script>
+    function fun() {
+
+        var meh = document.getElementById("postal").value;
+        $.ajax({
+            url: '@Url.Action("ReturnPostalAsync","ServiceReport")',
+            method: "post",
+            data: { postal: meh },
+            success: function (data) {
+                var x = document.getElementById("address");
+                x.value = data;}
+        }).done(function (data) {
+            var x = document.getElementById("address");
+            x.value = data;
+        });
+        //}).done(function (data) {
+        //    var x = document.getElementById("address")
+        //    x.value = data
+        //}).fail(function () {
+        //    //error
+        //});
+    }
+
 </script>

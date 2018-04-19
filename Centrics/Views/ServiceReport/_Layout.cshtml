@@ -1,0 +1,172 @@
+﻿@using Microsoft.AspNetCore.Http
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Centrics</title>
+
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+       
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+    </environment>
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Centrics Networks</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    @if (@Context.Session.GetString("LoginEmail") != null)
+                    {
+                        <li><a asp-area="" asp-controller="Users" asp-action="Profile">@Context.Session.GetString("LoginEmail")</a></li>
+                    }
+                    else
+                    {
+                        <li><a asp-area="" asp-controller="Users" asp-action="Login">Login</a></li>
+                        <li><a asp-area="" asp-controller="Users" asp-action="RegisterUser">Register</a></li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; 2018 - Centrics</p>
+        </footer>
+    </div>
+
+    <environment include="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script>
+            $(document).ready(function () {
+                $('#ClientCompanyName').change(function (e) {
+                    e.preventDefault();
+                    var optionSelected = $("option:selected", this);
+                    var valueSelected = this.value;
+                    var hii = '"' + valueSelected + '"';
+                    //alert(valueSelected);
+                    @*var url = '@Url.Action("ChangeAddressInput","ServiceReport")';
+                    var model = { Name: "bye bye"}
+                    $.post(url, model, function () {
+                        alert("meh");
+                    })*@
+                    console.log("1st" + valueSelected)
+                    var data2send = JSON.stringify(valueSelected);
+                    $.ajax({
+                        method: "Post",
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        data: data2send,
+                        url: '@Url.Action("ChangeAddressInput","ServiceReport")',
+                        success: function (data) {
+
+                            $.ajax({
+                                method: "Get",
+                                url: '@Url.Action("ChangeAddressInput","ServiceReport")',
+                                success: function (data,textstatus,jqXHR) {
+                                    $('#loadoutautobots').html(data)
+                                    console.log("success?");
+                                }, error: function () {
+                                    console.log("2nd error");
+                                }, failure: function () {
+                                    console.log("bakka");
+
+                                }
+                            })
+                        },
+                        error: function () {
+                            console.log("error")
+                        }
+                    })
+                });
+                    //now it override submit i want it to submit so on fail isntead they say can do .post
+                //2nd update i need it to make it so that tempdata is taken when done
+                $(window).load(function () {
+                    
+                    var optionSelected = $('#ClientCompanyName');
+                    var valueSelected = $('#ClientCompanyName').find(":selected").text();;
+                    var hii = '"' + valueSelected + '"';
+
+                    console.log(valueSelected);
+                    var data2send = JSON.stringify(valueSelected);
+                    $.ajax({
+                        method: "Post",
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        data: data2send,
+                        url: '@Url.Action("ChangeAddressInput","ServiceReport")',
+                        success: function (data) {
+
+                            $.ajax({
+                                method: "Get",
+                                url: '@Url.Action("ChangeAddressInput","ServiceReport")',
+                                success: function (data,textstatus,jqXHR) {
+                                    $('#loadoutautobots').html(data)
+                                    console.log("success?");
+                                }, error: function () {
+                                    console.log("2nd error");
+                                }, failure: function () {
+                                    console.log("bakka");
+
+                                }
+                            })
+                        },
+                        error: function () {
+                            console.log("error")
+                        }
+                    })
+                        
+                });
+
+                $(window).unload(function () {
+                    var valueSelected = $('#Address').find(":selected").text();
+                    $.ajax({
+                        url: '@Url.Action("Unloader","ServiceReport")',
+                        method: "Get",
+                        async:false
+                    });
+                });
+            });
+
+
+        </script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery"
+                crossorigin="anonymous"
+                integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
+        </script>
+        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
+        </script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+    </environment>
+    
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,80 @@
+﻿@model searcher
+@{
+    ViewData["Title"] = "Index";
+    List<ClientAddress> ListcA = (List<ClientAddress>)ViewData["viewer"];
+}
+
+<h2>Index</h2>
+
+@using (@Html.BeginForm("Index", "ClientAddress", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.searchvalue, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.searchvalue, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <input type="submit" value="search"/>
+}
+
+
+<table border="1">
+    <tr>
+        <th>Customer ID</th>
+        <th>Company Name</th>
+        <th>Address</th>
+        <th>Contact</th>
+        <th>ContactNo</th>
+        <th>Email</th>
+    </tr>
+    
+        @for(int i = 0; i < ListcA.Count; i++)
+        {
+            <tr>
+            <td>@ListcA[i].CustomerID</td>
+            <td>@ListcA[i].ClientCompany</td>
+            
+            <td>
+            @if (ListcA[i].Addresslist != null)
+            {
+                @for (int j = 0; j < ((List<string>)ListcA[i].Addresslist).Count(); j++)
+                {
+                    
+                    @ListcA[i].Addresslist[j] 
+
+                    <br/>
+                }
+            }
+            </td>
+
+            <td>
+            @for (int j=0;j < ListcA[i].ContactList.Count;j++)
+            {
+                @ListcA[i].ContactList[j] 
+                <br/>
+            }
+            </td>
+             <td>
+            @for (int j=0;j < ListcA[i].ContactNoList.Count;j++)
+            {
+                @ListcA[i].ContactNoList[j] 
+                <br/>
+            }
+            </td>
+             <td>
+            @for (int j=0;j < ListcA[i].EmailList.Count;j++)
+            {
+                @ListcA[i].EmailList[j] 
+                <br/>
+            }
+            </td>
+            <td>@Html.ActionLink("Edit Address","Company","ClientAddress",new { name = @ListcA[i].ClientCompany })</td>
+            </tr>
+        }
+   
+
+</table>
