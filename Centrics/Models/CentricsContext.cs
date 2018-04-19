@@ -1483,7 +1483,7 @@ namespace Centrics.Models
             {
                 if(aList[i] == address)
                 {
-                    aList.RemoveAt(i);
+                    aList.Remove(address);
                 }
             }
             int hi = aList.Count();
@@ -1977,7 +1977,7 @@ namespace Centrics.Models
                         MySqlCommand c = new MySqlCommand(query, conn);
                         for(int i =0 ; i < listy.Count(); i++)
                         {
-                            if (i != (listy.Count -1 ))
+                            if (i != (listy.Count - 1))
                             {
                                 saver += listy[i] + "centricsnetworks";
                             }
@@ -1998,7 +1998,7 @@ namespace Centrics.Models
                         MySqlCommand c = new MySqlCommand(query, conn);
                         for (int i = 0; i < listy.Count(); i++)
                         {
-                            if (i != (listy.Count -1 ))
+                            if (i != (listy.Count() - 1))
                             {
                                 saver += listy[i] + "centricsnetworks";
                             }
