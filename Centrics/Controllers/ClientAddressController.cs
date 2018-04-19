@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Centrics.Models;
 using MySql.Data.MySqlClient;
 using Microsoft.AspNetCore.Server.Kestrel.Internal.System.Collections.Sequences;
@@ -65,6 +66,7 @@ namespace Centrics.Controllers
             TempData["companyname"] = boo.ClientCompany;
             return View();
         }
+
         [HttpGet]
         public ActionResult AddAddress()
         {
@@ -87,12 +89,14 @@ namespace Centrics.Controllers
             ClientAddress Weeeheee = new ClientAddress { ClientCompany= name};
             return PartialView("AddAddress",Weeeheee);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddAddress(ClientAddress clientAddress)
         {
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             context.AddAdresstoClientAddressList(clientAddress);
+            context.LogAction("Client", "New address (" + clientAddress.Address + ") has been added to " + clientAddress.ClientCompany + ".", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
             return RedirectToAction("Company", new { name = clientAddress.ClientCompany });
         }
         
@@ -105,6 +109,7 @@ namespace Centrics.Controllers
                 return RedirectToAction("Index");
             }
             context.RemoveAddressFromClientList(name, address);
+            context.LogAction("Client", "Address (" + address + ") has been removed from client " + name + ".", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
             return RedirectToAction("Company", new { name = name });
         }
 
@@ -139,6 +144,7 @@ namespace Centrics.Controllers
                 return View(clientAddress);
             }
 
+            context.LogAction("Client", clientAddress.ClientCompany + " has been added to the client list with this address (" + clientAddress.Address + ")", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))) + ")");
             context.AddNewCompany(clientAddress);
             return RedirectToAction("Company", new { name = clientAddress.ClientCompany });
         }

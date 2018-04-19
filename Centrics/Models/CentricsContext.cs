@@ -340,7 +340,7 @@ namespace Centrics.Models
                 }
             }
             
-            RecurringJob.AddOrUpdate(() => Emailcaller(), Cron.MinuteInterval(2));
+            //RecurringJob.AddOrUpdate(() => Emailcaller(), Cron.MinuteInterval(2));
         }
 
         public void callmemaybe()
@@ -389,13 +389,13 @@ namespace Centrics.Models
             //mailMessage.To.Add(contract.Email);
             //mailMessage.Body = "nobody has no body there nobody is nobody cuz nobody can see him <br /> thanks, from centrics";
             mailMessage.Subject = "Contract Expiry from Centrics Networks";
-            client.Send(mailMessage);
+            //client.Send(mailMessage);
 
         }
 
         private MailMessage getMailWithImg(MailMessage mail, Contract contract, string lol)
         {
-            mail.AlternateViews.Add(getEmbeddedImage(contract,lol,@"C:\Users\Intern1\source\repos\CentricsNetworks\Centrics\Images\logo1.png"));   
+            mail.AlternateViews.Add(getEmbeddedImage(contract,lol,@"Images\logo1.png"));   
             return mail;
         }
         private AlternateView getEmbeddedImage(Contract contract,string lol,String filePath )
@@ -416,7 +416,7 @@ namespace Centrics.Models
                 + "<br/> <br/> " + "This email is auto-generated. Please do not reply to this email."
                 + "<br> <br/>" + " Warm Regards, <br/> Centrics <br /> <b>Centrics Networks Pte. Ltd.</b>"
                 + "<br/>"+@"<img src='cid:" + res.ContentId + @"'/>"
-                + "<br/>" + "26 Sing Ming Lane, #08-115 Midview City, Singapore (573971)"
+                + "<br/>" + "26 Sin Ming Lane, #08-115 Midview City, Singapore (573971)"
                 + "<br/>" + "Main: 6833 7898 | Fax: 6833 7897 " +
                 "<br/>" + "Web: www.centricsnetworks.com.sg"
                 ;
@@ -430,8 +430,6 @@ namespace Centrics.Models
             SmtpClient client = new SmtpClient("outlook.centricsnetworks.com.sg");
             client.UseDefaultCredentials = false;
             client.Credentials = new NetworkCredential("crm@centricnetworks.com.sg", "Password123");
-
-
 
 
             MailMessage mailMessage = new MailMessage();
@@ -476,7 +474,7 @@ namespace Centrics.Models
                 + "<br/> <br/> " + "This email is auto-generated. Please do not reply to this email."
                 + "<br> <br/>" + " Warm Regards, <br/> Centrics <br /> <b>Centrics Networks Pte. Ltd.</b>"
                 + "<br/>" + @"<img src='cid:" + res.ContentId + @"'/>"
-                + "<br/>" + "26 Sing Ming Lane, #08-115 Midview City, Singapore (573971)"
+                + "<br/>" + "26 Sin Ming Lane, #08-115 Midview City, Singapore (573971)"
                 + "<br/>" + "Main: 6833 7898 | Fax: 6833 7897 " +
                 "<br/>" + "Web: www.centricsnetworks.com.sg"
                 ;
@@ -1516,7 +1514,7 @@ namespace Centrics.Models
                     MySqlCommand c = new MySqlCommand(query, conn);
 
                         Debug.WriteLine("here please? ");
-                    c.Parameters.AddWithValue("@addresslist", address);
+                    c.Parameters.AddWithValue("@addresslist", aList[0]);
                     c.Parameters.AddWithValue("@clientcompany", name);
 
                     c.ExecuteNonQuery();
@@ -1528,7 +1526,7 @@ namespace Centrics.Models
                     MySqlCommand c = new MySqlCommand(query, conn);
                     for (int i = 0; i < aList.Count(); i++)
                     {
-                        if (aList[i] != aList.Last())
+                        if (i != (aList.Count -1))
                         {
                             saver += aList[i] + "centricsnetworks";
                         }
@@ -1830,7 +1828,7 @@ namespace Centrics.Models
                         for (int c = 0; c < Addresslist.Count(); c++)
                         {
                             
-                            if (Addresslist[c] != Addresslist.Last())
+                            if (c != (Addresslist.Count() -1 ))
                             {
                                 cA.Address += Addresslist[c] + "centricsnetworks";
                             }
@@ -1851,7 +1849,7 @@ namespace Centrics.Models
                     {
                         for (int c = 0; c < ContactList.Count(); c++)
                         {
-                            if (ContactList[c] != ContactList.Last())
+                            if (c != (ContactList.Count -1 ))
                             {
                                 cA.Contact += ContactList[c] + "centricsnetworks";
                             }
@@ -1872,7 +1870,7 @@ namespace Centrics.Models
                         for (int c = 0; c < ContactNoList.Count(); c++)
                         {
                             Debug.WriteLine("been here done that");
-                            if (ContactNoList[c] != ContactNoList.Last())
+                            if (c != (ContactNoList.Count -1 ))
                             {
 
                                 cA.ContactNoString += ContactNoList[c] + "centricsnetworks";
@@ -1886,8 +1884,6 @@ namespace Centrics.Models
                 
                 Debug.WriteLine(cA.ContactNoString);
                 
-                    
-                    
                         if (EmailList.Count == 1)
                         {
                             cA.EmailAddress = EmailList[0];
@@ -1896,7 +1892,7 @@ namespace Centrics.Models
                         {
                             for (int c = 0; c < EmailList.Count(); c++)
                             {
-                                if (EmailList[c] != EmailList.Last())
+                                if (c != (EmailList.Count -1 ))
                                 {
                                     
                                     cA.EmailAddress += EmailList[c] + "centricsnetworks";
@@ -1911,7 +1907,6 @@ namespace Centrics.Models
                                 }
                             }
                         }
-                    
                 
                 Debug.WriteLine(cA.EmailAddress);
                 MySqlConnection conn = GetConnection();
@@ -1982,7 +1977,7 @@ namespace Centrics.Models
                         MySqlCommand c = new MySqlCommand(query, conn);
                         for(int i =0 ; i < listy.Count(); i++)
                         {
-                            if (listy[i] != listy.Last())
+                            if (i != (listy.Count -1 ))
                             {
                                 saver += listy[i] + "centricsnetworks";
                             }
@@ -2003,7 +1998,7 @@ namespace Centrics.Models
                         MySqlCommand c = new MySqlCommand(query, conn);
                         for (int i = 0; i < listy.Count(); i++)
                         {
-                            if (listy[i] != listy.Last())
+                            if (i != (listy.Count -1 ))
                             {
                                 saver += listy[i] + "centricsnetworks";
                             }
@@ -2277,8 +2272,6 @@ namespace Centrics.Models
             }
         }
 
-
-
         //Creates a new user in the database
         public void RegisterUser(User model)
         {
@@ -2311,7 +2304,6 @@ namespace Centrics.Models
                 }
             }
         }
-
 
         //Get a single user by Email, returns a User Object
         public User GetUserByEmail(string email)
@@ -2354,7 +2346,6 @@ namespace Centrics.Models
             }
             return userRetrieved;
         }
-
 
         //Get a single user by UserID, returns the user retrieved as a User Object
         public User GetUser(int UserID)
@@ -2855,6 +2846,58 @@ namespace Centrics.Models
                     c2.Parameters.AddWithValue("@action", action);
                     c2.Parameters.AddWithValue("@userID", userWhoForgotPassword.UserID);
                     c2.Parameters.AddWithValue("@email", userWhoForgotPassword.UserEmail);
+                    c2.Parameters.AddWithValue("@dateTime", DateTime.Now);
+                    c2.ExecuteNonQuery();
+                }
+
+                if (type == "Client")
+                {
+                    User modifyingUser = (User)user;
+                    string query = "insert into actionlogs(type, userID, email, action, dateTimePerformed) values (@type, @userID, @email, @action, @dateTime)";
+                    MySqlCommand c2 = new MySqlCommand(query, conn);
+                    c2.Parameters.AddWithValue("@type", type);
+                    c2.Parameters.AddWithValue("@action", action);
+                    c2.Parameters.AddWithValue("@userID", modifyingUser.UserID);
+                    c2.Parameters.AddWithValue("@email", modifyingUser.UserEmail);
+                    c2.Parameters.AddWithValue("@dateTime", DateTime.Now);
+                    c2.ExecuteNonQuery();
+                }
+
+                if (type == "Contract")
+                {
+                    User modifyingUser = (User)user;
+                    string query = "insert into actionlogs(type, userID, email, action, dateTimePerformed) values (@type, @userID, @email, @action, @dateTime)";
+                    MySqlCommand c2 = new MySqlCommand(query, conn);
+                    c2.Parameters.AddWithValue("@type", type);
+                    c2.Parameters.AddWithValue("@action", action);
+                    c2.Parameters.AddWithValue("@userID", modifyingUser.UserID);
+                    c2.Parameters.AddWithValue("@email", modifyingUser.UserEmail);
+                    c2.Parameters.AddWithValue("@dateTime", DateTime.Now);
+                    c2.ExecuteNonQuery();
+                }
+
+                if (type == "Service Report")
+                {
+                    User modifyingUser = (User)user;
+                    string query = "insert into actionlogs(type, userID, email, action, dateTimePerformed) values (@type, @userID, @email, @action, @dateTime)";
+                    MySqlCommand c2 = new MySqlCommand(query, conn);
+                    c2.Parameters.AddWithValue("@type", type);
+                    c2.Parameters.AddWithValue("@action", action);
+                    c2.Parameters.AddWithValue("@userID", modifyingUser.UserID);
+                    c2.Parameters.AddWithValue("@email", modifyingUser.UserEmail);
+                    c2.Parameters.AddWithValue("@dateTime", DateTime.Now);
+                    c2.ExecuteNonQuery();
+                }
+
+                if (type == "Import/Export Excel")
+                {
+                    User userLoggedIn = (User)user;
+                    string query = "insert into actionlogs(type, userID, email, action, dateTimePerformed) values (@type, @userID, @email, @action, @dateTime)";
+                    MySqlCommand c2 = new MySqlCommand(query, conn);
+                    c2.Parameters.AddWithValue("@type", type);
+                    c2.Parameters.AddWithValue("@action", action);
+                    c2.Parameters.AddWithValue("@userID", userLoggedIn.UserID);
+                    c2.Parameters.AddWithValue("@email", userLoggedIn.UserEmail);
                     c2.Parameters.AddWithValue("@dateTime", DateTime.Now);
                     c2.ExecuteNonQuery();
                 }

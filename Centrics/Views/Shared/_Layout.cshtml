@@ -35,8 +35,9 @@
                     @if (@Context.Session.GetString("LoginEmail") != null)
                     {
                         <li><a asp-area="" asp-controller="Users" asp-action="Profile">@Context.Session.GetString("LoginEmail")</a></li>
-                        <li><a asp-area="" asp-controller="ServiceReport" asp-action="AddContract">Add Contract</a></li>
-                        <li><a asp-area="" asp-controller="ServiceReport" asp-action="AddNewReport">Add Service Report</a></li>
+                        <li><a asp-area="" asp-controller="ClientAddress" asp-action="Index">Clients</a></li>
+                        <li><a asp-area="" asp-controller="Contract" asp-action="Index">Contracts</a></li>
+                        <li><a asp-area="" asp-controller="ServiceReport" asp-action="Index">Service Reports</a></li>
                         <li>@Html.ActionLink("Logout", "Logout", "Users")</li>
                         @if (Context.Session.GetString("AdminValidity") == "Admin" || Context.Session.GetString("AdminValidity") == "Super Admin")
                         {

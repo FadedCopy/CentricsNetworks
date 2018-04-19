@@ -208,6 +208,9 @@
         EditFilter = document.getElementById("EditFilter");
         ForgotFilter = document.getElementById("ForgotFilter");
         RegisterFilter = document.getElementById("RegisterFilter");
+        ClientFilter = document.getElementById("ClientFilter");
+        ContractFilter = document.getElementById("ContractFilter");
+        SRFilter = document.getElementById("SRFilter");
 
         if (LoginFilter.checked == true) {
             for (i = 1; i < tr.length; i++) {
@@ -383,7 +386,78 @@
                 }
             }
         }
-
+        if (ClientFilter.checked == true) {
+            for (i = 1; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML == "Client") {
+                        td2 = tr[i].getElementsByTagName("td")[3];
+                        if (td2.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+        } else if (ClientFilter.checked == false) {
+            for (i = 1; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML == "Client") {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+        if (ContractFilter.checked == true) {
+            for (i = 1; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML == "Contract") {
+                        td2 = tr[i].getElementsByTagName("td")[3];
+                        if (td2.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+        } else if (ContractFilter.checked == false) {
+            for (i = 1; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML == "Contract") {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+        if (SRFilter.checked == true) {
+            for (i = 1; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML == "Service Report") {
+                        td2 = tr[i].getElementsByTagName("td")[3];
+                        if (td2.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+            }
+        } else if (SRFilter.checked == false) {
+            for (i = 1; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML == "Service Report") {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
     }
 </script>
 <style>
@@ -438,6 +512,7 @@
 <label name="filterLabel"><input type="checkbox" onchange="FilterLogs()" name="filterBox" id="ChangePassFilter">Password Change</label><br />
 <label name="filterLabel"><input type="checkbox" onchange="FilterLogs()" name="filterBox" id="DeleteFilter">User Deleted</label><br />
 <label name="filterLabel"><input type="checkbox" onchange="FilterLogs()" name="filterBox" id="EditFilter">User Edited</label><br />
+<label name="filterLabel"><input type="checkbox" onchange="FilterLogs()" name="filterBox" id="ClientFilter">Client</label><br />
 <label name="filterLabel"><input type="checkbox" onchange="FilterLogs()" name="filterBox" id="ContractFilter">Contract</label><br />
 <label name="filterLabel"><input type="checkbox" onchange="FilterLogs()" name="filterBox" id="SRFilter">Service Report</label><br />
 <div>

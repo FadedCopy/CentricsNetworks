@@ -18,7 +18,7 @@
         </div>
     </div>
 
-    <input type="submit" value="search"/>
+    <input type="submit" value="search" />
 }
 
 
@@ -31,50 +31,53 @@
         <th>ContactNo</th>
         <th>Email</th>
     </tr>
-    
-        @for(int i = 0; i < ListcA.Count; i++)
-        {
-            <tr>
+
+    @for (int i = 0; i < ListcA.Count; i++)
+    {
+        <tr>
             <td>@ListcA[i].CustomerID</td>
             <td>@ListcA[i].ClientCompany</td>
-            
+
             <td>
-            @if (ListcA[i].Addresslist != null)
-            {
-                @for (int j = 0; j < ((List<string>)ListcA[i].Addresslist).Count(); j++)
+                @if (ListcA[i].Addresslist != null)
                 {
-                    
-                    @ListcA[i].Addresslist[j] 
+                    @for (int j = 0; j < ((List<string>)ListcA[i].Addresslist).Count(); j++)
+                    {
 
-                    <br/>
+                        @ListcA[i].Addresslist[j]
+
+                        <br />
+                    }
                 }
-            }
             </td>
 
             <td>
-            @for (int j=0;j < ListcA[i].ContactList.Count;j++)
-            {
-                @ListcA[i].ContactList[j] 
-                <br/>
-            }
+                @for (int j = 0; j < ListcA[i].ContactList.Count; j++)
+                {
+                    @ListcA[i].ContactList[j]
+                    <br />
+                }
             </td>
-             <td>
-            @for (int j=0;j < ListcA[i].ContactNoList.Count;j++)
-            {
-                @ListcA[i].ContactNoList[j] 
-                <br/>
-            }
+            <td>
+                @for (int j = 0; j < ListcA[i].ContactNoList.Count; j++)
+                {
+                    @ListcA[i].ContactNoList[j]
+                    <br />
+                }
             </td>
-             <td>
-            @for (int j=0;j < ListcA[i].EmailList.Count;j++)
-            {
-                @ListcA[i].EmailList[j] 
-                <br/>
-            }
+            <td>
+                @for (int j = 0; j < ListcA[i].EmailList.Count; j++)
+                {
+                    @ListcA[i].EmailList[j]
+                    <br />
+                }
             </td>
-            <td>@Html.ActionLink("Edit Address","Company","ClientAddress",new { name = @ListcA[i].ClientCompany })</td>
-            </tr>
-        }
-   
+            <td>@Html.ActionLink("Edit Address", "Company", "ClientAddress", new { name = @ListcA[i].ClientCompany })</td>
+        </tr>
+    }
+
 
 </table>
+@Html.ActionLink("Add New Client", "AddNewCompany", "ClientAddress")
+@Html.ActionLink("Import Excel to Client List", "Importer", "ImportExport")
+@Html.ActionLink("Export Client List to Excel", "Exporter", "ImportExport")

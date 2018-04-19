@@ -21,6 +21,7 @@ namespace Centrics.Controllers
 {
     public class ImportExportController : Controller {
         private readonly IHostingEnvironment _hostingEnvironment;
+       
 
         public ImportExportController(IHostingEnvironment hostingEnvironment)
         {
@@ -188,6 +189,10 @@ namespace Centrics.Controllers
         [HttpGet]
         public IActionResult Importer()
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
             return View();
         }
 
@@ -200,6 +205,8 @@ namespace Centrics.Controllers
                
                 return View(file);
             }
+            CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
+
             Debug.WriteLine("hi " + file.File.ContentType);
             if (file.File.ContentType != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
             {
@@ -228,7 +235,7 @@ namespace Centrics.Controllers
             Debug.WriteLine("boo" + file.File.FileName);
             Debug.WriteLine("wer" + file.File.Name);
             OnPostImport(file);
-
+            context.LogAction("Import/Export Excel", "User imported an excel file to the application.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
             return RedirectToAction("Index","ClientAddress" );
         }
 
@@ -363,7 +370,7 @@ namespace Centrics.Controllers
                 await stream.CopyToAsync(memory);
             }
             memory.Position = 0;
-            
+
             //Debug.WriteLine("set posistion");
             //return GiveMe();
             return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", sFileName);
@@ -373,6 +380,10 @@ namespace Centrics.Controllers
         {
             OnPostExport();
             Debug.WriteLine("give me");
+            CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
+
+            context.LogAction("Import/Export Excel", "User exported an excel file from the application.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
+
             string sFileName = @"Centrics Networks.xlsx";
             string sWebRootFolder = _hostingEnvironment.WebRootPath;
             var memory = new MemoryStream();

@@ -3,6 +3,7 @@ using Geocoding.Google;
 using Hangfire;
 using jsreport.AspNetCore;
 using jsreport.Types;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -19,18 +20,28 @@ namespace Centrics.Controllers
     {
         public IActionResult Index()
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
+
             return View();
         }
 
         [HttpGet]
         public IActionResult AddNewReport()
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
+
             //this is for pulling out data from contract to service report
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             ServiceReport model = new ServiceReport();
             ViewData["Companies"] = context.GetClientByContract();
             //TempData["address"] = "false";
-            context.Selfcaller();
+            //context.Selfcaller();
             
 
 
@@ -154,6 +165,7 @@ namespace Centrics.Controllers
                     return View(model);
                 }
                 context.AddServiceReport(model);
+                context.LogAction("Service Report", "Service Report (SRN: " + model.SerialNumber + ") created for " + model.ClientCompanyName + " at " + model.ClientAddress + ".", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
                 TempData.Remove("dataishere");
                 return RedirectToAction("ViewReports", "ServiceReport");
             }
@@ -170,6 +182,11 @@ namespace Centrics.Controllers
         [HttpGet]
         public IActionResult ChangeAddressInput()
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
+
             string name = "";
             if (((TempData.Peek("dataishere") != null).ToString().ToLower()) == "true")
             {
@@ -216,6 +233,10 @@ namespace Centrics.Controllers
         [HttpGet]
         public IActionResult ViewReports()
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             ViewData["Pending"] = context.getPendingReports();
             ViewData["Confirmed"] = context.getConfirmedReports();
@@ -232,6 +253,10 @@ namespace Centrics.Controllers
         [HttpGet]
         public IActionResult Report(int id)
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
             if (id == 0)
             {
                 return RedirectToAction("ViewReports");
@@ -247,6 +272,10 @@ namespace Centrics.Controllers
         [HttpGet]
         public IActionResult EditReport(int id)
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
 
             ServiceReport model = new ServiceReport();
@@ -334,6 +363,7 @@ namespace Centrics.Controllers
                 }
             Debug.WriteLine("This is submitting" + report.TimeEnd);
             context.ReportEdit(report);
+            context.LogAction("Service Report", "Service Report (Serial Number: " + report.SerialNumber + ") has been edited.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
             return RedirectToAction("Report", new { id = report.SerialNumber });
             }
             
@@ -436,6 +466,10 @@ namespace Centrics.Controllers
         [HttpGet]
         public IActionResult AddBilling(int id)
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             
             ServiceReport model = context.getServiceReport(id);

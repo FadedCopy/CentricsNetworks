@@ -114,6 +114,7 @@ namespace Centrics.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult EditUser(EditUserViewModel model)
         {
             if (ModelState.IsValid)
@@ -152,12 +153,21 @@ namespace Centrics.Controllers
         [HttpGet]
         public IActionResult ChangePassword()
         {
-            return View();
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
+            else return View();
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult ChangePassword(ChangePasswordViewModel passwords)
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
             string CurrentPassword = passwords.CurrentPassword;
             string NewPassword = passwords.NewPassword;
             passwords.UserID = Convert.ToInt32(HttpContext.Session.GetString("LoginID"));
@@ -187,6 +197,7 @@ namespace Centrics.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult ForgotPassword(ForgotPasswordViewModel model)
         {
             //Sends the Reset Link to the user's email
@@ -216,6 +227,7 @@ namespace Centrics.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult ResetPassword(ResetPasswordViewModel model)
         {
             model.ResetID = TempData["ResetID"].ToString();
@@ -260,6 +272,7 @@ namespace Centrics.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Send2FA(TwoFactorAuth model)
         {
             TwoFactorAuthenticator TwoFacAuth = new TwoFactorAuthenticator();
@@ -345,7 +358,6 @@ namespace Centrics.Controllers
             _context.Reset2FactorAuth(email);
             _context.LogAction("2 Factor Authentication", "User reset 2 Factor Authentication.", _context.GetUserByEmail(email));
             return View("Send2FA");
-
         }
     }
 }

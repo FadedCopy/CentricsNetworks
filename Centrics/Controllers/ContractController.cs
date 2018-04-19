@@ -8,6 +8,7 @@ using Centrics.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Net.Mail;
 using System.Net;
+using Microsoft.AspNetCore.Http;
 
 namespace Centrics.Controllers
 {
@@ -78,7 +79,7 @@ namespace Centrics.Controllers
                     return View(model);
                 }
 
-                
+                context.LogAction("Contract", "New " + model.ContractType + " contract has been created for " + model.ClientCompany + " lasting from " + model.StartValid + " to " + model.EndValid + ".", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
                 context.AddContract(model);
                 return RedirectToAction("ViewContract");
             }
@@ -97,9 +98,9 @@ namespace Centrics.Controllers
             Contract model = context.getContract(contractid);
             context.Emailsender(30, model);
 
-
             return View(model);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ModifyContract(Contract meh)
