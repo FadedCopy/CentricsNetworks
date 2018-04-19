@@ -100,10 +100,15 @@ namespace Centrics.Controllers
         public IActionResult DeleteAddress(string name,string address)
         {
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
-            if (name == "" || name == null || address == "" || address == null)
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction("Company", new { name = name });
+            }
+                if (name == "" || name == null || address == "" || address == null)
             {
                 return RedirectToAction("Index");
             }
+            Debug.WriteLine("Kill" + address);
             context.RemoveAddressFromClientList(name, address);
             return RedirectToAction("Company", new { name = name });
         }

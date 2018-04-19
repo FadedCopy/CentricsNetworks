@@ -1485,7 +1485,7 @@ namespace Centrics.Models
             {
                 if(aList[i] == address)
                 {
-                    aList.RemoveAt(i);
+                    aList.Remove(address);
                 }
             }
             int hi = aList.Count();
@@ -1516,7 +1516,7 @@ namespace Centrics.Models
                     MySqlCommand c = new MySqlCommand(query, conn);
 
                         Debug.WriteLine("here please? ");
-                    c.Parameters.AddWithValue("@addresslist", address);
+                    c.Parameters.AddWithValue("@addresslist", aList[0]);
                     c.Parameters.AddWithValue("@clientcompany", name);
 
                     c.ExecuteNonQuery();
@@ -1528,7 +1528,7 @@ namespace Centrics.Models
                     MySqlCommand c = new MySqlCommand(query, conn);
                     for (int i = 0; i < aList.Count(); i++)
                     {
-                        if (aList[i] != aList.Last())
+                        if (i != (aList.Count -1 ))
                         {
                             saver += aList[i] + "centricsnetworks";
                         }
@@ -1830,7 +1830,7 @@ namespace Centrics.Models
                         for (int c = 0; c < Addresslist.Count(); c++)
                         {
                             
-                            if (Addresslist[c] != Addresslist.Last())
+                            if (c != (Addresslist.Count - 1))
                             {
                                 cA.Address += Addresslist[c] + "centricsnetworks";
                             }
@@ -1851,7 +1851,7 @@ namespace Centrics.Models
                     {
                         for (int c = 0; c < ContactList.Count(); c++)
                         {
-                            if (ContactList[c] != ContactList.Last())
+                            if (c != (ContactList.Count - 1))
                             {
                                 cA.Contact += ContactList[c] + "centricsnetworks";
                             }
@@ -1872,7 +1872,7 @@ namespace Centrics.Models
                         for (int c = 0; c < ContactNoList.Count(); c++)
                         {
                             Debug.WriteLine("been here done that");
-                            if (ContactNoList[c] != ContactNoList.Last())
+                            if (c != (Addresslist.Count - 1))
                             {
 
                                 cA.ContactNoString += ContactNoList[c] + "centricsnetworks";
@@ -1896,7 +1896,7 @@ namespace Centrics.Models
                         {
                             for (int c = 0; c < EmailList.Count(); c++)
                             {
-                                if (EmailList[c] != EmailList.Last())
+                                if (c != (Addresslist.Count - 1))
                                 {
                                     
                                     cA.EmailAddress += EmailList[c] + "centricsnetworks";
@@ -1982,7 +1982,7 @@ namespace Centrics.Models
                         MySqlCommand c = new MySqlCommand(query, conn);
                         for(int i =0 ; i < listy.Count(); i++)
                         {
-                            if (listy[i] != listy.Last())
+                            if (i != (listy.Count - 1))
                             {
                                 saver += listy[i] + "centricsnetworks";
                             }
@@ -2003,7 +2003,7 @@ namespace Centrics.Models
                         MySqlCommand c = new MySqlCommand(query, conn);
                         for (int i = 0; i < listy.Count(); i++)
                         {
-                            if (listy[i] != listy.Last())
+                            if (i != (listy.Count() - 1))
                             {
                                 saver += listy[i] + "centricsnetworks";
                             }
