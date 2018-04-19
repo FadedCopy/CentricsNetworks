@@ -1,0 +1,26 @@
+﻿@model ClientAddress
+
+@if ((TempData.Peek("Message")).ToString() == "true")
+{
+    <p>Max no. of Address Reached. Please remove one address before adding</p>
+}
+else
+{
+
+@using (Html.BeginForm("AddAddress", "ClientAddress", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Address, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Address, new { @class = "form-control" })
+        </div>
+    </div>
+
+    @Html.HiddenFor(m => m.ClientCompany)
+    <input type="submit" value="Add new address"/>
+}
+
+}

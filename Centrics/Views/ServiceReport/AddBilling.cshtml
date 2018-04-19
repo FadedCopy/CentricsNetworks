@@ -1,6 +1,9 @@
 ﻿@model ServiceReport
 
 <h2>Add Billing</h2>
+@{
+    var dateofthingy = Model.TimeStart.ToShortDateString();
+}
 
 @using (@Html.BeginForm("AddBilling", "ServiceReport", FormMethod.Post))
 {
@@ -17,6 +20,7 @@
         @Html.LabelFor(m => m.ClientAddress, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
             @Html.TextBoxFor(m => m.ClientAddress, new { @class = "form-control", @readonly = "readonly" })
+            
         </div>
     </div>
     <div class="form-group">
@@ -26,12 +30,12 @@
             @Html.HiddenFor(m => m.Description)
         </div>
     </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.Date, new { @class = "col-md-2 control-label" })
+    @*<div class="form-group">
+        <p>Date:</p>
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.Date, new { @class = "form-control", @readonly = "readonly" })
+            @dateofthingy
         </div>
-    </div>
+    </div>*@
 
     <div class="form-group">
         @Html.LabelFor(m => m.Labour, new { @class = "col-md-2 control-label" })
@@ -76,6 +80,7 @@
     @Html.HiddenFor(m => m.JobStatus)
     @Html.HiddenFor(m=> m.PurposeOfVisit )
     @Html.HiddenFor(m => m.SerialNumber)
+    @Html.HiddenFor(m => m.ClientAddress)
     
 
     <input type="submit" value="Add Billing" />

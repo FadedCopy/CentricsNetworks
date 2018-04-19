@@ -1,17 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Centrics.Models;
-using FluentEmail.Core;
-using FluentEmail.Mailgun;
+using Hangfire;
+using Hangfire.MySql;
+using Hangfire.MySql.Core;
 using jsreport.AspNetCore;
 using jsreport.Binary;
 using jsreport.Local;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 
 namespace Centrics
 {
@@ -20,13 +25,7 @@ namespace Centrics
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            var sender = new MailgunSender(
-                "sandbox25775aba365f4601ad62cbd09dae30da.mailgun.org", // Mailgun Domain
-                "key-7b134700351795bfc6149f9f84204e1a" // Mailgun API Key
-            );
-            Email.DefaultSender = sender;
-
-                
+                           
         }
 
         public IConfiguration Configuration { get; }
@@ -35,9 +34,17 @@ namespace Centrics
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
             services.Add(new ServiceDescriptor(typeof(CentricsContext), new CentricsContext(Configuration.GetConnectionString("DefaultConnection"))));
             // Adds a default in-memory implementation of IDistributedCache.
             services.AddDistributedMemoryCache();
+            services.AddHangfire(configuration => Configuration.GetConnectionString("DefaultConnection"));
+            services.AddSingleton<IFileProvider>(
+                new PhysicalFileProvider(
+                    Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
+
+            GlobalConfiguration.Configuration.UseStorage(
+    new MySqlStorage(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddSession(options =>
             {
@@ -45,14 +52,13 @@ namespace Centrics
                 options.IdleTimeout = TimeSpan.FromSeconds(10);
                 options.Cookie.HttpOnly = true;
             });
-            services.AddJsReport(new LocalReporting()
-                .UseBinary(JsReportBinary.GetBinary())
-                .AsUtility()
-                .Create());
+            services.AddJsReport(new LocalReporting().UseBinary(JsReportBinary.GetBinary()).AsUtility().Create());
+            services.AddTransient<IEmailService, EmailService>();
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -64,6 +70,8 @@ namespace Centrics
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            app.UseHangfireServer();
+            app.UseHangfireDashboard();
             app.UseStaticFiles();
             app.UseSession();
             app.UseMvc(routes =>

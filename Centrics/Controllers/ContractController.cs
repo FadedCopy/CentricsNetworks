@@ -5,8 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Centrics.Models;
-using FluentEmail.Core;
-using FluentEmail.Razor;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Net.Mail;
+using System.Net;
 
 namespace Centrics.Controllers
 {
@@ -20,6 +21,25 @@ namespace Centrics.Controllers
         [HttpGet]
         public IActionResult AddContract()
         {
+            CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
+            List<ClientAddress> clientAddresses = context.getAllClientAddress();
+            List<SelectListItem> companynames = new List<SelectListItem>();
+            for (int i = 0; i < clientAddresses.Count; i++)
+            {
+                companynames.Add(new SelectListItem { Value = clientAddresses[i].ClientCompany, Text = clientAddresses[i].ClientCompany });
+            }
+
+            ViewData["Company"] = companynames;
+
+            ViewData["Company"] = companynames;
+            List<SelectListItem> ContractTypeList = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Bundled hours with product", Text = "Bundled hours with product" },
+                new SelectListItem { Value = "Maintenance Contract", Text = "Maintenance Contract" }
+            };
+
+            ViewData["ContractType"] = ContractTypeList;
+
             return View();
         }
         
@@ -27,6 +47,24 @@ namespace Centrics.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddContract(Contract model)
         {
+            List<SelectListItem> ContractTypeList = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Bundled hours with product", Text = "Bundled hours with product" },
+                new SelectListItem { Value = "Maintenance Contract", Text = "Maintenance Contract" }
+            };
+
+            ViewData["ContractType"] = ContractTypeList;
+
+            CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
+            List<ClientAddress> clientAddresses = context.getAllClientAddress();
+            List<SelectListItem> companynames = new List<SelectListItem>();
+            for (int i = 0; i < clientAddresses.Count; i++)
+            {
+                companynames.Add(new SelectListItem { Value = clientAddresses[i].ClientCompany, Text = clientAddresses[i].ClientCompany });
+            }
+
+            ViewData["Company"] = companynames;
+
             if (ModelState.IsValid)
             {
                 if (!DateComparer(model.StartValid, model.EndValid))
@@ -40,7 +78,6 @@ namespace Centrics.Controllers
                     return View(model);
                 }
 
-                CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
                 
                 context.AddContract(model);
                 return RedirectToAction("ViewContract");
@@ -58,8 +95,8 @@ namespace Centrics.Controllers
 
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             Contract model = context.getContract(contractid);
-            
-            Debug.WriteLine(model.ClientCompany + "Que");
+            context.Emailsender(30, model);
+
 
             return View(model);
         }
@@ -85,7 +122,7 @@ namespace Centrics.Controllers
             int i = 0;
             while(counter != 0)
             {
-                if (contractlist[i].EndValid.CompareTo(DateTime.Today) > 0 && (contractlist[i].StartValid.CompareTo(DateTime.Today)) < 0)
+                if (contractlist[i].EndValid.CompareTo(DateTime.Today) >= 0 && (contractlist[i].StartValid.CompareTo(DateTime.Today)) <= 0)
                 {
                     if (contractlist[i].MSH != 0)
                     {
@@ -138,47 +175,47 @@ namespace Centrics.Controllers
             return false;
         }
 
-        public void CheckContractExpiryWarning()
-        {
-            DateTime today = DateTime.Today;
-            Debug.WriteLine(today);
+        //public void CheckContractExpiryWarning()
+        //{
+        //    DateTime today = DateTime.Today;
+        //    Debug.WriteLine(today);
 
-            CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
+        //    CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             
 
-            List<Contract> contracts = context.getContracts();
+        //    List<Contract> contracts = context.getContracts();
 
-            for (int i = 0; i < contracts.Count; i++) {
-                DateTime end = contracts[i].EndValid;
-                if ((end - today).Days == 30)
-                {
-                    //send email
-                }
-                else if ((end - today).Days == 7)
-                {
-                    //send email dashboard?
+        //    for (int i = 0; i < contracts.Count; i++) {
+        //        DateTime end = contracts[i].EndValid;
+        //        if ((end - today).Days == 30)
+        //        {
+        //            //send email
+        //        }
+        //        else if ((end - today).Days == 7)
+        //        {
+        //            //send email dashboard?
 
-                }
-                else if ((end - today).Days == 0)
-                {
-                    //send email
-                }
-            }
-        }
+        //        }
+        //        else if ((end - today).Days == 0)
+        //        {
+        //            //send email
+        //        }
+        //    }
+        //}
         //works but weirdly works? feel like u can send from any account to any account without validation which is wtf?
-        public void ContractExpiryWarningEmail()
-        {
-            // Using Razor templating package
-            Email.DefaultRenderer = new RazorRenderer();
+        //public void ContractExpiryWarningEmail()
+        //{
+        //    // Using Razor templating package
+        //    Email.DefaultRenderer = new RazorRenderer();
 
-            var template = "Dear @Model.Name, You are totally @Model.Compliment.";
+        //    var template = "Dear @Model.Name, You are totally @Model.Compliment.";
 
-            var email = Email
-                .From("fadedcostt@gmail.com")
-                .To("ai.permacostt@gmail.com")
-                .Subject("burden")
-                .UsingTemplate(template, new { Name = "Luke", Compliment = "Awesome" });
-            email.Send();
-        }
+        //    var email = Email
+        //        .From("fadedcostt@gmail.com")
+        //        .To("ai.permacostt@gmail.com")
+        //        .Subject("burden")
+        //        .UsingTemplate(template, new { Name = "Luke", Compliment = "Awesome" });
+        //    email.Send();
+        //}
     }
 }

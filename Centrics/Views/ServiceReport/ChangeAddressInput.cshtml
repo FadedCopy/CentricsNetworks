@@ -1,0 +1,46 @@
+﻿@model ServiceReport
+@{
+    ViewData["Title"] = "View";
+}
+
+@if (ViewData.ContainsKey("AddressList"))
+{
+
+    <div class="form-group">
+
+        @Html.LabelFor(m => m.ClientAddress, new { @class = "col-md-2 control-label chzn-select" })
+        <div class="col-md-10">
+            @Html.DropDownListFor(m => m.ClientAddress,(List<SelectListItem>)ViewData["AddressList"],"SelectAddress" ,new {@class = "form-control" })
+            <br />
+        </div>
+    </div>
+
+}
+else
+{
+    <div class="form-group">
+        @Html.LabelFor(m => m.PostalCode, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.PostalCode, new { @class = "form-control", @id = "postal", @onchange = "fun();" })
+            <br />
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.ClientAddress, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.ClientAddress, new { @class = "form-control", @id = "address" })
+            <br />
+        </div>
+    </div>
+
+    @*<div class="form-group">
+        @Html.LabelFor(m => m.ClientAddress2, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.ClientAddress2, new { @class = "form-control" })
+            <br />
+        </div>
+    </div>*@
+
+}
+

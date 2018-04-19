@@ -3,15 +3,13 @@
 @{
     ViewData["Title"] = "Service Report";
     var Report = Model;
-    var starttime = Report.TimeStart.ToShortTimeString();
-    var endtime = Report.TimeEnd.ToShortTimeString();
-    var dateofvisit = Report.Date.ToShortDateString();
+    var starttime = Report.TimeStart;
+    var endtime = Report.TimeEnd;
+    var dateofvisit = Report.TimeStart.ToShortDateString();
 
 }
 <style>
-    td{padding-top:10px;
-       padding-bottom:10px;
-    }
+    
 </style>
 <h2 style="text-align:center;">Service Report</h2>
 @if (TempData["error"] != null)
@@ -32,7 +30,7 @@
         <td>@Report.ClientAddress</td>
     </tr>
 
-    <tr 
+    <tr>
         <td>Tel/Hp:</td>
         <td>@Report.ClientTel</td>
     </tr>
@@ -99,7 +97,7 @@
 @if (Report.ReportStatus != "Confirmed")
 {
     @Html.ActionLink("Confirm Report", "ReportConfirm", "ServiceReport", new { id = Report.SerialNumber }, new { @onclick = "return confirm('Once confirmed, Report cannot be edited/deleted. Are you sure?')" })
-    @Html.ActionLink("Delete Report", "DeleteReport", "ServiceReport", new { id = Report.SerialNumber })
+    @Html.ActionLink("Delete Report", "DeleteReport", "ServiceReport", new { id = Report.SerialNumber }, new { @onclick = "return confirm('Confirm Delete?')"})
     @Html.ActionLink("Edit Report", "EditReport", "ServiceReport", new { id = Report.SerialNumber }, null)
     //test this down
     @Html.ActionLink("Add Billing", "AddBilling", "ServiceReport", new { id = Report.SerialNumber }, null)

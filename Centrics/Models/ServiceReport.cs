@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace Centrics.Models
 {
     public class ServiceReport
@@ -21,8 +18,11 @@ namespace Centrics.Models
         [Display(Name = "Company Name"), Required(ErrorMessage = "Please enter a company name", AllowEmptyStrings = false)]
         public string ClientCompanyName { get; set; }
 
-        [Display(Name = "Address"), StringLength(200, ErrorMessage = "Maximum character space for address is 200 only"), Required(ErrorMessage = "Enter the address of the company")]
+        [Display(Name = "Address"), StringLength(100, ErrorMessage = "Maximum character space for address is 100 only"), Required(ErrorMessage = "Enter the address of the company")]
         public string ClientAddress { get; set; }
+
+        //[Display(Name = "Address 2"),StringLength(100,ErrorMessage = "Maximum character space for address is 100 only")]
+        //public string ClientAddress2 { get; set; }
 
         //not required? (condition for Req: proper report)
         [Display(Name = "Tel / HP")] //Regular Expression? Max Length 8?
@@ -47,13 +47,15 @@ namespace Centrics.Models
         public string Remarks { get; set; }
 
         //Service Time info
-        [Display(Name = "Date"), Required, DataType(DataType.Date)]
-        public DateTime Date { get; set; }
 
-        [Display(Name = "Time Start"), DataType(DataType.Time),Required, DisplayFormat(DataFormatString = "{0:hh\\:mm}", ApplyFormatInEditMode = true)]
+        //[Display(Name = "Date"), Required, DataType(DataType.Date)]
+        //public DateTime Date { get; set; }
+
+        [Display(Name = "Time Start"), DataType(DataType.DateTime),Required, DisplayFormat(DataFormatString = "{0:dd-MMM-yyyy hh:mm}", ApplyFormatInEditMode = true)]
         public DateTime TimeStart { get; set; }
-
-        [Display(Name = "Time End"), DisplayFormat(DataFormatString = "{0:hh\\:mm}", ApplyFormatInEditMode = true), DataType(DataType.Time),Required]
+        //DisplayFormat(DataFormatString = "{0:hh\\:mm}", ApplyFormatInEditMode = true),
+        [Display(Name = "Time End") ,DataType(DataType.DateTime),Required]
+        [DisplayFormat(DataFormatString = "{0:dd-MMM-yyyy hh:mm}",ApplyFormatInEditMode = true)]
         public DateTime TimeEnd { get; set; }
 
         [Display(Name = "MSH Used"), Required(ErrorMessage = "Please enter how much MSH is used")] // ???
@@ -63,8 +65,8 @@ namespace Centrics.Models
         [Display(Name = "Attended by Staff/s"),Required(ErrorMessage = "Please enter the name of the attending ")]
         public string AttendedByStaffName { get; set; }
 
-        [Display(Name = "Attended on Date"),Required, DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        [Display(Name = "Attended on Date"), DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString ="{0:d}",ApplyFormatInEditMode = true)] 
         public DateTime AttendedOnDate { get; set; }
 
         #region Acknowledgement Questionable here commented out
@@ -126,6 +128,12 @@ namespace Centrics.Models
         public string Purpose { get; set; }
 
         public string ReportStatus { get; set; }
+
+        [Display(Name = "Address Searcher")]
+        public string PostalCode { get; set; }
+
+        public string[] Address1Array { get; set; }
+        public string[] Address2Array { get; set; }
     }
 }
 

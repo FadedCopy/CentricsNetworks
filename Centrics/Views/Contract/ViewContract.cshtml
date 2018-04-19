@@ -19,17 +19,22 @@
         <caption>Exisiting Contracts</caption>
         <tr>
             <td>Contract ID</td>
+            <td>Company ID</td>
             <td>Company</td>
+            <td>Email</td>
             <td>Remaining MSH</td>
             <td>Start of Validity</td>
             <td>End of Validity</td>
         </tr>
+       
         @foreach (var SR in ViewData["Valid"] as List<Contract>)
         {
 
             <tr>
                 <td>@SR.idcontract</td>
+                <td>@SR.CentricID</td>
                 <td>@SR.ClientCompany</td>
+                <td>@SR.Email</td>
                 <td>@SR.MSH</td>
                 <td>@SR.StartValid.ToShortDateString()</td>
                 <td>@SR.EndValid.ToShortDateString()</td>
@@ -42,10 +47,12 @@
 @if (ViewData.ContainsKey("Finished"))
 {
     <table>
-        <caption>Exisiting Contracts</caption>
+        <caption>Finished Contracts</caption>
         <tr>
             <td>Contract ID</td>
+            <td>Company ID</td>
             <td>Company</td>
+            <td>Email</td>
             <td>Remaining MSH</td>
             <td>Start of Validity</td>
             <td>End of Validity</td>
@@ -55,11 +62,13 @@
 
             <tr>
                 <td>@SR.idcontract</td>
+                <td>@SR.CentricID</td>
                 <td>@SR.ClientCompany</td>
+                <td>@SR.Email</td>
                 <td>@SR.MSH</td>
                 <td>@SR.StartValid.ToShortDateString()</td>
                 <td>@SR.EndValid.ToShortDateString()</td>
-                <td>@Html.ActionLink("Edit Contract", "ModifyContract", "Contract", new { contractid = SR.idcontract }, null)</td>
+                
             </tr>
         }
 
@@ -72,6 +81,7 @@
         <tr>
             <td>Contract ID</td>
             <td>Company</td>
+            <td>Email</td>
             <td>Remaining MSH</td>
             <td>Start of Validity</td>
             <td>End of Validity</td>
@@ -81,11 +91,13 @@
 
             <tr>
                 <td>@SR.idcontract</td>
+                <td>@SR.CentricID</td>
                 <td>@SR.ClientCompany</td>
+                <td>@SR.Email</td>
                 <td>@SR.MSH</td>
                 <td>@SR.StartValid.ToShortDateString()</td>
                 <td>@SR.EndValid.ToShortDateString()</td>
-                <td>@Html.ActionLink("Edit Contract", "ModifyContract", "Contract", new { contractid = SR.idcontract }, null)</td>
+                
             </tr>
         }
     </table>
@@ -96,7 +108,9 @@
         <caption>Future Contract</caption>
         <tr>
             <td>Contract ID</td>
+            <td>Company ID</td>
             <td>Company</td>
+            <td>Email</td>
             <td>Remaining MSH</td>
             <td>Start of Validity</td>
             <td>End of Validity</td>
@@ -106,11 +120,12 @@
 
             <tr>
                 <td>@SR.idcontract</td>
+                <td>@SR.CentricID</td>
                 <td>@SR.ClientCompany</td>
+                <td>@SR.Email</td>
                 <td>@SR.MSH</td>
                 <td>@SR.StartValid.ToShortDateString()</td>
                 <td>@SR.EndValid.ToShortDateString()</td>
-                <td>@Html.ActionLink("Edit Contract", "ModifyContract", "Contract", new { contractid = SR.idcontract }, null)</td>
             </tr>
         }
     </table>

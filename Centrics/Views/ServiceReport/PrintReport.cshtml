@@ -13,6 +13,9 @@
             CombPurpose += Model.PurposeOfVisit[i];
         }
     }
+
+    var dateofvisit = Model.TimeStart.ToShortDateString();    
+
 }
 
 <style>
@@ -62,7 +65,13 @@
     </tr>
     <tr>
         <th>Tel/HP:</th>
+        @if (Model.ClientTel != 0)
+        {
         <td>@Html.DisplayFor(m => m.ClientTel)</td>
+        }
+        else
+        {<td>
+        </td>}
     </tr>
     <tr>
         <th>Contact Person: </th>
@@ -87,14 +96,17 @@
         <th>Remarks:</th>
         <td colspan="7">@Html.Raw(Model.Remarks)</td>
     </tr>
+</table>
+<br/>
+<table>
     <tr>
-        <th>Date:</th>
-        <td>@Html.DisplayFor(m => m.Date)</td>
-        <th>Time Start:</th>
+        <td><b>Date:</b></td>
+        <td>@dateofvisit</td>
+        <td><b>Time Start:</b></td>
         <td>@Html.DisplayFor(m => m.TimeStart)</td>
-        <th>Time End:</th>
+        <td><b>Time End:</b></td>
         <td>@Html.DisplayFor(m => m.TimeEnd)</td>
-        <th>MSH Used:</th>
+        <td><b>MSH Used:</b></td>
         <td>@Html.DisplayFor(m => m.MSHUsed)</td>
     </tr>
 </table>
@@ -139,7 +151,7 @@
         <td>@Html.DisplayFor(m => m.InvoiceNo)</td>
     </tr>
     <tr>
-        <td colspan="2">Name:</td>
+        <td colspan="2">Name: @Html.DisplayFor(m => m.AttendedByStaffName)</td>
         <td colspan="2">Date:</td>
         <td>Invoice Date:</td>
         <td colspan="2"></td>
@@ -154,8 +166,8 @@
 
     </tr>
     <tr>
-        <td colspan="2">Date:</td>
-        <td colspan="2">Company Status:</td>
+        <td colspan="2">Date: @dateofvisit</td>
+        <td colspan="2">Company Stamp:</td>
         <td></td>
         <td colspan="2"></td>
         <td></td>
