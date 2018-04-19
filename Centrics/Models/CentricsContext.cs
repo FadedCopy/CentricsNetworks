@@ -19,7 +19,7 @@ namespace Centrics.Models
         public string ConnectionString { get; set; }
 
         public CentricsContext(string connectionString)
-        {
+        {   
             this.ConnectionString = connectionString;
         }
 
@@ -1014,7 +1014,7 @@ namespace Centrics.Models
             try
             {
                 conn.Open();
-                string query = "update users(authenticated) set authenticated = 1 where email = @email";
+                string query = "update users set authenticated = 1 where email = @email";
                 MySqlCommand c = new MySqlCommand(query, conn);
                 c.Parameters.AddWithValue("@email", UserLoggingInEmail);
                 c.ExecuteNonQuery();
@@ -1029,6 +1029,9 @@ namespace Centrics.Models
                 conn.Close();
             }
         }
+
+
+
         //Creates a new user in the database
         public void RegisterUser(User model)
         {
@@ -1218,7 +1221,6 @@ namespace Centrics.Models
             MySqlConnection conn = GetConnection();
             try
             {
-                Debug.WriteLine("Hello"+user.UserID);
                 conn.Open();
                 string query = "update users set firstName=@firstName, lastName=@lastName, email=@email, userRole=@role where userID=@userID";
                 MySqlCommand c = new MySqlCommand(query, conn);
@@ -1457,17 +1459,6 @@ namespace Centrics.Models
             }
         }
 
-        //Returns a true if user is an admin/super admin, otherwise returns false
-        public Boolean CheckUserPrivilege(User userChecked)
-        {
-            Debug.WriteLine("Role: " + userChecked.UserRole);
-            if (userChecked.UserRole == "Admin" || userChecked.UserRole == "Super Admin")
-            {
-                return true;
-            }
-            else return false;
-        }
-
         //Retrieves all logs for admin view
         public List<Log> GetAllLogs()
         {
@@ -1620,6 +1611,49 @@ namespace Centrics.Models
                     c2.Parameters.AddWithValue("@dateTime", DateTime.Now);
                     c2.ExecuteNonQuery();
                 }
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        //Deletes all logs, function only works for Super Admin
+        public void DeleteAllLogs()
+        {
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                string query = "delete from actionlogs";
+                MySqlCommand c = new MySqlCommand(query, conn);
+                c.ExecuteNonQuery();
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        //Resets 2 Factor Authentication
+        public void Reset2FactorAuth(string email)
+        {
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                string query = "update users set authenticated = 0 where email = @email";
+                MySqlCommand c = new MySqlCommand(query, conn);
+                c.Parameters.AddWithValue("@email", email);
+                c.ExecuteNonQuery();
             }
             catch (MySqlException e)
             {

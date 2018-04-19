@@ -1,5 +1,6 @@
 ﻿@model Centrics.Models.User
 @using Centrics.Models
+@using Microsoft.AspNetCore.Http
 @{
     ViewData["Title"] = "View Users";
     var UsersData = ViewBag.UsersData;
@@ -41,47 +42,52 @@
 </style>
 <script>
     function SearchFunction() {
-        var input, filter, table, tr, td, i;
+        var input, filter, table, tr, td, td2, i;
+        var UserIDFilter, NameFilter, EmailFilter;
         input = document.getElementById("SearchInput");
         filter = input.value.toUpperCase();
         table = document.getElementById("UserTable");
         tr = table.getElementsByTagName("tr");
         for (i = 0; i < tr.length; i++) {
-            td = tr[i].getElementsByTagName("td")[1];
-            if (td) {
-                if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
-                    tr[i].style.display = "";
-                } else {
-                    tr[i].style.display = "none";
+            if (document.getElementById("IDFilter").checked) {
+                td = tr[i].getElementsByTagName("td")[0];
+                if (td) {
+                    if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            } else if (document.getElementById("NameFilter").checked) {
+                td = tr[i].getElementsByTagName("td")[1];
+                td2 = tr[i].getElementsByTagName("td")[2];
+                if (td) {
+                    if (td.innerHTML.toUpperCase().indexOf(filter) > -1 || td2.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            } else if (document.getElementById("EmailFilter").checked) {
+                td = tr[i].getElementsByTagName("td")[3];
+                if (td) {
+                    if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
                 }
             }
         }
     }
 
-    function FilterFunction() {
-        var input, filter, table, tr, td, i;
-        input = document.getElementById("SearchInput");
-        filter = input.value.toUpperCase();
-        table = document.getElementById("UserTable");
-        tr = table.getElementsByTagName("tr");
-        for (i = 0; i < tr.length; i++) {
-            td = tr[i].getElementsByTagName("td")[1];
-            if (td) {
-                if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
-                    tr[i].style.display = "";
-                } else {
-                    tr[i].style.display = "none";
-                }
-            }
-        }
-    }
 </script>
 <h2>View All Users</h2>
-<input type="text" id="SearchInput" onkeyup="SearchFunction()" placeholder="Search for users" title="User Search">
-<input type="radio" class="SearchFilters" id="IDFilter" value="User ID" /> <br />
-<input type="radio" class="SearchFilters" id="NameFilter" value="Name" /> <br />
-<input type="radio" class="SearchFilters" id="EmailFilter" value="Email" /> <br />
-
+<input type="text" id="SearchInput" placeholder="Search for users" title="User Search">
+<input type="radio" class="SearchFilters" id="IDFilter" name="Filters" value="User ID" checked="checked" /> User ID<br />
+<input type="radio" class="SearchFilters" id="NameFilter" name="Filters" value="Name" /> Name<br />
+<input type="radio" class="SearchFilters" id="EmailFilter" name="Filters" value="Email" /> Email<br />
+<input type="button" id="SearchButton" onclick="SearchFunction()" value="Search" runat="server" onserverclick="return false;" />
 <div>
     <hr />
     @TempData["Status"]
@@ -103,13 +109,35 @@
                 <td>@UsersData[i].UserEmail</td>
                 <td>@UsersData[i].UserRole</td>
                 <td>
-                    @Html.ActionLink("Delete User", "DeleteUser", "Users", new { UserID = UsersData[i].UserID }, new { onclick = "return confirm('Are you sure you want to delete this user?')" })
-                    <br />
-                    @Html.ActionLink("Edit User", "EditUserDetails", "Users", new { UserID = UsersData[i].UserID }, new
+                    @if (Context.Session.GetString("AdminValidity") == "Super Admin")
                     {
-                        data_target = "#modal-container",
-                        data_toggle = "modal"
-                    })
+                        @if (UsersData[i].UserRole != "Super Admin")
+                        {
+                            @Html.ActionLink("Delete User", "DeleteUser", "Users", new { UserID = UsersData[i].UserID }, new { onclick = "return confirm('Are you sure you want to delete this user?')" })
+                            <br />
+                        }
+                        @Html.ActionLink("Edit User", "EditUserDetails", "Users", new { UserID = UsersData[i].UserID }, new
+                        {
+                            data_target = "#modal-container",
+                            data_toggle = "modal"
+                        })
+                    }
+                    @if (Context.Session.GetString("AdminValidity") == "Admin")
+                    {
+                        @if (Convert.ToInt32(Context.Session.GetString("LoginID")) != UsersData[i].UserID)
+                        {
+                            @if (UsersData[i].UserRole != "Super Admin")
+                            {
+                                @Html.ActionLink("Delete User", "DeleteUser", "Users", new { UserID = UsersData[i].UserID }, new { onclick = "return confirm('Are you sure you want to delete this user?')" })
+                                <br />
+                                @Html.ActionLink("Edit User", "EditUserDetails", "Users", new { UserID = UsersData[i].UserID }, new
+                                {
+                                    data_target = "#modal-container",
+                                    data_toggle = "modal"
+                                })
+                            }
+                        }
+                    }
                 </td>
             </tr>
         }

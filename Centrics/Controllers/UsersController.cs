@@ -105,7 +105,7 @@ namespace Centrics.Controllers
         [HttpGet]
         public IActionResult ViewUsers()
         {
-            if (HttpContext.Session.GetString("AdminValidity") == "True")
+            if (HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin")
             {
                 ViewBag.UsersData = _context.GetUsers();
                 return View();
@@ -118,11 +118,14 @@ namespace Centrics.Controllers
         {
             if (ModelState.IsValid)
             {
-                User userWhoEdited = _context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID")));
-                _context.EditUser(model);
-                EditUserViewModel newDetails = model;
-                _context.LogAction("User Edited", "Name: "+ newDetails.FirstName + " " + newDetails.LastName + " Email: " + newDetails.UserEmail + " Role: " + newDetails.UserRole, userWhoEdited);
-                TempData["Status"] = "User successfully edited.";
+                if (HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin")
+                {
+                    User userWhoEdited = _context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID")));
+                    _context.EditUser(model);
+                    EditUserViewModel newDetails = model;
+                    _context.LogAction("User Edited", "Name: " + newDetails.FirstName + " " + newDetails.LastName + " Email: " + newDetails.UserEmail + " Role: " + newDetails.UserRole, userWhoEdited);
+                    TempData["Status"] = "User successfully edited.";
+                }
             }
             return RedirectToAction("ViewUsers");
         }
@@ -134,6 +137,7 @@ namespace Centrics.Controllers
             User userRoles = new User();
             TempData["UserID"] = UserID;
             ViewData["Roles"] = userRoles.Roles;
+            ViewData["RolesNoSuperAdmin"] = userRoles.RolesNoSuperAdmin;
             EditUserViewModel editedUser = new EditUserViewModel
             {
                 UserID = UserID,
@@ -148,14 +152,12 @@ namespace Centrics.Controllers
         [HttpGet]
         public IActionResult ChangePassword()
         {
-            Debug.WriteLine("GetSession " + HttpContext.Session.GetString("LoginID"));
             return View();
         }
 
         [HttpPost]
         public IActionResult ChangePassword(ChangePasswordViewModel passwords)
         {
-            Debug.WriteLine("Session " + HttpContext.Session.GetString("LoginID"));
             string CurrentPassword = passwords.CurrentPassword;
             string NewPassword = passwords.NewPassword;
             passwords.UserID = Convert.ToInt32(HttpContext.Session.GetString("LoginID"));
@@ -270,9 +272,13 @@ namespace Centrics.Controllers
                 HttpContext.Session.SetString("LoginEmail", TempData["LoginEmail"].ToString());
                 User userLoggedIn = _context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID")));
                 _context.LogAction("2 Factor Authentication", "Authentication successful.", userLoggedIn);
-                if (userLoggedIn.UserRole == "Admin" || userLoggedIn.UserRole == "Super Admin")
+                if (userLoggedIn.UserRole == "Admin")
                 {
-                    HttpContext.Session.SetString("AdminValidity", "True");
+                    HttpContext.Session.SetString("AdminValidity", "Admin");
+                }
+                else if (userLoggedIn.UserRole == "Super Admin")
+                {
+                    HttpContext.Session.SetString("AdminValidity", "Super Admin");
                 }
                 if (userLoggedIn.Authenticated == false)
                     _context.SetUserAsAuthenticated(HttpContext.Session.GetString("LoginEmail"));
@@ -309,12 +315,37 @@ namespace Centrics.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult Error()
+        {
+            return View();
+        }
+        
         public IActionResult Logout()
         {
             _context.LogAction("Logout", "User logged out.", _context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
             HttpContext.Session.Clear();
             TempData["Status"] = "You have successfully logged out.";
             return View("Login");
+        }
+
+        public IActionResult Reset2FA()
+        {
+            string email = TempData["LoginEmail"].ToString();
+            //Two Factor Authentication Setup
+            TwoFactorAuthenticator TwoFacAuth = new TwoFactorAuthenticator();
+            User loggingIn = _context.GetUserByEmail(email);
+            string UserUniqueKey = (email + GoogleAuthKey);
+            TempData["UserUniqueKey"] = UserUniqueKey; //Session
+            var setupInfo = TwoFacAuth.GenerateSetupCode("Centrics Network", email, UserUniqueKey, 300, 300);
+            ViewBag.Message = "Enter your code displayed in Google Authenticator.";
+            ViewBag.BarcodeImageUrl = setupInfo.QrCodeSetupImageUrl;
+            ViewBag.SetupCode = setupInfo.ManualEntryKey;
+            TempData["LoginEmail"] = email;
+            _context.Reset2FactorAuth(email);
+            _context.LogAction("2 Factor Authentication", "User reset 2 Factor Authentication.", _context.GetUserByEmail(email));
+            return View("Send2FA");
+
         }
     }
 }

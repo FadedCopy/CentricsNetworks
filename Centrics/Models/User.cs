@@ -41,5 +41,10 @@ namespace Centrics.Models
             new SelectListItem { Value = "Super Admin", Text = "Super Admin"},
         };
 
+        public List<SelectListItem> RolesNoSuperAdmin { get; } = new List<SelectListItem>
+        {
+            new SelectListItem { Value = "User", Text = "User" },
+            new SelectListItem { Value = "Admin", Text = "Admin" },
+        };
     }
 }
