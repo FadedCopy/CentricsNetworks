@@ -326,7 +326,7 @@ namespace Centrics.Controllers
 
             if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin" || (user.FirstName + user.LastName) == context.getServiceReport(id).ReportFrom))
             {
-                return RedirectToAction("Eroor", "Admin");
+                return RedirectToAction("Error", "Admin");
             }
 
             
@@ -432,6 +432,7 @@ namespace Centrics.Controllers
 
             }
 
+            context.LogAction("Service Report", "Service Report (Serial Number: " + id + ") has been confirmed.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
             context.ReportConfirm(id);
             //if (tf == false)
             //{
@@ -463,9 +464,10 @@ namespace Centrics.Controllers
              User user = context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID")));
             if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin" || (user.FirstName + user.LastName) == context.getServiceReport(id).ReportFrom))
             {
-                return RedirectToAction("Eroor", "Admin");
+                return RedirectToAction("Error", "Admin");
             }
 
+            context.LogAction("Service Report", "Service Report (Serial Number: " + id + ") has been deleted.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
             return RedirectToAction("Report", id);
         }
 
@@ -479,7 +481,7 @@ namespace Centrics.Controllers
 
             string jobcombined = "";
             if (model.JobStatus.Length > 1)
-            {
+            {       
                 for (int i = 0; i < model.JobStatus.Length; i++)
                 {
                     if (model.JobStatus[i] != model.JobStatus.Last())

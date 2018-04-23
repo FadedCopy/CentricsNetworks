@@ -150,7 +150,7 @@ namespace Centrics.Controllers
                 return View(clientAddress);
             }
 
-            context.LogAction("Client", clientAddress.ClientCompany + " has been added to the client list with this address (" + clientAddress.Address + ")", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))) + ")");
+            context.LogAction("Client", clientAddress.ClientCompany + " has been added to the client list with this address (" + clientAddress.Address + ")", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
             context.AddNewCompany(clientAddress);
             return RedirectToAction("Company", new { name = clientAddress.ClientCompany });
         }
