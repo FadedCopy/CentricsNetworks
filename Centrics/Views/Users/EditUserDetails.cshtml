@@ -38,19 +38,14 @@
             @ViewBag.Message
         </div>
 
+        @if (ViewData["Privilege"].ToString() != "Super Admin") {
         <div class="form-group">
             @Html.LabelFor(m => m.UserRole, new { @class = "col-md-2 control-label" })
             <div class="col-md-10">
-                @if (Context.Session.GetString("AdminValidity") == "Super Admin")
-                {
-                    @Html.DropDownListFor(m => m.UserRole, (List<SelectListItem>)ViewData["Roles"])
-                }
-                else if (Context.Session.GetString("AdminValidity") == "Admin")
-                {
-                    @Html.DropDownListFor(m => m.UserRole, (List<SelectListItem>)ViewData["RolesNoSuperAdmin"])
-                }
+                @Html.DropDownListFor(m => m.UserRole, (List<SelectListItem>)ViewData["RolesNoSuperAdmin"])
             </div>
         </div>
+        }
 
         <input type="submit" value="Confirm" />
         <input type="reset" value="Reset" />

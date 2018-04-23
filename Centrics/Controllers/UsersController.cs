@@ -139,6 +139,7 @@ namespace Centrics.Controllers
             TempData["UserID"] = UserID;
             ViewData["Roles"] = userRoles.Roles;
             ViewData["RolesNoSuperAdmin"] = userRoles.RolesNoSuperAdmin;
+            ViewData["Privilege"] = retrieveUserEdited.UserRole;
             EditUserViewModel editedUser = new EditUserViewModel
             {
                 UserID = UserID,

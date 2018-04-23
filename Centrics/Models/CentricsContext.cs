@@ -389,7 +389,7 @@ namespace Centrics.Models
             //mailMessage.To.Add(contract.Email);
             //mailMessage.Body = "nobody has no body there nobody is nobody cuz nobody can see him <br /> thanks, from centrics";
             mailMessage.Subject = "Contract Expiry from Centrics Networks";
-            //client.Send(mailMessage);
+            client.Send(mailMessage);
 
         }
 
@@ -427,9 +427,11 @@ namespace Centrics.Models
 
         public void SREmail(ServiceReport SR)
         {
-            SmtpClient client = new SmtpClient("outlook.centricsnetworks.com.sg");
-            client.UseDefaultCredentials = false;
-            client.Credentials = new NetworkCredential("crm@centricnetworks.com.sg", "Password123");
+            SmtpClient client = new SmtpClient("outlook.centricsnetworks.com.sg")
+            {
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential("crm@centricnetworks.com.sg", "Password123")
+            };
 
 
             MailMessage mailMessage = new MailMessage();
@@ -460,8 +462,10 @@ namespace Centrics.Models
         private AlternateView SREmbedImage(ServiceReport SR,String filePath)
         {
 
-            LinkedResource res = new LinkedResource(filePath, MediaTypeNames.Image.Jpeg);
-            res.ContentId = Guid.NewGuid().ToString();
+            LinkedResource res = new LinkedResource(filePath, MediaTypeNames.Image.Jpeg)
+            {
+                ContentId = Guid.NewGuid().ToString()
+            };
 
             string html = "Dear " + SR.ClientCompanyName + ", <br /> <br />"
                 + "The purpose of this e-mail is to inform you about a recent usage of centrics networks services <br />"
