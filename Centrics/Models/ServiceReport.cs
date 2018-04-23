@@ -131,9 +131,6 @@ namespace Centrics.Models
 
         [Display(Name = "Address Searcher")]
         public string PostalCode { get; set; }
-
-        public string[] Address1Array { get; set; }
-        public string[] Address2Array { get; set; }
     }
 }
 

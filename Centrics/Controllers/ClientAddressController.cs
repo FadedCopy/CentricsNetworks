@@ -128,6 +128,7 @@ namespace Centrics.Controllers
         [HttpPost]
         public IActionResult AddNewCompany(ClientAddress clientAddress)
         {
+            
             if (!ModelState.IsValid)
             {
                 if (clientAddress.ClientCompany == "")

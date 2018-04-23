@@ -241,9 +241,13 @@ namespace Centrics.Controllers
 
         public IActionResult Exporter()
         {
-            //var memory = new MemoryStream();
-            //string sFileName = @"demo.xlsx";
-            //return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", sFileName);
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
+            //var memory = new memorystream();
+            //string sfilename = @"demo.xlsx";
+            //return file(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", sfilename);
             return View();
         }
 

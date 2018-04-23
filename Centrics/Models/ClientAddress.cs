@@ -17,10 +17,13 @@ namespace Centrics.Models
         [Required(ErrorMessage = "Please enter a Address")]
         public string Address { get; set; }
 
+        [Required(ErrorMessage = "Please enter a Contact person")]
         public string Contact { get; set; }
 
+        [Display(Name = "Contact Number"),Required(ErrorMessage ="Please enter a contact number")]
         public int ContactNo { get; set; }
 
+        [Required(ErrorMessage = "Please enter a Email Address")]
         public string EmailAddress { get; set; }
 
         public string Title { get; set; }

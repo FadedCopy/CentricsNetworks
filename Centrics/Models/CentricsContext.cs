@@ -43,7 +43,7 @@ namespace Centrics.Models
                 //clientemail?
                 //change the attendedondate to maybe signed date? for clarity cuz now 2 dates?
                 // or and manually add lol
-                string AddQuery = "insert into centrics.servicereport(clientcompanyname,clientaddress,clienttel,clientcontactperson,purposeofvisit,description,remarks,timestart,timeend,mshused,attendedbystaffname,attendedondate,jobstatus,daterecorded,reportstatus) values (@clientcompanyname,@clientaddress,@clienttel,@clientcontactperson,@purposeofvisit,@description,@remarks,@timestart,@timeend,@mshused,@attendedbystaffname,@attendondate,@jobstatus,@daterecorded,@reportstatus)";
+                string AddQuery = "insert into centrics.servicereport(clientcompanyname,clientaddress,clienttel,clientcontactperson,purposeofvisit,description,remarks,timestart,timeend,mshused,attendedbystaffname,attendedondate,jobstatus,daterecorded,reportstatus,reportfrom) values (@clientcompanyname,@clientaddress,@clienttel,@clientcontactperson,@purposeofvisit,@description,@remarks,@timestart,@timeend,@mshused,@attendedbystaffname,@attendondate,@jobstatus,@daterecorded,@reportstatus,@reportfrom)";
                 MySqlCommand c = new MySqlCommand(AddQuery, conn);
 
                 //combining values purposeofvisit array
@@ -122,7 +122,7 @@ namespace Centrics.Models
                 c.Parameters.AddWithValue("@jobstatus",jobcombined);
                 c.Parameters.AddWithValue("@daterecorded",DateTime.Now);
                 //wait for integration remember
-                //c.Parameters.AddWithValue("@reportfrom", model.ReportFrom);
+                c.Parameters.AddWithValue("@reportfrom", model.ReportFrom);
                 c.Parameters.AddWithValue("@reportstatus", "Pending");
 
                 c.ExecuteNonQuery();
@@ -1055,7 +1055,31 @@ namespace Centrics.Models
         //    }
         //}
         #endregion
+        
+        public void DeleteReport(int id)
+        {
+            MySqlConnection conn = GetConnection();
+            if(getServiceReport(id) != null || getServiceReport(id).ReportStatus != "Comfirmed" ) {
+                try
+                {
+                    conn.Open();
+                    string Query = "delete  from centrics.servicereport where id = @id";
 
+                    MySqlCommand c = new MySqlCommand(Query, conn);
+                    c.Parameters.AddWithValue("@id", id);
+
+                    c.ExecuteNonQuery();
+                }
+                catch (MySqlException e)
+                {
+                    Debug.WriteLine(e);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+        }
         public void ModifyContract(Contract model) {
 
             MySqlConnection conn = GetConnection();
@@ -1267,6 +1291,7 @@ namespace Centrics.Models
                             AttendedOnDate = DateTime.Parse(r["attendedondate"].ToString()),
                             JobStatus = r["jobstatus"].ToString().Split(','),
                             ReportStatus = r["reportstatus"].ToString(),
+                            ReportFrom = r["reportfrom"].ToString()
                             
                             //enter user
                         };
@@ -2092,13 +2117,17 @@ namespace Centrics.Models
             try
             {
                 conn.Open();
-                string query = "insert into centrics.clientaddress(companyname,addresslist) values(@clientcompany,@addresslist)";
+                string query = "insert into centrics.clientaddress(companyname,addresslist,contact,contactno,emailaddress) values(@clientcompany,@addresslist,@contact,@contactno,@emailaddress)";
 
                 MySqlCommand c = new MySqlCommand(query, conn);
                 
+                
                 c.Parameters.AddWithValue("@clientcompany",clientAddress.ClientCompany );
                 c.Parameters.AddWithValue("@addresslist", clientAddress.Address);
-
+                c.Parameters.AddWithValue("@contact", clientAddress.Contact);
+                c.Parameters.AddWithValue("@contactno", clientAddress.ContactNo);
+                c.Parameters.AddWithValue("@emailaddress", clientAddress.EmailAddress);
+                
                 c.ExecuteNonQuery();
 
             }
