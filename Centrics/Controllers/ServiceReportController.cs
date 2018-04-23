@@ -279,7 +279,17 @@ namespace Centrics.Controllers
                 return RedirectToAction("ViewReports");
             }
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
-            ServiceReport model = context.getServiceReport(id);
+            if (HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin" || context.getServiceReport(id).ReportFrom == context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))).FirstName + context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))).LastName)
+            {
+                ViewData["allowdelete"] = "weee";
+            }
+            if ((HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
+            {
+                ViewData["rights"] = "Admin";
+            }
+
+
+                ServiceReport model = context.getServiceReport(id);
             
             return View(model);
         }
@@ -468,7 +478,7 @@ namespace Centrics.Controllers
             }
 
             context.LogAction("Service Report", "Service Report (Serial Number: " + id + ") has been deleted.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
-            return RedirectToAction("Report", id);
+            return RedirectToAction("ViewReports");
         }
 
 

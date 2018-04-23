@@ -9,7 +9,6 @@
 
 }
 <style>
-    
 </style>
 <h2 style="text-align:center;">Service Report</h2>
 @if (TempData["error"] != null)
@@ -96,9 +95,16 @@
     }*@
 @if (Report.ReportStatus != "Confirmed")
 {
-    @Html.ActionLink("Confirm Report", "ReportConfirm", "ServiceReport", new { id = Report.SerialNumber }, new { @onclick = "return confirm('Once confirmed, Report cannot be edited/deleted. Are you sure?')" })
-    @Html.ActionLink("Delete Report", "DeleteReport", "ServiceReport", new { id = Report.SerialNumber }, new { @onclick = "return confirm('Confirm Delete?')"})
-    @Html.ActionLink("Edit Report", "EditReport", "ServiceReport", new { id = Report.SerialNumber }, null)
+    if (ViewData["rights"] != null)
+    {
+        @Html.ActionLink("Confirm Report", "ReportConfirm", "ServiceReport", new { id = Report.SerialNumber }, new { @onclick = "return confirm('Once confirmed, Report cannot be edited/deleted. Are you sure?')" })
+    }
+    if (ViewData["allowdelete"] != null)
+    {
+        @Html.ActionLink("Delete Report", "DeleteReport", "ServiceReport", new { id = Report.SerialNumber }, new { @onclick = "return confirm('Confirm Delete?')" })
+        @Html.ActionLink("Edit Report", "EditReport", "ServiceReport", new { id = Report.SerialNumber }, null)
+    }
+
     //test this down
     @Html.ActionLink("Add Billing", "AddBilling", "ServiceReport", new { id = Report.SerialNumber }, null)
 }
