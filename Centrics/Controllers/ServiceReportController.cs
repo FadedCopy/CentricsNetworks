@@ -80,6 +80,12 @@ namespace Centrics.Controllers
         [HttpPost]
         public IActionResult AddNewReport(ServiceReport model)
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
+           
+
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             ViewData["Companies"] = context.GetClientByContract();
 
@@ -164,6 +170,8 @@ namespace Centrics.Controllers
                     ModelState.AddModelError("", "your start time should be before your end time");
                     return View(model);
                 }
+                User user = context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID")));
+                model.ReportFrom = user.FirstName + user.LastName ;
                 context.AddServiceReport(model);
                 context.LogAction("Service Report", "Service Report (SRN: " + model.SerialNumber + ") created for " + model.ClientCompanyName + " at " + model.ClientAddress + ".", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
                 TempData.Remove("dataishere");
@@ -175,6 +183,10 @@ namespace Centrics.Controllers
         [HttpPost]
         public IActionResult ChangeAddressInput([FromBody]string name)
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
             Debug.WriteLine("debug is here");
             TempData["dataishere"] = name;
             return Json(new { Url = Url.Action("ChangeAddressInput", "ServiceReport") });
@@ -247,6 +259,11 @@ namespace Centrics.Controllers
         [HttpPost]
         public IActionResult ViewReports(int page)
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
+
             return RedirectToAction("Report",page);
         }
 
@@ -267,7 +284,7 @@ namespace Centrics.Controllers
             return View(model);
         }
 
-        
+
 
         [HttpGet]
         public IActionResult EditReport(int id)
@@ -277,6 +294,8 @@ namespace Centrics.Controllers
                 return View("Login");
             }
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
+
+            User user = context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID")));
 
             ServiceReport model = new ServiceReport();
             //ViewData["Companies"] = context.GetClientByContract();
@@ -304,6 +323,15 @@ namespace Centrics.Controllers
             #endregion
             //pull db
             model = context.getServiceReport(id);
+
+            if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin" || (user.FirstName + user.LastName) == context.getServiceReport(id).ReportFrom))
+            {
+                return RedirectToAction("Eroor", "Admin");
+            }
+
+            
+
+
             Debug.WriteLine("edit report" + model.TimeEnd  + model.TimeStart) ;
             return View(model);
         }
@@ -312,6 +340,11 @@ namespace Centrics.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult EditReport(ServiceReport report)
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
+
             List<SelectListItem> PurposeList = new List<SelectListItem>();
             PurposeList.Add(new SelectListItem { Value = "Project", Text = "Project" });
             PurposeList.Add(new SelectListItem { Value = "Installation", Text = "Installation" });
@@ -331,6 +364,11 @@ namespace Centrics.Controllers
             ViewData["JobStatusList"] = JobStatusList;
             //update database
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
+            User user = context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID")));
+            if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin" || (user.FirstName + user.LastName) == context.getServiceReport(report.SerialNumber).ReportFrom))
+            {
+                return RedirectToAction("Eroor", "Admin");
+            }
             if (!ModelState.IsValid)
             {
                 return View(report);
@@ -362,6 +400,7 @@ namespace Centrics.Controllers
                     return View(report);
                 }
             Debug.WriteLine("This is submitting" + report.TimeEnd);
+               
             context.ReportEdit(report);
             context.LogAction("Service Report", "Service Report (Serial Number: " + report.SerialNumber + ") has been edited.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
             return RedirectToAction("Report", new { id = report.SerialNumber });
@@ -373,7 +412,16 @@ namespace Centrics.Controllers
         
         public IActionResult ReportConfirm(int id)
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
+            User user = context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID")));
+            if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
+            {
+                return RedirectToAction("Eroor", "Admin");
+            }
             ServiceReport meh = context.getServiceReport(id);
             double totalmshremain = context.GetRemainingMSHByCompany(meh);
             if (totalmshremain < meh.MSHUsed)
@@ -405,9 +453,18 @@ namespace Centrics.Controllers
         [HttpPost]
         public IActionResult ReportDelete(int id)
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
             //checkowner
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             //enter user
+             User user = context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID")));
+            if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin" || (user.FirstName + user.LastName) == context.getServiceReport(id).ReportFrom))
+            {
+                return RedirectToAction("Eroor", "Admin");
+            }
 
             return RedirectToAction("Report", id);
         }
@@ -481,6 +538,10 @@ namespace Centrics.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddBilling(ServiceReport model)
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
             if (ModelState.IsValid)
             {
                 if (model.Labour < 0 || model.Others < 0 || model.Parts < 0 || model.Transport <0)

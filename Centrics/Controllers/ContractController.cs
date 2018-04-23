@@ -16,12 +16,24 @@ namespace Centrics.Controllers
     {
         public IActionResult Index()
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
             return View();
         }
 
         [HttpGet]
         public IActionResult AddContract()
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
+            if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
+            {
+                return RedirectToAction("Eroor", "Admin");
+            }
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             List<ClientAddress> clientAddresses = context.getAllClientAddress();
             List<SelectListItem> companynames = new List<SelectListItem>();
@@ -48,6 +60,14 @@ namespace Centrics.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddContract(Contract model)
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
+            if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
+            {
+                return RedirectToAction("Eroor", "Admin");
+            }
             List<SelectListItem> ContractTypeList = new List<SelectListItem>
             {
                 new SelectListItem { Value = "Bundled hours with product", Text = "Bundled hours with product" },
@@ -113,6 +133,11 @@ namespace Centrics.Controllers
         [HttpGet]
         public IActionResult ViewContract()
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login");
+            }
+            
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             List<Contract> contractlist = context.getContracts();
             List<Contract> ValidContract = new List<Contract>();

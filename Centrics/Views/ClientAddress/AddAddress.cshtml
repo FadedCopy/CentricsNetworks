@@ -18,7 +18,9 @@ else
             @Html.TextBoxFor(m => m.Address, new { @class = "form-control" })
         </div>
     </div>
-
+    @Html.HiddenFor(m => m.Contact)
+    @Html.HiddenFor(m => m.ContactNo)
+    @Html.HiddenFor(m => m.EmailAddress)
     @Html.HiddenFor(m => m.ClientCompany)
     <input type="submit" value="Add new address"/>
 }
