@@ -72,7 +72,7 @@ namespace Centrics.Controllers
             //RatingList.Add(new SelectListItem { Value = "Poor", Text = "Poor" });
             //ViewData["RatingList"] = RatingList;
             #endregion
-            model.SerialNumber = context.getReportCounts() + 1;
+            model.SerialNumber = context.getReportCounts();
             return View(model);
         }
 
@@ -461,7 +461,6 @@ namespace Centrics.Controllers
             return  RedirectToAction("ViewReports");
         }
 
-        [HttpPost]
         public IActionResult ReportDelete(int id)
         {
             if (HttpContext.Session.GetString("LoginID") == null)
@@ -476,7 +475,7 @@ namespace Centrics.Controllers
             {
                 return RedirectToAction("Error", "Admin");
             }
-
+            context.DeleteReport(id);
             context.LogAction("Service Report", "Service Report (Serial Number: " + id + ") has been deleted.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
             return RedirectToAction("ViewReports");
         }

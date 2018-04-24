@@ -1218,7 +1218,7 @@ namespace Centrics.Models
             try
             {
                 conn.Open();
-                string query = "select * from centrics.servicereport order by id";
+                string query = "SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'centrics' AND TABLE_NAME = 'servicereport'; ";
 
                 MySqlCommand c = new MySqlCommand(query, conn);
 
@@ -1226,10 +1226,7 @@ namespace Centrics.Models
                 {
                     while (r.Read())
                     {
-                        if (!(DBNull.Value.Equals(r["id"])))
-                        {
-                            count = int.Parse(r["id"].ToString());
-                        }
+                        count = int.Parse(r["AUTO_INCREMENT"].ToString());
                     }
                 }
             }
