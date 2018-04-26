@@ -72,7 +72,7 @@ namespace Centrics.Controllers
             //RatingList.Add(new SelectListItem { Value = "Poor", Text = "Poor" });
             //ViewData["RatingList"] = RatingList;
             #endregion
-            model.SerialNumber = context.getReportCounts() + 1;
+            model.SerialNumber = context.getReportCounts();
             return View(model);
         }
 
@@ -336,7 +336,7 @@ namespace Centrics.Controllers
 
             if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin" || (user.FirstName + user.LastName) == context.getServiceReport(id).ReportFrom))
             {
-                return RedirectToAction("Eroor", "Admin");
+                return RedirectToAction("Error", "Admin");
             }
 
             
@@ -442,6 +442,7 @@ namespace Centrics.Controllers
 
             }
 
+            context.LogAction("Service Report", "Service Report (Serial Number: " + id + ") has been confirmed.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
             context.ReportConfirm(id);
             //if (tf == false)
             //{
@@ -460,7 +461,6 @@ namespace Centrics.Controllers
             return  RedirectToAction("ViewReports");
         }
 
-        [HttpPost]
         public IActionResult ReportDelete(int id)
         {
             if (HttpContext.Session.GetString("LoginID") == null)
@@ -475,7 +475,8 @@ namespace Centrics.Controllers
             {
                 return RedirectToAction("Error", "Admin");
             }
-
+            context.DeleteReport(id);
+            context.LogAction("Service Report", "Service Report (Serial Number: " + id + ") has been deleted.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
             return RedirectToAction("ViewReports");
         }
 
@@ -489,7 +490,7 @@ namespace Centrics.Controllers
 
             string jobcombined = "";
             if (model.JobStatus.Length > 1)
-            {
+            {       
                 for (int i = 0; i < model.JobStatus.Length; i++)
                 {
                     if (model.JobStatus[i] != model.JobStatus.Last())

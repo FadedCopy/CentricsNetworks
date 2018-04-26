@@ -101,7 +101,7 @@
     }
     if (ViewData["allowdelete"] != null)
     {
-        @Html.ActionLink("Delete Report", "DeleteReport", "ServiceReport", new { id = Report.SerialNumber }, new { @onclick = "return confirm('Confirm Delete?')" })
+        @Html.ActionLink("Delete Report", "ReportDelete", "ServiceReport", new { id = Report.SerialNumber }, new { @onclick = "return confirm('Confirm Delete?')" })
         @Html.ActionLink("Edit Report", "EditReport", "ServiceReport", new { id = Report.SerialNumber }, null)
     }
 
