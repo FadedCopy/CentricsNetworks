@@ -1816,6 +1816,32 @@ namespace Centrics.Models
 
         public void Imported(ClientAddress cA)
         {
+            MySqlConnection conn = GetConnection();
+
+            if (GetClientAddressList(cA.ClientCompany).ClientCompany != "")
+            {
+                try
+                {
+                    conn.Open();
+                    string query = "Delete from centrics.clientaddress where companyname = @companyname";
+
+                    MySqlCommand c = new MySqlCommand(query, conn);
+                    c.Parameters.AddWithValue("@companyname", cA.ClientCompany);
+                    
+                    c.ExecuteNonQuery();
+                    Imported(cA);
+                }
+                catch (MySqlException e)
+                {
+                    Debug.WriteLine(e);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+
+            }
+
             Debug.WriteLine(cA.ClientCompany);
             if (GetClientAddressList(cA.ClientCompany).ClientCompany == "")
             {
@@ -1938,8 +1964,6 @@ namespace Centrics.Models
                         }
                 
                 Debug.WriteLine(cA.EmailAddress);
-                MySqlConnection conn = GetConnection();
-
                 try
                 {
                     conn.Open();

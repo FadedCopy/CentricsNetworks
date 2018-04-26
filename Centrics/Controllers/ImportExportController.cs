@@ -86,7 +86,7 @@ namespace Centrics.Controllers
                         IRow row = sheet.GetRow(i);
                         if (row == null) continue;
                         if (row.Cells.All(d => d.CellType == CellType.Blank)) continue;
-                        if (context.GetClientAddressList(row.GetCell(0).ToString()).ClientCompany != "") continue;
+                        //if (context.GetClientAddressList(row.GetCell(0).ToString()).ClientCompany != "") continue;
                         bool skip = false;
                         for (int k = 0; k<ListCA.Count; k++)
                         {
