@@ -2483,7 +2483,7 @@ namespace Centrics.Models
             }
         }
 
-        //Updates to Database the user changes
+        //Updates to Database the changes made to the user by the admin
         public void EditUser(EditUserViewModel user)
         {
             MySqlConnection conn = GetConnection();
@@ -2510,7 +2510,7 @@ namespace Centrics.Models
             }
         }
 
-        //Not working, check for errors
+        //Changes the password of a user by asking them to key in their old password as well as their new password
         public Boolean ChangePassword(string CurrentPassword, string NewPassword, User user)
         {
             MySqlConnection conn = GetConnection();
@@ -2585,7 +2585,38 @@ namespace Centrics.Models
 
                         //email.Send();
                         //return true;
+
+                        SmtpClient client = new SmtpClient("outlook.centricsnetworks.com.sg");
+                        client.UseDefaultCredentials = false;
+                        client.Credentials = new NetworkCredential("crm@centricnetworks.com.sg", "Password123");
+                        string ResetID = RandomString(20);
+                        int UserID = Convert.ToInt32(r["userID"]);
+                        SaveResetIDToDB(ResetID, UserID, DateTime.Now);
+                        string name = r["firstName"].ToString();
+                        string link = "http://localhost:57126/Users/ResetPassword?ResetID=" + ResetID + "&UserID=" + UserID;
+
+
+                        MailMessage mailMessage = new MailMessage
+                        {
+                            IsBodyHtml = true,
+                            Body = "Hi " + name + ", you've recently requested to reset your password. Click on this <a href = '" + link + "'>link</a> to reset your password. " +
+                            "<p>Ignore this email if you did not request to reset your password.</p>",
+                            From = new MailAddress("crm@centricsnetworks.com.sg")
+                        };
+                        mailMessage.To.Add("wenjie_lee@centricsnetworks.com.sg"); //Should be replaced with the user's email who wants to reset their password.
+
+                        //if (cA.EmailList != null)
+                        //{
+                        //    mailMessage.To.Add(cA.EmailList[0]);
+                        //}
+
+                        //mailMessage.To.Add(contract.Email);
+                        //mailMessage.Body = "nobody has no body there nobody is nobody cuz nobody can see him <br /> thanks, from centrics";
+                        mailMessage.Subject = "Reset Password";
+                        client.Send(mailMessage);
+                        return true;
                     }
+                    
                     else
                     {
                         return false;

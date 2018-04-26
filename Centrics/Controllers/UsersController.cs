@@ -135,6 +135,7 @@ namespace Centrics.Controllers
         public IActionResult EditUserDetails(int UserID)
         {
             User retrieveUserEdited = _context.GetUser(UserID);
+            
             User userRoles = new User();
             TempData["UserID"] = UserID;
             ViewData["Roles"] = userRoles.Roles;
@@ -148,6 +149,7 @@ namespace Centrics.Controllers
                 UserEmail = retrieveUserEdited.UserEmail,
                 UserRole = retrieveUserEdited.UserRole
             };
+            Debug.WriteLine("User " + editedUser.FirstName + editedUser.LastName);
             return PartialView("EditUserDetails", editedUser);
         }
 

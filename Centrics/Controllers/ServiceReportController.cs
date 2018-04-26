@@ -22,7 +22,7 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login");
+                return View("Login", "Users");
             }
 
             return View();
@@ -33,7 +33,7 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login");
+                return View("Login", "Users");
             }
 
             //this is for pulling out data from contract to service report
@@ -82,7 +82,7 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login");
+                return View("Login", "Users");
             }
            
 
@@ -185,7 +185,7 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login");
+                return View("Login", "Users");
             }
             Debug.WriteLine("debug is here");
             TempData["dataishere"] = name;
@@ -196,7 +196,7 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login");
+                return View("Login", "Users");
             }
 
             string name = "";
@@ -247,7 +247,7 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login");
+                return View("Login", "Users");
             }
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             ViewData["Pending"] = context.getPendingReports();
@@ -261,7 +261,7 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login");
+                return View("Login", "Users");
             }
 
             return RedirectToAction("Report",page);
@@ -272,7 +272,7 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login");
+                return View("Login", "Users");
             }
             if (id == 0)
             {
@@ -301,7 +301,7 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login");
+                return View("Login", "Users");
             }
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
 
@@ -352,7 +352,7 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login");
+                return View("Login", "Users");
             }
 
             List<SelectListItem> PurposeList = new List<SelectListItem>();
@@ -377,7 +377,7 @@ namespace Centrics.Controllers
             User user = context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID")));
             if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin" || (user.FirstName + user.LastName) == context.getServiceReport(report.SerialNumber).ReportFrom))
             {
-                return RedirectToAction("Eroor", "Admin");
+                return View("Login", "Users");
             }
             if (!ModelState.IsValid)
             {
@@ -424,13 +424,13 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login");
+                return View("Login", "Users");
             }
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             User user = context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID")));
             if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
             {
-                return RedirectToAction("Eroor", "Admin");
+                return RedirectToAction("Error", "Admin");
             }
             ServiceReport meh = context.getServiceReport(id);
             double totalmshremain = context.GetRemainingMSHByCompany(meh);
@@ -465,7 +465,7 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login");
+                return View("Login", "Users");
             }
             //checkowner
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
@@ -473,9 +473,13 @@ namespace Centrics.Controllers
              User user = context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID")));
             if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin" || (user.FirstName + user.LastName) == context.getServiceReport(id).ReportFrom))
             {
-                return RedirectToAction("Error", "Admin");
+                return View("Login", "Users");
             }
-            context.DeleteReport(id);
+            if(context.getServiceReport(id).ReportStatus != "Confirmed")
+            {
+                context.DeleteReport(id);
+            }
+            
             context.LogAction("Service Report", "Service Report (Serial Number: " + id + ") has been deleted.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
             return RedirectToAction("ViewReports");
         }
@@ -484,6 +488,11 @@ namespace Centrics.Controllers
         [MiddlewareFilter(typeof(JsReportPipeline))]
         public IActionResult PrintReport(int id)
         {
+
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login", "Users");
+            }
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             ServiceReport model = context.getServiceReport(id);
             string[] m = model.JobStatus;
@@ -536,7 +545,7 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login");
+                return View("Login", "Users");
             }
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             
@@ -551,7 +560,7 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login");
+                return View("Login", "Users");
             }
             if (ModelState.IsValid)
             {

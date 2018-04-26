@@ -191,7 +191,7 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login");
+                return View("Login", "Users");
             }
             return View();
         }
@@ -243,7 +243,7 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login");
+                return View("Login", "Users");
             }
             //var memory = new memorystream();
             //string sfilename = @"demo.xlsx";

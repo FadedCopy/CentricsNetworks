@@ -18,7 +18,7 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login");
+                return View("Login", "Users");
             }
             return View();
         }
@@ -28,11 +28,11 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login");
+                return View("Login", "Users");
             }
             if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
             {
-                return RedirectToAction("Eroor", "Admin");
+                return RedirectToAction("Error", "Admin");
             }
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             List<ClientAddress> clientAddresses = context.getAllClientAddress();
@@ -62,11 +62,11 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login");
+                return View("Login", "Users");
             }
             if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
             {
-                return RedirectToAction("Eroor", "Admin");
+                return RedirectToAction("Error", "Admin");
             }
             List<SelectListItem> ContractTypeList = new List<SelectListItem>
             {
@@ -106,36 +106,36 @@ namespace Centrics.Controllers
             return View(model);
         }
         
-        [HttpGet]
-        public IActionResult ModifyContract(int contractid)
-        {
-            if (contractid == 0)
-            {
-                return RedirectToAction("ViewContract");
-            }
+        //[HttpGet]
+        //public IActionResult ModifyContract(int contractid)
+        //{
+        //    if (contractid == 0)
+        //    {
+        //        return RedirectToAction("ViewContract");
+        //    }
 
-            CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
-            Contract model = context.getContract(contractid);
-            context.Emailsender(30, model);
+        //    CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
+        //    Contract model = context.getContract(contractid);
+        //    context.Emailsender(30, model);
 
-            return View(model);
-        }
+        //    return View(model);
+        //}
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult ModifyContract(Contract meh)
-        {
-            CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
-            context.ModifyContract(meh);
-            return RedirectToAction("ViewContract");
-        }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public IActionResult ModifyContract(Contract meh)
+        //{
+        //    CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
+        //    context.ModifyContract(meh);
+        //    return RedirectToAction("ViewContract");
+        //}
 
         [HttpGet]
         public IActionResult ViewContract()
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login");
+                return View("Login", "Users");
             }
             
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
