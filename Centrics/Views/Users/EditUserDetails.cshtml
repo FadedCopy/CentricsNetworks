@@ -38,18 +38,30 @@
             @ViewBag.Message
         </div>
 
-        @if (ViewData["Privilege"].ToString() != "Super Admin") {
         <div class="form-group">
             @Html.LabelFor(m => m.UserRole, new { @class = "col-md-2 control-label" })
             <div class="col-md-10">
-                @Html.DropDownListFor(m => m.UserRole, (List<SelectListItem>)ViewData["RolesNoSuperAdmin"])
+                @if (ViewData["Privilege"].ToString() != "Super Admin")
+                {
+                    @Html.DropDownListFor(m => m.UserRole, (List<SelectListItem>)ViewData["RolesNoSuperAdmin"])
+                } else
+                {
+                    @Html.TextBoxFor(m => m.UserRole, new {@readonly = true })
+
+                }
             </div>
         </div>
-        }
+        
 
         <input type="submit" value="Confirm" />
         <input type="reset" value="Reset" />
 
     </div>
 }
+    <script>
+        $("#modal-container").on('hidden.bs.modal', function (e) {
+            $(this).removeData();
+        });
+    </script>
+
 

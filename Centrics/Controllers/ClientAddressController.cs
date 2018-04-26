@@ -16,6 +16,11 @@ namespace Centrics.Controllers
     {
         public IActionResult Index()
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login", "Users");
+            }
+
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             ViewData["viewer"] = context.getAllClientAddress();
             List < ClientAddress > listca = context.getAllClientAddress();
@@ -26,6 +31,10 @@ namespace Centrics.Controllers
         [HttpPost]
         public IActionResult Index(searcher val)
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login", "Users");
+            }
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             ViewData["viewer"] = context.SearchClientAddress(val.searchvalue);
             
@@ -33,12 +42,20 @@ namespace Centrics.Controllers
         }
         public IActionResult SearchComapny()
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login", "Users");
+            }
             return View();
         }
 
         [HttpGet]
         public IActionResult Company(string name)
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login", "Users");
+            }
             if (name == "")
             {
                 return RedirectToAction("index");
@@ -70,6 +87,16 @@ namespace Centrics.Controllers
         [HttpGet]
         public ActionResult AddAddress()
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login", "Users");
+            }
+
+            if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
+            {
+                return RedirectToAction("Error", "Admin");
+            }
+
             string name = TempData.Peek("companyname").ToString();
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             ClientAddress cA = context.GetClientAddressList(name);
@@ -94,6 +121,14 @@ namespace Centrics.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddAddress(ClientAddress clientAddress)
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login", "Users");
+            }
+            if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
+            {
+                return RedirectToAction("Error", "Admin");
+            }
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             context.AddAdresstoClientAddressList(clientAddress);
             context.LogAction("Client", "New address (" + clientAddress.Address + ") has been added to " + clientAddress.ClientCompany + ".", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
@@ -103,6 +138,14 @@ namespace Centrics.Controllers
         
         public IActionResult DeleteAddress(string name,string address)
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login", "Users");
+            }
+            if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
+            {
+                return RedirectToAction("Error", "Admin");
+            }
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             if (!ModelState.IsValid)
             {
@@ -122,13 +165,28 @@ namespace Centrics.Controllers
         [HttpGet]
         public IActionResult AddNewCompany()
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login", "Users");
+            }
+            if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
+            {
+                return RedirectToAction("Error", "Admin");
+            }
             return View();
         }
 
         [HttpPost]
         public IActionResult AddNewCompany(ClientAddress clientAddress)
         {
-            
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return View("Login", "Users");
+            }
+            if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
+            {
+                return RedirectToAction("Error", "Admin");
+            }
             if (!ModelState.IsValid)
             {
                 if (clientAddress.ClientCompany == "")
