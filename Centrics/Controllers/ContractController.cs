@@ -18,7 +18,7 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login", "Users");
+                return RedirectToAction("Login", "Users");
             }
             return View();
         }
@@ -28,7 +28,7 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login", "Users");
+                return RedirectToAction("Login", "Users");
             }
             if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
             {
@@ -62,7 +62,7 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login", "Users");
+                return RedirectToAction("Login", "Users");
             }
             if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
             {
@@ -135,7 +135,7 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login", "Users");
+                return RedirectToAction("Login", "Users");
             }
             
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;

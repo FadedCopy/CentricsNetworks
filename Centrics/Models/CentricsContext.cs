@@ -1640,7 +1640,7 @@ namespace Centrics.Models
                         cA.ContactNoList = ContactNoList;
                         cA.ContactList = ContactList;
                         cA.Addresslist = addresslist;
-                        Debug.WriteLine(cA.EmailList[0].ToString());
+                        
                         ListCA.Add(cA);
                     }
                 }
@@ -1826,7 +1826,7 @@ namespace Centrics.Models
                     c.Parameters.AddWithValue("@companyname", cA.ClientCompany);
                     
                     c.ExecuteNonQuery();
-                    Imported(cA);
+                    
                 }
                 catch (MySqlException e)
                 {
@@ -1839,8 +1839,38 @@ namespace Centrics.Models
 
             }
 
-            Debug.WriteLine(cA.ClientCompany);
-            if (GetClientAddressList(cA.ClientCompany).ClientCompany == "")
+            //wtf? so what?
+            List<ClientAddress> cList = getAllClientAddress();
+            for(int i = 0;i < cList.Count; i++)
+            {
+            if (cList[i].CustomerID == cA.CustomerID)
+            {
+                try
+                {
+                    conn.Open();
+                    string query = "Delete from centrics.clientaddress where customerid = @customerid";
+
+                    MySqlCommand c = new MySqlCommand(query, conn);
+                    c.Parameters.AddWithValue("@customerid", cA.CustomerID);
+
+                    c.ExecuteNonQuery();
+                    
+                }
+                catch (MySqlException e)
+                {
+                    Debug.WriteLine(e);
+                }
+                finally
+                {
+                    conn.Close();
+                    
+                    }
+
+            }
+            }
+
+            ClientAddress getList = GetClientAddressList(cA.ClientCompany);
+            if (getList.ClientCompany == "" )
             {
 
                 List<string> Addresslist = new List<string>();
@@ -1877,6 +1907,7 @@ namespace Centrics.Models
                     }
                     else if (Addresslist.Count > 1)
                     {
+                    Debug.WriteLine("mehmeh" + Addresslist.Count);
                         for (int c = 0; c < Addresslist.Count(); c++)
                         {
                             

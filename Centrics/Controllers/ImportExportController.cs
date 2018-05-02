@@ -28,7 +28,7 @@ namespace Centrics.Controllers
             _hostingEnvironment = hostingEnvironment;
         }
 
-        public void OnPostImport(Importer import)
+        private void OnPostImport(Importer import)
         {
             IFormFile file = import.File;
             string folderName = "Upload";
@@ -88,21 +88,21 @@ namespace Centrics.Controllers
                         if (row.Cells.All(d => d.CellType == CellType.Blank)) continue;
                         //if (context.GetClientAddressList(row.GetCell(0).ToString()).ClientCompany != "") continue;
                         bool skip = false;
-                        for (int k = 0; k<ListCA.Count; k++)
-                        {
-                            if (row.GetCell(0).ToString() == ListCA[i].ClientCompany)
-                            {
-                                skip = true;
-                            } else if (row.GetCell(1).ToString() == ListCA[i].CustomerID)
-                            {
-                                skip = true;
-                            }
+                        //for (int k = 0; k<ListCA.Count; k++)
+                        //{
+                        //    if (row.GetCell(0).ToString() == ListCA[i].ClientCompany)
+                        //    {
+                        //        skip = true;
+                        //    } else if (row.GetCell(1).ToString() == ListCA[i].CustomerID)
+                        //    {
+                        //        skip = true;
+                        //    }
 
-                        }
-                        if (skip)
-                        {
-                            continue;
-                        }
+                        //}
+                        //if (skip)
+                        //{
+                        //    continue;
+                        //}
                         ClientAddress cA = new ClientAddress();
                         cA.EmailList = new List<string>();
                         cA.TitleList = new List<string>();
@@ -139,7 +139,7 @@ namespace Centrics.Controllers
                                 {
                                     string stringer = "";
                                     stringer = row.GetCell(j).ToString();
-                                    Debug.WriteLine("line 3 :" + row.GetCell(j).StringCellValue + row.GetCell(j).ToString() + stringer);
+                                    
                                     cA.Addresslist.Add(stringer);
                                 }
                                 else if (j == 3)
@@ -191,7 +191,11 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login", "Users");
+                return RedirectToAction("Login", "Users");
+            }
+            if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
+            {
+                return RedirectToAction("Error", "Admin");
             }
             return View();
         }
@@ -200,6 +204,14 @@ namespace Centrics.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Importer(Importer file)
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return RedirectToAction("Login", "Users");
+            }
+            if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
+            {
+                return RedirectToAction("Error", "Admin");
+            }
             if (!ModelState.IsValid)
             {
                
@@ -243,8 +255,13 @@ namespace Centrics.Controllers
         {
             if (HttpContext.Session.GetString("LoginID") == null)
             {
-                return View("Login", "Users");
+                return RedirectToAction("Login", "Users");
             }
+            if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
+            {
+                return RedirectToAction("Error", "Admin");
+            }
+            
             //var memory = new memorystream();
             //string sfilename = @"demo.xlsx";
             //return file(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", sfilename);
@@ -254,6 +271,15 @@ namespace Centrics.Controllers
 
         public async Task<IActionResult> OnPostExport()
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return RedirectToAction("Login", "Users");
+            }
+            if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
+            {
+                return RedirectToAction("Error", "Admin");
+            }
+
             Debug.WriteLine("called");
             string sWebRootFolder = _hostingEnvironment.WebRootPath;
             string sFileName = @"Centrics Networks.xlsx";
@@ -380,13 +406,44 @@ namespace Centrics.Controllers
             return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", sFileName);
             //auto sizing causes the return to be a blank class/cshtml page when click on excel.
         }
-        public async Task<FileResult> GiveMe()
+
+        public IActionResult CheckStuff()
         {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                Debug.WriteLine("f1");
+                return RedirectToAction("Login", "Users");
+            }
+            if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
+            {
+                Debug.WriteLine("f2");
+                return RedirectToAction("Error", "Admin");
+            }
+
+            Debug.WriteLine("f3");
+            return View();
+        }
+
+ 
+        public async Task<IActionResult> GiveMe()
+        {
+
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                Debug.WriteLine("f1");
+                return RedirectToAction("Login", "Users");
+            }
+            if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
+            {
+                Debug.WriteLine("f2");
+                return RedirectToAction("Error", "Admin");
+            }
+
             OnPostExport();
             Debug.WriteLine("give me");
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
 
-            context.LogAction("Import/Export Excel", "User exported an excel file from the application.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
+            //context.LogAction("Import/Export Excel", "User exported an excel file from the application.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
 
             string sFileName = @"Centrics Networks.xlsx";
             string sWebRootFolder = _hostingEnvironment.WebRootPath;
