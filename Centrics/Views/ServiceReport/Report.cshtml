@@ -98,11 +98,14 @@
     if (ViewData["rights"] != null)
     {
         @Html.ActionLink("Confirm Report", "ReportConfirm", "ServiceReport", new { id = Report.SerialNumber }, new { @onclick = "return confirm('Once confirmed, Report cannot be edited/deleted. Are you sure?')" })
+        <br />
     }
     if (ViewData["allowdelete"] != null)
     {
         @Html.ActionLink("Delete Report", "ReportDelete", "ServiceReport", new { id = Report.SerialNumber }, new { @onclick = "return confirm('Confirm Delete?')" })
+        <br />
         @Html.ActionLink("Edit Report", "EditReport", "ServiceReport", new { id = Report.SerialNumber }, null)
+        <br />
     }
 
     //test this down

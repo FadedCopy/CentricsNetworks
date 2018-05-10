@@ -403,6 +403,8 @@ namespace Centrics.Controllers
 
             //Debug.WriteLine("set posistion");
             //return GiveMe();
+            context.LogAction("Import/Export Excel", "User exported an excel file from the application.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
+
             return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", sFileName);
             //auto sizing causes the return to be a blank class/cshtml page when click on excel.
         }

@@ -412,7 +412,7 @@ namespace Centrics.Controllers
             Debug.WriteLine("This is submitting" + report.TimeEnd);
                
             context.ReportEdit(report);
-            context.LogAction("Service Report", "Service Report (Serial Number: " + report.SerialNumber + ") has been edited.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
+            context.LogAction("Service Report", "Service Report (SRN: " + report.SerialNumber + ") has been edited.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
             return RedirectToAction("Report", new { id = report.SerialNumber });
             }
             
@@ -442,7 +442,7 @@ namespace Centrics.Controllers
 
             }
 
-            context.LogAction("Service Report", "Service Report (Serial Number: " + id + ") has been confirmed.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
+            context.LogAction("Service Report", "Service Report (SRN: " + id + ") has been confirmed.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
             context.ReportConfirm(id);
             //if (tf == false)
             //{
@@ -480,7 +480,7 @@ namespace Centrics.Controllers
                 context.DeleteReport(id);
             }
             
-            context.LogAction("Service Report", "Service Report (Serial Number: " + id + ") has been deleted.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
+            context.LogAction("Service Report", "Service Report (SRN: " + id + ") has been deleted.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
             return RedirectToAction("ViewReports");
         }
 

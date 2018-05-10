@@ -64,6 +64,10 @@ namespace Centrics.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+            if (HttpContext.Session.GetString("LoginID") != null)
+            {
+                return RedirectToAction("Profile");
+            }
             return View();
         }
 
@@ -110,7 +114,7 @@ namespace Centrics.Controllers
                 ViewBag.UsersData = _context.GetUsers();
                 return View();
             }
-            else return RedirectToAction("Error");
+            else return RedirectToAction("Error", "Admin");
         }
 
         [HttpPost]
@@ -251,27 +255,35 @@ namespace Centrics.Controllers
         [HttpGet]
         public IActionResult Send2FA()
         {
-            string email = TempData["LoginEmail"].ToString();
-            //Two Factor Authentication Setup
-            TwoFactorAuthenticator TwoFacAuth = new TwoFactorAuthenticator();
-            User loggingIn = _context.GetUserByEmail(email);
-            string UserUniqueKey = (email + GoogleAuthKey);
-            TempData["UserUniqueKey"] = UserUniqueKey; //Session
-            var setupInfo = TwoFacAuth.GenerateSetupCode("Centrics Network", email, UserUniqueKey, 300, 300);
-            ViewBag.Message = "Enter your code displayed in Google Authenticator.";
-            if (loggingIn.Authenticated == false)
+            if (HttpContext.Session.GetString("LoginID") != null)
             {
-                ViewBag.BarcodeImageUrl = setupInfo.QrCodeSetupImageUrl;
-                ViewBag.SetupCode = setupInfo.ManualEntryKey;
-                TempData["LoginEmail"] = email;
+                return RedirectToAction("Profile");
             }
-            else if (loggingIn.Authenticated == true)
+            if (TempData["LoginEmail"] != null)
             {
-                ViewBag.BarcodeImageUrl = null;
-                ViewBag.SetupCode = null;
-                TempData["LoginEmail"] = email;
+                string email = TempData["LoginEmail"].ToString();
+                //Two Factor Authentication Setup
+                TwoFactorAuthenticator TwoFacAuth = new TwoFactorAuthenticator();
+                User loggingIn = _context.GetUserByEmail(email);
+                string UserUniqueKey = (email + GoogleAuthKey);
+                TempData["UserUniqueKey"] = UserUniqueKey; //Session
+                var setupInfo = TwoFacAuth.GenerateSetupCode("Centrics Network", email, UserUniqueKey, 300, 300);
+                ViewBag.Message = "Enter your code displayed in Google Authenticator.";
+                if (loggingIn.Authenticated == false)
+                {
+                    ViewBag.BarcodeImageUrl = setupInfo.QrCodeSetupImageUrl;
+                    ViewBag.SetupCode = setupInfo.ManualEntryKey;
+                    TempData["LoginEmail"] = email;
+                }
+                else if (loggingIn.Authenticated == true)
+                {
+                    ViewBag.BarcodeImageUrl = null;
+                    ViewBag.SetupCode = null;
+                    TempData["LoginEmail"] = email;
+                }
+                return View();
             }
-            return View();
+            return View("Error");
         }
 
         [HttpPost]
