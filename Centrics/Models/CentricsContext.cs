@@ -741,6 +741,9 @@ namespace Centrics.Models
         //probably working
         public double CalculateMSH(DateTime jobstart, DateTime jobend)
         {
+
+            Debug.WriteLine("jobstart" + jobstart);
+            Debug.WriteLine("jobend" + jobend);
             if(jobstart > jobend)
             {
                 return 0;
@@ -796,6 +799,7 @@ namespace Centrics.Models
             #endregion
             double workingcounter = 0.0;
             //same day 
+            string pathtraverse = "";
             if (jobstart.Date == jobend.Date)
             {
                 if (!(jobstart.DayOfWeek == DayOfWeek.Saturday || jobstart.DayOfWeek == DayOfWeek.Sunday))
@@ -805,38 +809,48 @@ namespace Centrics.Models
                         // start and end before 9
                         workingcounter += (jobend - jobstart).TotalHours * 1.5;
                         Debug.WriteLine((startdate9am - jobstart).TotalHours);
+                        pathtraverse = pathtraverse + "1";
                     }
                     else if (jobstart <= startdate9am && jobend <= startdate6pm)
                     {
                         // start before 9, end before 6
                         workingcounter += ((startdate9am - jobstart).TotalHours * 1.5) + ((jobend - startdate9am).TotalHours);
+                        pathtraverse = pathtraverse + "2";
                     }
                     else if (jobstart <= startdate9am && jobend >= startdate6pm)
                     {
                         //start before 9, end after 6
                         workingcounter += ((startdate9am - jobstart).TotalHours * 1.5) + ((startdate6pm - startdate9am).TotalHours) + ((jobend - startdate6pm).TotalHours * 1.5);
+                        pathtraverse = pathtraverse + "3";
                     }
                     else if (jobstart >= startdate9am && jobend <= startdate6pm)
                     {
                         //start after 9, end before 6
                         workingcounter += (jobend - jobstart).TotalHours;
+                        pathtraverse = pathtraverse + "4";
                     }
-                    else if (jobstart >= startdate9am && jobend >= startdate6pm)
-                    {
-                        //start after 9, end after 6
-                        workingcounter += ((startdate6pm - jobstart).TotalHours) + ((jobend - startdate6pm).TotalHours * 1.5);
-                    }
+                    
                     else if (jobstart >= startdate6pm && jobend >= startdate6pm)
                     {
                         //start and end after 6
+                        Debug.WriteLine("I came after 6");
                         workingcounter += (jobend - jobstart).TotalHours * 1.5;
+                        pathtraverse = pathtraverse + "5";
+                    }else if (jobstart >= startdate9am && jobend >= startdate6pm)
+                    {
+                        //start after 9, end after 6
+                        workingcounter += ((startdate6pm - jobstart).TotalHours) + ((jobend - startdate6pm).TotalHours * 1.5);
+                        pathtraverse = pathtraverse + "6";
                     }
                 }else if(jobstart.DayOfWeek == DayOfWeek.Saturday)
                 {
                     workingcounter += (jobend - jobstart).TotalHours * 1.5;
-                }else if(jobstart.DayOfWeek == DayOfWeek.Sunday)
+                    pathtraverse = pathtraverse + "7";
+                }
+                else if(jobstart.DayOfWeek == DayOfWeek.Sunday)
                 {
                     workingcounter += (jobend - jobstart).TotalHours * 2;
+                    pathtraverse = pathtraverse + "8";
                 }
             }else if (jobstart.Date != jobend.Date) //start and end on different dates
             {
@@ -854,26 +868,32 @@ namespace Centrics.Models
                         {
                             //DateTime nextday = datecounter.AddDays(1);
                             workingcounter += (nextday - jobstart).TotalHours * 1.5;
+                            pathtraverse = pathtraverse + "9";
                         }
                         else if (jobstart >= startdate9am && jobstart <= startdate6pm)
                         {
                            // DateTime nextday = datecounter.AddDays(1);
                             workingcounter += (startdate6pm - jobstart).TotalHours + ((nextday - startdate6pm).TotalHours * 1.5);
+                            pathtraverse = pathtraverse + "10";
                         }
                         else if (jobstart <= startdate9am)
                         {
                             //DateTime nextday = datecounter.AddDays(1);
                             workingcounter += ((startdate9am - jobstart).TotalHours * 1.5) + ((startdate6pm - startdate9am).TotalHours)
                                 + ((nextday - startdate6pm).TotalHours * 1.5);
+                            pathtraverse = pathtraverse + "11";
                         }
                     }else if(datecounter.DayOfWeek == DayOfWeek.Saturday)
                     {
                         //DateTime nextday = datecounter.AddDays(1);
                         workingcounter += (nextday - jobstart).TotalHours * 1.5;
-                    }else if(datecounter.DayOfWeek == DayOfWeek.Sunday)
+                        pathtraverse = pathtraverse + "12";
+                    }
+                    else if(datecounter.DayOfWeek == DayOfWeek.Sunday)
                     {
                        // DateTime nextday = datecounter.AddDays(1);
                         workingcounter += (nextday - jobstart).TotalHours * 2;
+                        pathtraverse = pathtraverse + "13";
                     }
                     startdate6pm = startdate6pm.AddDays(1);
                     startdate9am = startdate9am.AddDays(1);
@@ -889,27 +909,35 @@ namespace Centrics.Models
                     if (jobend <= startdate9am)
                     {
                         workingcounter += (jobend - datecounter).TotalHours * 1.5;
+                        pathtraverse = pathtraverse + "14";
                     }
                     else if (jobend >= startdate9am && jobend <= startdate6pm)
                     {
                         workingcounter += ((jobend - startdate9am).TotalHours) + ((startdate9am - datecounter).TotalHours * 1.5);
+                        pathtraverse = pathtraverse + "15";
                     }
                     else if (jobend >= startdate6pm)
                     {
                         workingcounter += (startdate6pm - startdate9am).TotalHours + ((jobend - startdate6pm).TotalHours * 1.5) +
                             ((startdate9am - datecounter).TotalHours * 1.5);
+                        pathtraverse = pathtraverse + "16";
                     }
                 }else if(jobend.DayOfWeek == DayOfWeek.Saturday)
                 {
                     workingcounter += (jobend - datecounter).TotalHours * 1.5;
-                }else if (jobend.DayOfWeek == DayOfWeek.Sunday)
+                    pathtraverse = pathtraverse + "18";
+                }
+                else if (jobend.DayOfWeek == DayOfWeek.Sunday)
                 {
                     workingcounter += (jobend - datecounter).TotalHours * 2;
+                    pathtraverse = pathtraverse + "19";
                 }
 
             }
+            Debug.WriteLine("UnRounded" + workingcounter);
             Debug.WriteLine("Rounded" + Math.Round(workingcounter));
-            return Math.Round(workingcounter);
+            Debug.WriteLine("traverse" + pathtraverse);
+            return workingcounter;
             //return Math.Round(workingcounter,0);
         }
          

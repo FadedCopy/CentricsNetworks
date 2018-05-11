@@ -58,7 +58,7 @@ namespace Centrics.Controllers
                 
             }
             ViewData["Roles"] = model.Roles;
-            return View("Error");
+            return View();
         }
 
         [HttpGet]
