@@ -38,7 +38,6 @@
                 <td>@SR.MSH</td>
                 <td>@SR.StartValid.ToShortDateString()</td>
                 <td>@SR.EndValid.ToShortDateString()</td>
-                <td>@Html.ActionLink("Edit Contract", "ModifyContract", "Contract", new { contractid = SR.idcontract }, null)</td>
             </tr>
         }
 
@@ -80,6 +79,7 @@
         <caption>Expired Contract</caption>
         <tr>
             <td>Contract ID</td>
+            <td>Company ID</td>
             <td>Company</td>
             <td>Email</td>
             <td>Remaining MSH</td>

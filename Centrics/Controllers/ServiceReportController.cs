@@ -278,6 +278,7 @@ namespace Centrics.Controllers
             {
                 return RedirectToAction("ViewReports");
             }
+           
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             if (HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin" || context.getServiceReport(id).ReportFrom == context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))).FirstName + context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))).LastName)
             {
@@ -289,8 +290,11 @@ namespace Centrics.Controllers
             }
 
 
-                ServiceReport model = context.getServiceReport(id);
-            
+            ServiceReport model = context.getServiceReport(id);
+            if (model.SerialNumber == 0)
+            {
+                return RedirectToAction("ViewReports");
+            }
             return View(model);
         }
 
@@ -308,6 +312,7 @@ namespace Centrics.Controllers
             User user = context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID")));
 
             ServiceReport model = new ServiceReport();
+            
             //ViewData["Companies"] = context.GetClientByContract();
 
             #region prepare for failure codes
@@ -333,7 +338,10 @@ namespace Centrics.Controllers
             #endregion
             //pull db
             model = context.getServiceReport(id);
-
+            if (model.SerialNumber == 0)
+            {
+                return RedirectToAction("Report");
+            }
             if (!(HttpContext.Session.GetString("AdminValidity") == "Admin" || HttpContext.Session.GetString("AdminValidity") == "Super Admin" || (user.FirstName + user.LastName) == context.getServiceReport(id).ReportFrom))
             {
                 return RedirectToAction("Error", "Admin");
@@ -387,6 +395,7 @@ namespace Centrics.Controllers
             if (ModelState.IsValid)
             {
                 double totalmshremain = context.GetRemainingMSHByCompany(report);
+                Debug.WriteLine("Debug from post editreport: Total MSH Remaining : " + totalmshremain);
                 double calculatedhours = context.CalculateMSH(report.TimeStart, report.TimeEnd);
                 //ModelState.AddModelError("", "The calculated MSH:" + calculatedhours);
                 //return View(model);
@@ -450,13 +459,13 @@ namespace Centrics.Controllers
             //    return View();
             //}
             
-            double remains = context.SubtractMSHUsingSR(context.getServiceReport(id));
+            ServiceReport remains = context.SubtractMSHUsingSR(context.getServiceReport(id));
 
-            if(remains > 0)
+            while (remains.MSHUsed != 0)
             {
-                context.SubtractRemains(remains, context.getServiceReport(id));
-                //wait step context copy code to create method
+                remains = context.SubtractMSHUsingSR(remains);
             }
+            
             Debug.WriteLine("hi id = " + id);
             return  RedirectToAction("ViewReports");
         }
@@ -495,6 +504,10 @@ namespace Centrics.Controllers
             }
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             ServiceReport model = context.getServiceReport(id);
+            if (model.SerialNumber == 0 )
+            {
+                return RedirectToAction("ViewReports");
+            }
             string[] m = model.JobStatus;
 
             string jobcombined = "";

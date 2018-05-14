@@ -47,12 +47,14 @@
     </tr>
     @foreach (var SR in ViewData["Confirmed"] as List<ServiceReport>)
     {
-        <tr>
-            <td>@SR.SerialNumber</td>
-            <td>@SR.ClientCompanyName</td>
-            <td>@SR.ClientAddress</td>
-            <td>@Html.Raw(SR.Description)</td>
-            <td>@SR.JobStat</td>
-        </tr>
+    <tr>
+        <td>@SR.SerialNumber</td>
+        <td>@SR.ClientCompanyName</td>
+        <td>@SR.ClientAddress</td>
+        <td>@Html.Raw(SR.Description)</td>
+        <td>@SR.JobStat</td>
+        <td>@Html.ActionLink("View Report", "Report", "ServiceReport", new { id = SR.SerialNumber }, null)</td>
+
+    </tr>
     }
 </table>

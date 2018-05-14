@@ -98,7 +98,7 @@ namespace Centrics.Controllers
                     ModelState.AddModelError("", "The Contract you are trying to add has an End Date that expired already");
                     return View(model);
                 }
-
+                
                 context.LogAction("Contract", "New " + model.ContractType + " contract has been created for " + model.ClientCompany + " lasting from " + model.StartValid + " to " + model.EndValid + ".", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
                 context.AddContract(model);
                 return RedirectToAction("ViewContract");
@@ -153,6 +153,7 @@ namespace Centrics.Controllers
                     if (contractlist[i].MSH != 0)
                     {
                         ValidContract.Add(contractlist[i]);
+                        
                     }
                     else
                     {
