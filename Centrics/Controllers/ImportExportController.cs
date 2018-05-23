@@ -87,7 +87,7 @@ namespace Centrics.Controllers
                         if (row == null) continue;
                         if (row.Cells.All(d => d.CellType == CellType.Blank)) continue;
                         //if (context.GetClientAddressList(row.GetCell(0).ToString()).ClientCompany != "") continue;
-                        bool skip = false;
+                        bool skip = false; // for ignoring
                         //for (int k = 0; k<ListCA.Count; k++)
                         //{
                         //    if (row.GetCell(0).ToString() == ListCA[i].ClientCompany)
@@ -117,14 +117,13 @@ namespace Centrics.Controllers
                             
                             if (row.GetCell(j) !=null)
                             {
-                                
+                                //trying to get the value of an empty cell as empty cell is neither 0 nor null nor "".
                                 row.CreateCell(200);
                                 if(row.GetCell(j).ToString() == row.GetCell(200).ToString())
                                 {
                                     //assuming nothing is at 200 if not get fked?
                                     continue;
                                 }
-                                Debug.WriteLine(j + row.GetCell(j).ToString());
                                 if (j == 0)
                                 {
 
@@ -244,8 +243,7 @@ namespace Centrics.Controllers
                 await file.File.CopyToAsync(stream);
             }
 
-            Debug.WriteLine("boo" + file.File.FileName);
-            Debug.WriteLine("wer" + file.File.Name);
+            
             OnPostImport(file);
             context.LogAction("Import/Export Excel", "User imported an excel file to the application.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
             return RedirectToAction("Index","ClientAddress" );
@@ -262,9 +260,7 @@ namespace Centrics.Controllers
                 return RedirectToAction("Error", "Admin");
             }
             
-            //var memory = new memorystream();
-            //string sfilename = @"demo.xlsx";
-            //return file(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", sfilename);
+            
             return View();
         }
 
@@ -370,7 +366,8 @@ namespace Centrics.Controllers
                     counter++;
                     
                 }
-
+                
+                //original test data to create the excel 
                 //row.CreateCell(0).SetCellValue("ID");
                 //row.CreateCell(1).SetCellValue("Name");
                 //row.CreateCell(2).SetCellValue("Age");
@@ -401,8 +398,7 @@ namespace Centrics.Controllers
             }
             memory.Position = 0;
 
-            //Debug.WriteLine("set posistion");
-            //return GiveMe();
+            
             context.LogAction("Import/Export Excel", "User exported an excel file from the application.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
 
             return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", sFileName);

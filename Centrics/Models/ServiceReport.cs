@@ -20,25 +20,19 @@ namespace Centrics.Models
 
         [Display(Name = "Address"), StringLength(100, ErrorMessage = "Maximum character space for address is 100 only"), Required(ErrorMessage = "Enter the address of the company")]
         public string ClientAddress { get; set; }
-
-        //[Display(Name = "Address 2"),StringLength(100,ErrorMessage = "Maximum character space for address is 100 only")]
-        //public string ClientAddress2 { get; set; }
-
-        //not required? (condition for Req: proper report)
-        [Display(Name = "Tel / HP")] //Regular Expression? Max Length 8?
+        
+        [Display(Name = "Tel / HP")] 
         public int ClientTel { get; set; }
 
-        //not required? (condition for Req: proper report)
         [Display(Name = "Contact Person")]
         public string ClientContactPerson { get; set; }
         #endregion
 
         #region service-related
-        //Service Details
-        //
+        
         [Display(Name = "Purpose of Visit")]
         [Required]
-        public string[] PurposeOfVisit { get; set; } //select or option?
+        public string[] PurposeOfVisit { get; set; }
 
         [Display(Name = "Description"), Required, StringLength(3000, ErrorMessage = "Maximum word limit (3000) exceeded ")]
         public string Description { get; set; }
@@ -47,12 +41,9 @@ namespace Centrics.Models
         public string Remarks { get; set; }
 
         //Service Time info
-
-        //[Display(Name = "Date"), Required, DataType(DataType.Date)]
-        //public DateTime Date { get; set; }
-
         [Display(Name = "Time Start"), DataType(DataType.DateTime),Required, DisplayFormat(DataFormatString = "{0:dd-MMM-yyyy hh:mm}", ApplyFormatInEditMode = true)]
         public DateTime TimeStart { get; set; }
+        
         //DisplayFormat(DataFormatString = "{0:hh\\:mm}", ApplyFormatInEditMode = true),
         [Display(Name = "Time End") ,DataType(DataType.DateTime),Required]
         [DisplayFormat(DataFormatString = "{0:dd-MMM-yyyy hh:mm}",ApplyFormatInEditMode = true)]
@@ -69,22 +60,6 @@ namespace Centrics.Models
         [DisplayFormat(DataFormatString ="{0:d}",ApplyFormatInEditMode = true)] 
         public DateTime AttendedOnDate { get; set; }
 
-        #region Acknowledgement Questionable here commented out
-        //TBC
-        //AttendedBy and when
-
-
-        ////TBC
-        ////Client Acknowledgement
-        //[Display(Name = "Name")]
-        //public string ClientName { get; set; }
-
-        //[Display(Name = "Date")]
-        //public DateTime ClientSignedDate { get; set; }
-
-
-        #endregion
-
         #region Billing Seperated?
         [Display(Name = "Labour")]
         public double Labour { get; set; }
@@ -98,21 +73,17 @@ namespace Centrics.Models
         [Display(Name = "Others")]
         public double Others { get; set; }
 
-        //TBC
         //Invoice Details
         [Display(Name = "Invoice No")]
         public int InvoiceNo { get; set; }
-
-
+        
         [Display(Name = "Invoice Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime InvoiceDate { get; set; }
 
 
-        //servicerating
-        //[Display(Name = "please rate our service")]
-        //public bool Servicerating { get; set; }
+       
         #endregion
 
         //JobStatus

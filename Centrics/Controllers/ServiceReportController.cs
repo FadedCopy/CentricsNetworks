@@ -36,15 +36,11 @@ namespace Centrics.Controllers
                 return RedirectToAction("Login", "Users");
             }
 
-            //this is for pulling out data from contract to service report
+            
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             ServiceReport model = new ServiceReport();
             ViewData["Companies"] = context.GetClientByContract();
-            //TempData["address"] = "false";
-            //context.Selfcaller();
             
-
-
             List<SelectListItem> PurposeList = new List<SelectListItem>();
             PurposeList.Add(new SelectListItem { Value = "Project", Text = "Project" });
             PurposeList.Add(new SelectListItem { Value = "Installation", Text = "Installation" });
@@ -62,16 +58,7 @@ namespace Centrics.Controllers
             JobStatusList.Add(new SelectListItem { Value = "Recommendation Requied", Text = "Recommendation Required" });
             JobStatusList.Add(new SelectListItem { Value = "Escalated to Ext. Support", Text = "Escalated to Ext. Support" });
             ViewData["JobStatusList"] = JobStatusList;
-
-            #region Client Ratings? Questionable needed on this form 
-            //Client side?
-            //List<SelectListItem> RatingList = new List<SelectListItem>();
-            //RatingList.Add(new SelectListItem { Value = "Excellent", Text = "Excellent" });
-            //RatingList.Add(new SelectListItem { Value = "Good", Text = "Good" });
-            //RatingList.Add(new SelectListItem { Value = "Average", Text = "Average" });
-            //RatingList.Add(new SelectListItem { Value = "Poor", Text = "Poor" });
-            //ViewData["RatingList"] = RatingList;
-            #endregion
+            
             model.SerialNumber = context.getReportCounts();
             return View(model);
         }
@@ -145,6 +132,7 @@ namespace Centrics.Controllers
             {
                 double totalmshremain = context.GetRemainingMSHByCompany(model);
                 double calculatedhours = context.CalculateMSH(model.TimeStart, model.TimeEnd);
+                //for test purpose
                 //ModelState.AddModelError("", "The calculated MSH:" + calculatedhours);
                 //return View(model);
                 if (totalmshremain < calculatedhours)
@@ -164,7 +152,7 @@ namespace Centrics.Controllers
                     ModelState.AddModelError("", "Please enter a report after the service is rendered");
                     return View(model);
                 }
-                //questionable
+                
                 if (!(model.TimeStart.CompareTo(model.TimeEnd) <= 0))
                 {
                     ModelState.AddModelError("", "your start time should be before your end time");
@@ -187,7 +175,6 @@ namespace Centrics.Controllers
             {
                 return RedirectToAction("Login", "Users");
             }
-            Debug.WriteLine("debug is here");
             TempData["dataishere"] = name;
             return Json(new { Url = Url.Action("ChangeAddressInput", "ServiceReport") });
         }
@@ -213,7 +200,6 @@ namespace Centrics.Controllers
             ClientAddress cA = context.GetClientAddressList(name);
             List<string> aList = new List<string>();
             aList = cA.Addresslist;
-            Debug.WriteLine(name + "SPARTA");
 
             if (aList == null || aList.Count() == 0)
             {
@@ -346,11 +332,7 @@ namespace Centrics.Controllers
             {
                 return RedirectToAction("Error", "Admin");
             }
-
             
-
-
-            Debug.WriteLine("edit report" + model.TimeEnd  + model.TimeStart) ;
             return View(model);
         }
 
@@ -412,13 +394,12 @@ namespace Centrics.Controllers
                     ModelState.AddModelError("", "Please enter a report after the service is rendered");
                     return View(report);
                 }
-                //questionable
+
                 if (!(report.TimeStart.CompareTo(report.TimeEnd) <= 0))
                 {
                     ModelState.AddModelError("", "your start time should be before your end time");
                     return View(report);
                 }
-            Debug.WriteLine("This is submitting" + report.TimeEnd);
                
             context.ReportEdit(report);
             context.LogAction("Service Report", "Service Report (SRN: " + report.SerialNumber + ") has been edited.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
@@ -453,11 +434,7 @@ namespace Centrics.Controllers
 
             context.LogAction("Service Report", "Service Report (SRN: " + id + ") has been confirmed.", context.GetUser(Convert.ToInt32(HttpContext.Session.GetString("LoginID"))));
             context.ReportConfirm(id);
-            //if (tf == false)
-            //{
-            //    ViewBag.Error = "Error with Confirming Report. Please try again.";
-            //    return View();
-            //}
+            
             
             ServiceReport remains = context.SubtractMSHUsingSR(context.getServiceReport(id));
 
@@ -538,7 +515,7 @@ namespace Centrics.Controllers
             return View(model);
         }
 
-        
+        //google api geocoding + reverse geocoding for service report when company don't have address
         [HttpPost]
         public async System.Threading.Tasks.Task<string> ReturnPostalAsync (string postal, GoogleAddressType type){
             Debug.WriteLine("postal" + postal);

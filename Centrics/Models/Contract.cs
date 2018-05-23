@@ -11,7 +11,6 @@ namespace Centrics.Models
         
         public int idcontract { get; set; }
 
-        //Display(Name = "Company ID"),Required(ErrorMessage ="Please enter the Company ID")]
         public int CentricID { get; set; }
 
         [Display(Name = "Company Name"),Required(ErrorMessage = "Please enter a Company Name"),MaxLength(30)]

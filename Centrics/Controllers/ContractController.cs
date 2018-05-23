@@ -184,7 +184,7 @@ namespace Centrics.Controllers
             if (FutureContract.Count != 0)
             {
                 ViewData["Future"] = FutureContract;
-                Debug.WriteLine("This is the future:" + ViewData["Future"]);
+                
             }
             return View();
         }
@@ -201,48 +201,5 @@ namespace Centrics.Controllers
             }
             return false;
         }
-
-        //public void CheckContractExpiryWarning()
-        //{
-        //    DateTime today = DateTime.Today;
-        //    Debug.WriteLine(today);
-
-        //    CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
-            
-
-        //    List<Contract> contracts = context.getContracts();
-
-        //    for (int i = 0; i < contracts.Count; i++) {
-        //        DateTime end = contracts[i].EndValid;
-        //        if ((end - today).Days == 30)
-        //        {
-        //            //send email
-        //        }
-        //        else if ((end - today).Days == 7)
-        //        {
-        //            //send email dashboard?
-
-        //        }
-        //        else if ((end - today).Days == 0)
-        //        {
-        //            //send email
-        //        }
-        //    }
-        //}
-        //works but weirdly works? feel like u can send from any account to any account without validation which is wtf?
-        //public void ContractExpiryWarningEmail()
-        //{
-        //    // Using Razor templating package
-        //    Email.DefaultRenderer = new RazorRenderer();
-
-        //    var template = "Dear @Model.Name, You are totally @Model.Compliment.";
-
-        //    var email = Email
-        //        .From("fadedcostt@gmail.com")
-        //        .To("ai.permacostt@gmail.com")
-        //        .Subject("burden")
-        //        .UsingTemplate(template, new { Name = "Luke", Compliment = "Awesome" });
-        //    email.Send();
-        //}
     }
 }

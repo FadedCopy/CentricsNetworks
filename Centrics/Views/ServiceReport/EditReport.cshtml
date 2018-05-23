@@ -35,7 +35,6 @@
     @Html.AntiForgeryToken()
     @Html.ValidationSummary("", new { @class = "text-danger" })
 
-    @*Questionably needed to display this here maybe? for reference*@
     <div class="form-group">
         @Html.LabelFor(m => m.SerialNumber, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
@@ -48,7 +47,6 @@
     <div class="form-group">
         @Html.LabelFor(m => m.ClientCompanyName, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @*@Html.DropDownListFor(m => m.ClientCompanyName, (List<SelectListItem>)ViewData["Companies"], "Select Company", new { @class = "form-control" })*@
             @Html.TextBoxFor(m => m.ClientCompanyName, new { @class = "form-control", @readonly = "readonly" })
         </div>
     </div>
@@ -89,13 +87,7 @@
         </div>
     </div>
 
-    @*<div class="form-group">
-            @Html.LabelFor(m => m.Date, new { @class = "col-md-2 control-label" })
-            <div class="col-md-10">
-                @Html.EditorFor(m => m.Date, new { @class = "form-control" })
-            </div>
-        </div>*@
-    //wtf why cant get date
+    
     <div class="form-group">
         @Html.LabelFor(m => m.TimeStart, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
@@ -123,14 +115,6 @@
             <br />
         </div>
     </div>
-
-    @*<div class="form-group">
-            @Html.LabelFor(m => m.MSHUsed, new { @class = "col-md-2 control-label" })
-            <div class="col-md-10">
-                @Html.TextBoxFor(m => m.MSHUsed, new { @class = "form-control" })
-                <br />
-            </div>
-        </div>*@
 
     <p> Acknowledgement?</p>
     <div class="form-group">

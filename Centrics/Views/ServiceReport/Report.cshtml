@@ -88,11 +88,7 @@
 {
     @Html.ActionLink("Print Report(PDF)", "PrintReport", "ServiceReport", new { id = Report.SerialNumber }, null)
 }
-@*@using (Html.BeginForm("ReportConfirm","ServiceReport", FormMethod.Post))
-    {
-        @Html.HiddenFor(m=> m.SerialNumber)
-        <input type="submit" value="Confirm report" class="btn btn-success" />
-    }*@
+
 @if (Report.ReportStatus != "Confirmed")
 {
     if (ViewData["rights"] != null)

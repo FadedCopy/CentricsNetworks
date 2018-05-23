@@ -41,9 +41,7 @@ namespace Centrics.Models
             try
             {
                 conn.Open();
-                //clientemail?
-                //change the attendedondate to maybe signed date? for clarity cuz now 2 dates?
-                // or and manually add lol
+                
                 string AddQuery = "insert into centrics.servicereport(clientcompanyname,clientaddress,clienttel,clientcontactperson,purposeofvisit,description,remarks,timestart,timeend,mshused,attendedbystaffname,attendedondate,jobstatus,daterecorded,reportstatus,reportfrom) values (@clientcompanyname,@clientaddress,@clienttel,@clientcontactperson,@purposeofvisit,@description,@remarks,@timestart,@timeend,@mshused,@attendedbystaffname,@attendondate,@jobstatus,@daterecorded,@reportstatus,@reportfrom)";
                 MySqlCommand c = new MySqlCommand(AddQuery, conn);
 
@@ -114,7 +112,6 @@ namespace Centrics.Models
                 c.Parameters.AddWithValue("@purposeofvisit", combinedpurpose);
                 c.Parameters.AddWithValue("@description", model.Description);
                 c.Parameters.AddWithValue("@remarks", model.Remarks);
-                //c.Parameters.AddWithValue("@date", model.Date);
                 c.Parameters.AddWithValue("@timestart", model.TimeStart);
                 c.Parameters.AddWithValue("@timeend", model.TimeEnd);
                 c.Parameters.AddWithValue("@mshused", CalculateMSH(model.TimeStart,model.TimeEnd));
@@ -122,7 +119,7 @@ namespace Centrics.Models
                 c.Parameters.AddWithValue("@attendondate", DateTime.Parse(model.TimeStart.ToShortDateString()));
                 c.Parameters.AddWithValue("@jobstatus",jobcombined);
                 c.Parameters.AddWithValue("@daterecorded",DateTime.Now);
-                //wait for integration remember
+                
                 c.Parameters.AddWithValue("@reportfrom", model.ReportFrom);
                 c.Parameters.AddWithValue("@reportstatus", "Pending");
 
@@ -137,7 +134,7 @@ namespace Centrics.Models
                 conn.Close();
             }
         }
-        //boolean this maybe? question this
+        
         public void AddClient(Client model)
         {
             MySqlConnection conn = GetConnection();
@@ -165,6 +162,7 @@ namespace Centrics.Models
             }
         }
 
+        //get totalmsh of company
         public double GetRemainingMSHByCompany(ServiceReport model)
         {
             double totalmsh = 0.0;
@@ -183,7 +181,7 @@ namespace Centrics.Models
                     while (r.Read())
                     {
                         totalmsh += Convert.ToDouble(r["msh"].ToString());
-                        //totalmsh += int.Parse(r["msh"].ToString());
+                        
                     }
                 }
             }
@@ -198,6 +196,7 @@ namespace Centrics.Models
             return totalmsh;
         }
 
+
         public List<SelectListItem> GetClientByContract()
         {
             List<SelectListItem> listOfClient = new List<SelectListItem>();
@@ -208,10 +207,10 @@ namespace Centrics.Models
                 string Query = "select distinct companyname from centrics.contract where endvalid >= @today and startvalid <= @tod ";
                 MySqlCommand c = new MySqlCommand(Query, conn);
                 string todau = DateTime.Today.ToString("yyyy/MM/dd");
-                Debug.WriteLine(todau + " que?");
-                Debug.WriteLine("'" + todau + "'");
+
                 c.Parameters.AddWithValue("@today",todau);
                 c.Parameters.AddWithValue("@tod",todau);
+
                 using (MySqlDataReader r = c.ExecuteReader() )
                 {
                     while (r.Read())
@@ -311,6 +310,7 @@ namespace Centrics.Models
             return ExpiringContracts;
         }
 
+        //check for expiring contracts
         public void Emailcaller()
         {
             List<Contract> contracts = getContracts();
@@ -335,11 +335,10 @@ namespace Centrics.Models
                 counter--;
             }
         }
-        //bind on start?
+        
         public void Selfcaller()
         {
             // RecurringJob.AddOrUpdate(() => Emailcaller(), Cron.Daily());
-            Debug.WriteLine("SelfCalling lol");
             using (var connection = JobStorage.Current.GetConnection())
             {
                 foreach (var recurringjob in connection.GetRecurringJobs())
@@ -350,7 +349,7 @@ namespace Centrics.Models
             
             //RecurringJob.AddOrUpdate(() => Emailcaller(), Cron.MinuteInterval(2));
         }
-
+        // both of this are to test scheduler
         public void callmemaybe()
         {
             //Emailsender(7, getContract(1));
@@ -386,12 +385,12 @@ namespace Centrics.Models
             
             mailMessage.From = new MailAddress("crm@centricsnetworks.com.sg");
             //mailMessage.To.Add("James_Ng@centricsnetworks.com.sg");
-            //mailMessage.To.Add(contract.Email);
+            //mailMessage.To.Add(contract.Email); //this should not work, the one below might?
 
             //mailMessage.To.Add("wenjie_lee@centricsnetworks.com.sg");
-            mailMessage.To.Add("crm@centricsnetworks. .sg");
+            mailMessage.To.Add("crm@centricsnetworks.com.sg");
             
-            //release ME
+            
             ClientAddress cA = GetClientAddressList(contract.ClientCompany);
             
             //if (cA.EmailList != null)
@@ -438,6 +437,7 @@ namespace Centrics.Models
             return alternateView;
         }
 
+        //Haven't bind to Service report
         public void SREmail(ServiceReport SR)
         {
             SmtpClient client = new SmtpClient("outlook.centricsnetworks.com.sg")
@@ -452,8 +452,8 @@ namespace Centrics.Models
             mailMessage.IsBodyHtml = true;
 
             mailMessage.From = new MailAddress("crm@centricsnetworks.com.sg");
-            mailMessage.To.Add("wenjie_lee@centricsnetworks.com.sg");
-            //release ME
+            //mailMessage.To.Add("James_ng@centricsnetworks.com.sg");
+            
             ClientAddress cA = GetClientAddressList(SR.ClientCompanyName);
             //if (cA.EmailList != null)
             //{
@@ -543,8 +543,6 @@ namespace Centrics.Models
                     c.Parameters.AddWithValue("@msh",cont.MSH - cont.MSH);
                     remains = model.MSHUsed - cont.MSH;
                     model.MSHUsed = remains;
-                    //model.MSHUsed = remains;
-                    //SubtractMSHUsingSR(model);
                 }
                 else
                 {
@@ -555,7 +553,7 @@ namespace Centrics.Models
 
                 
                 c.Parameters.AddWithValue("@idcontract", cont.idcontract);
-                Debug.WriteLine("In CentricContext>SubtractMSHUsingSR: subtracted away from contracts and hours left" + cont.idcontract + remains);
+
                 c.ExecuteNonQuery();
                 return model;
             }
@@ -570,7 +568,7 @@ namespace Centrics.Models
             return model;
 
         }
-
+        
         public void AddBilling(ServiceReport model) {
             MySqlConnection conn = GetConnection();
             try
@@ -588,7 +586,6 @@ namespace Centrics.Models
                 c.Parameters.AddWithValue("@invoicedate", model.InvoiceDate);
                 c.Parameters.AddWithValue("@id", model.SerialNumber);
 
-                Debug.WriteLine("before me is king");
                 c.ExecuteNonQuery();
             }
             catch (MySqlException e)
@@ -601,6 +598,7 @@ namespace Centrics.Models
             }
         }
 
+        //trying to get the earliest expiring contract
         public Contract GetLatestContractBySRModel(ServiceReport model)
         {
             MySqlConnection conn = GetConnection();
@@ -678,45 +676,10 @@ namespace Centrics.Models
                 {
                     returner = listcont[0];
                 }
-                //if empty do the check at service report pulling data for the companies
             }
-            Debug.WriteLine(returner.EndValid);
             return returner;
         }
-        //public ArrayList<string> GetAddress1ByCompany(string name)
-        //{
-        //    MySqlConnection conn = GetConnection();
-        //    ArrayList<string> address1array = new ArrayList<string>();  
-        //    try
-        //    {
-        //        conn.Open();
-        //        string Query = "select * from centrics.servicereport where clientcompanyname = @clientcompanyname ";
-
-        //        MySqlCommand c = new MySqlCommand(Query, conn);
-                
-
-        //        using (MySqlDataReader r = c.ExecuteReader())
-        //        {
-        //            while (r.Read())
-        //            {
-        //                if (!(DBNull.Value.Equals(r["address1"]))){
-        //                    address1array.Add(r["address1"].ToString());
-        //                }
-        //                   //ContractType = r["contracttype"].ToString()
-        //                };
-        //            }
-        //        }
-        //    }
-        //    catch (MySqlException e)
-        //    {
-        //        Debug.WriteLine(e);
-        //    }
-        //    finally
-        //    {
-        //        conn.Close();
-        //    }
-            
-        //}
+        
         public Contract getContract(int idcontract)
         {
             MySqlConnection conn = GetConnection();
@@ -758,7 +721,7 @@ namespace Centrics.Models
             return dummy;
         }
 
-        //probably working
+        //probably working time counter
         public double CalculateMSH(DateTime jobstart, DateTime jobend)
         {
 
@@ -770,7 +733,7 @@ namespace Centrics.Models
             }
             DateTime startdate9am = jobstart.Date.AddHours(9);
             DateTime startdate6pm = jobstart.Date.AddHours(18);
-            #region
+            #region old code(commented out)
             //if (jobstart.DayOfWeek == DayOfWeek.Saturday && jobend.DayOfWeek == DayOfWeek.Saturday)
             //{
             //    //start and end on sat
@@ -817,6 +780,7 @@ namespace Centrics.Models
 
             // ^ check
             #endregion
+
             double workingcounter = 0.0;
             //same day 
             string pathtraverse = "";
@@ -954,14 +918,13 @@ namespace Centrics.Models
                 }
 
             }
-            Debug.WriteLine("UnRounded" + workingcounter);
-            Debug.WriteLine("Rounded" + Math.Round(workingcounter));
+            
             Debug.WriteLine("traverse" + pathtraverse);
-            return workingcounter;
-            //return Math.Round(workingcounter,0);
+            return Math.Round(workingcounter,1);
+            
         }
-         
-        #region old code for reference?
+
+        #region old code for reference? (commented out)
         //public double CalculateMSHUsed(DateTime starttime, DateTime endtime)
         //{
         //    //TimeSpan start = TimeSpan.Parse("22:00"); // 10 PM
@@ -1133,6 +1096,7 @@ namespace Centrics.Models
                 }
             }
         }
+        //this doesnt exist
         public void ModifyContract(Contract model) {
 
             MySqlConnection conn = GetConnection();
@@ -1141,7 +1105,7 @@ namespace Centrics.Models
                 conn.Open();
                 string query = "update centrics.contract set email = @email where idcontract =@idcontract";
                 MySqlCommand c = new MySqlCommand(query, conn);
-                Debug.WriteLine("this is msh: " + model.MSH + ";" + model.EndValid + ";" + model.idcontract );
+                
                 c.Parameters.AddWithValue("@email", model.Email);
                 c.Parameters.AddWithValue("@idcontract",model.idcontract);
 
@@ -1228,6 +1192,8 @@ namespace Centrics.Models
             }
             return getReports;
         }
+
+        //check for a duplicating id
         public bool CheckExisitingReportID(int id)
         {
             MySqlConnection conn = GetConnection();
@@ -1260,6 +1226,8 @@ namespace Centrics.Models
             }
             return false;
         }
+
+        //get the id of the next report to display in add service report page
         public int getReportCounts()
         {
             MySqlConnection conn = GetConnection();
@@ -1290,25 +1258,7 @@ namespace Centrics.Models
             return count;
         }
         
-        //public void SendEmailRegardingExpiry()
-        //{
-        //    EmailAddress.DefaultRenderer = new RazorRenderer();
-
-        //    var template = "Dear @Model.Company"+"<br/>"+"Your Company, @Model.Company, Service Contract with Centrics Network has is expiring soon." + "<br/>"
-        //        + "The Contract Details are as follows: <br/> Company Name: @Model.Company <br/> Start of Validity: @Model.StartValid <br/> End of Validity: @Model.EndValid <br/> Remaning Service Hours: @Model.Remains <br/>" + 
-        //        "Please contact us at 999 if you want to continue using our service"+"<br/>This is an auto-generated. Do not reply this email." + "<br/><img src='http://centricsnetworks.com.sg/wp-content/uploads/2015/12/logo1.png'/>" ;
-
-        //    var email = EmailAddress
-        //        .From("ai.permacostt@gmail.com")
-        //        .To("johnfoohw@gmail.com")
-        //        .Subject("You can be king again")
-        //        .UsingTemplate(template, new { Company = "KFC", StartValid = "1/4/2017", EndValid = "1/4/2018", Remains = "15", });
-
-        //    Debug.WriteLine(email);
-        //    email.Send();
-        //}
-
-        //maybe status? Comfirmed or Pending for the print?
+       
         public ServiceReport getServiceReport(int serial)
         {
             ServiceReport SR = new ServiceReport();
@@ -1339,7 +1289,6 @@ namespace Centrics.Models
                             PurposeOfVisit = r["purposeofvisit"].ToString().Split(','),
                             Description = r["description"].ToString(),
                             Remarks = r["remarks"].ToString(),
-                            //Date = DateTime.Parse(r["date"].ToString()),
                             TimeStart = DateTime.Parse(r["timestart"].ToString()),
                             TimeEnd = DateTime.Parse(r["timeend"].ToString()),
                             MSHUsed = double.Parse(r["mshused"].ToString()),
@@ -1348,8 +1297,6 @@ namespace Centrics.Models
                             JobStatus = r["jobstatus"].ToString().Split(','),
                             ReportStatus = r["reportstatus"].ToString(),
                             ReportFrom = r["reportfrom"].ToString()
-                            
-                            //enter user
                         };
 
                         if (!DBNull.Value.Equals(r["clienttel"]))
@@ -1387,7 +1334,6 @@ namespace Centrics.Models
                 
                 if (SR != empt)
                 {
-                    Debug.WriteLine("bypasscheck" + SR.AttendedOnDate);
                     String jobcombined = "";
                     if (SR.JobStatus.Length > 1)
                     {
@@ -1447,8 +1393,6 @@ namespace Centrics.Models
             return SR;
         }
 
-        //Hashes password for database
-        
         public void ReportEdit(ServiceReport model)
         {
             MySqlConnection conn = GetConnection();
@@ -1456,7 +1400,7 @@ namespace Centrics.Models
             try
             {
                 conn.Open();
-                //missing query
+                
                 string query = "Update centrics.servicereport set purposeofvisit = @purposeofvisit, description = @description, remarks = @remarks, timestart=@timestart, timeend = @timeend,mshused = @mshused, attendedbystaffname = @attendedbystaffname,attendedondate = @attendedondate ,jobstatus = @jobstatus where id = @id";
 
                 MySqlCommand c = new MySqlCommand(query, conn);
@@ -1512,7 +1456,6 @@ namespace Centrics.Models
                 c.Parameters.AddWithValue("@remarks", model.Remarks);
                 c.Parameters.AddWithValue("@mshused", CalculateMSH(model.TimeStart, model.TimeEnd));
                 c.Parameters.AddWithValue("@attendedondate",model.TimeStart.Date);
-                //c.Parameters.AddWithValue("@date", model.Date);
                 c.Parameters.AddWithValue("@timestart", model.TimeStart);
                 c.Parameters.AddWithValue("@timeend", model.TimeEnd);
                 c.Parameters.AddWithValue("@attendedbystaffname", model.AttendedByStaffName);
@@ -1559,6 +1502,7 @@ namespace Centrics.Models
             }
         }
 
+        //removing one address from the client
         public void RemoveAddressFromClientList(string name, string address)
         {
             MySqlConnection conn = GetConnection();
@@ -1578,7 +1522,7 @@ namespace Centrics.Models
 
                 if (hi == 0)
                 {
-                // u should not be able to?
+                
                 string query = "update centrics.clientaddress set addresslist = @addresslist where companyname = @clientcompany;";
                 MySqlCommand c = new MySqlCommand(query, conn);
                 address = "";
@@ -1638,6 +1582,7 @@ namespace Centrics.Models
             }
         }
 
+        //get all client details
         public List<ClientAddress> getAllClientAddress()
         {
             MySqlConnection conn = GetConnection();
@@ -1715,6 +1660,7 @@ namespace Centrics.Models
             return ListCA;
         }
 
+        //get a company detail
         public ClientAddress getOneClient(string name)
         {
             MySqlConnection conn = GetConnection();
@@ -1775,7 +1721,7 @@ namespace Centrics.Models
                         cA.ContactNoList = ContactNoList;
                         cA.ContactList = ContactList;
                         cA.Addresslist = addresslist;
-                        Debug.WriteLine(cA.EmailList[0].ToString());
+
                         return cA;
                     }
                 }
@@ -1791,6 +1737,7 @@ namespace Centrics.Models
             return cA;
         }
 
+        //search function based on name of the company
         public List<ClientAddress> SearchClientAddress(string name)
         {
             MySqlConnection conn = GetConnection();
@@ -1870,6 +1817,7 @@ namespace Centrics.Models
             return ListCA;
         }
 
+        //importing method (from excel)
         public void Imported(ClientAddress cA)
         {
             MySqlConnection conn = GetConnection();
@@ -1899,8 +1847,10 @@ namespace Centrics.Models
             }
 
             //current (delete) -- when deleting exisiting contract, there can exist a data in the contract but not in the client.
-            //do a truncate -- excel as the true source, all old data deleted. causes more of a reliance issue with contract
+            //do a truncate -- excel as the true source, all old data deleted. causes more of a reliance(data) issue with contract
             //do a ignore -- does not cause a error in contract but does contain error if excel changes that row huge margin(old code have this)
+            
+            //if u want to change the method, just comment the old configuration. For the delete, comment both the delete code blocks.
 
             //For ignore, go to the importexport controller, uncomment 2 sections of the code of onPostImport 
             //namely the line //if (context.GetClientAddressList(row.GetCell(0).ToString()).ClientCompany != "") continue;
@@ -1929,7 +1879,6 @@ namespace Centrics.Models
 
 
 
-            //wtf? so what?
             List<ClientAddress> cList = getAllClientAddress();
             for(int i = 0;i < cList.Count; i++)
             {
@@ -1989,7 +1938,6 @@ namespace Centrics.Models
                 {
                     TitleList = cA.TitleList;
                 }
-                Debug.WriteLine(cA.TitleList.Count + "" + cA.EmailList.Count + cA.ContactList.Count + cA.Addresslist.Count + cA.ContactNoList.Count);
                 
                     if (Addresslist.Count == 1)
                     {
@@ -1997,7 +1945,6 @@ namespace Centrics.Models
                     }
                     else if (Addresslist.Count > 1)
                     {
-                    Debug.WriteLine("mehmeh" + Addresslist.Count);
                         for (int c = 0; c < Addresslist.Count(); c++)
                         {
                             
@@ -2011,9 +1958,7 @@ namespace Centrics.Models
                             }
                         }
                     }
-                
-                Debug.WriteLine(cA.Address);
-                
+                                
                     if (ContactList.Count == 1)
                     {
                         cA.Contact = ContactList[0];
@@ -2042,7 +1987,6 @@ namespace Centrics.Models
                     {
                         for (int c = 0; c < ContactNoList.Count(); c++)
                         {
-                            Debug.WriteLine("been here done that");
                             if (c != (ContactNoList.Count -1 ))
                             {
 
@@ -2054,9 +1998,7 @@ namespace Centrics.Models
                             }
                         }
                     }
-                
-                Debug.WriteLine(cA.ContactNoString);
-                
+                                
                         if (EmailList.Count == 1)
                         {
                             cA.EmailAddress = EmailList[0];
@@ -2068,20 +2010,15 @@ namespace Centrics.Models
                                 if (c != (EmailList.Count -1 ))
                                 {
                                     
-                                    cA.EmailAddress += EmailList[c] + "centricsnetworks";
-                                    Debug.WriteLine(cA.EmailAddress);
-                                    
+                                    cA.EmailAddress += EmailList[c] + "centricsnetworks";                                    
                                 }
                                 else
                                 {
                                     
-                                    cA.EmailAddress += EmailList[c];
-                                    Debug.WriteLine(cA.EmailAddress);
-                                }
+                                    cA.EmailAddress += EmailList[c];                                }
                             }
                         }
                 
-                Debug.WriteLine(cA.EmailAddress);
                 try
                 {
                     conn.Open();
@@ -2095,8 +2032,6 @@ namespace Centrics.Models
                     c.Parameters.AddWithValue("@contact", cA.Contact);
                     c.Parameters.AddWithValue("@contactno", cA.ContactNoString);
                     c.Parameters.AddWithValue("@emailaddress", cA.EmailAddress);
-
-                    Debug.WriteLine("WEEE IM HERER");
 
                     c.ExecuteNonQuery();
 
@@ -2113,6 +2048,7 @@ namespace Centrics.Models
             }
         }
 
+        //Add a address to the client existing address list 
         public void AddAdresstoClientAddressList(ClientAddress cA)
         {
             MySqlConnection conn = GetConnection();
@@ -2138,7 +2074,7 @@ namespace Centrics.Models
                 {
                     if(listy.Count() == 5)
                     {
-                        Debug.WriteLine("Die Die Die");
+                        Debug.WriteLine("Die Die Die"); //.. basically u can't reach here hopefully
                     }
                     if(listy.Count() == 4)
                     {
@@ -2197,8 +2133,7 @@ namespace Centrics.Models
             }
         }
 
-        //size of this return to get it
-        //if size = 0, there's no read
+        //Get client address list using the name of the company.
         public ClientAddress GetClientAddressList(string name)
         {
             MySqlConnection conn = GetConnection();
@@ -2209,7 +2144,7 @@ namespace Centrics.Models
             {
                 conn.Open();
                 string query = "Select * from centrics.clientaddress where companyname = @name";
-                //SELECT * FROM centrics.clientaddress where clientcompany = 'bye bye';
+
                 MySqlCommand c = new MySqlCommand(query, conn);
                 c.Parameters.AddWithValue("@name", name);
                 
@@ -2256,6 +2191,7 @@ namespace Centrics.Models
             }
             return listy;
         }
+
         public void AddNewCompany(ClientAddress clientAddress)
         {
             MySqlConnection conn = GetConnection();

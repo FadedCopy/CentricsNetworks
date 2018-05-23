@@ -9,6 +9,7 @@ using MySql.Data.MySqlClient;
 
 namespace Centrics.Controllers
 {
+    // not using this
     public class ClientController : Controller
     {
         public IActionResult Index()

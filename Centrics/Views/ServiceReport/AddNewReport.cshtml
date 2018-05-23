@@ -11,39 +11,6 @@
     }
 </style>
 
-@*<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
-<script src="~/Scripts/jquery-3.1.1.min.js"></script>
-<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
-<link href="~/Content/jquery-ui-timepicker-addon.min.css" rel="stylesheet" />
-<script src="~/Scripts/jquery-ui-timepicker-addon.min.js"></script>
-<script type="text/javascript">
-    $(document).ready(function () {
-        $(function () {
-            $(".date-picker").datetimepicker({
-                changeMonth: true,
-                changeYear: true,
-                yearRange: "-100:+0",
-                dateFormat: 'dd-M-yy',
-                controlType: 'select',
-                timeFormat: 'hh:mm TT'
-            });
-
-        });
-
-        jQuery.validator.methods.date = function (value, element) {
-            var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
-            if (isChrome) {
-                var d = new Date();
-                return this.optional(element) || !/Invalid|NaN/.test(new Date(d.toLocaleDateString(value)));
-            } else {
-                return this.optional(element) || !/Invalid|NaN/.test(new Date(value));
-            }
-        };
-
-    });
-
-</script>*@
-
 <!-- Textbox-->
 <script src="//cdn.ckeditor.com/4.9.0/basic/ckeditor.js"></script>
 
@@ -54,7 +21,7 @@
 
     @Html.ValidationSummary("", new { @class = "text-danger" })
 
-    @*Questionably needed to display this here maybe? for reference*@
+    
     <div class="form-group">
         @Html.LabelFor(m => m.SerialNumber, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
@@ -72,46 +39,6 @@
     </div>
 
     <div id="loadoutautobots" ></div>
-
-    @*<div class="form-group">
-        @Html.LabelFor(m => m.PostalCode, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.PostalCode, new { @class = "form-control", @id = "postal", @onchange = "fun();" })
-            <br />
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.ClientAddress, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.ClientAddress, new { @class = "form-control", @id = "address" })
-            <br />
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.ClientAddress2, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.ClientAddress2, new { @class = "form-control" })
-            <br />
-        </div>
-    </div>*@
-
-    @*<div class="form-group">
-        @Html.LabelFor(m => m.ClientTel, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.ClientTel, new { @class = "form-control", @MaxLength = 8 })
-            <br />
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(m => m.ClientContactPerson, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.ClientContactPerson, new { @class = "form-control" })
-            <br />
-        </div>
-    </div>*@
 
     <h3> &nbsp; Visit Details</h3>
     <div class="form-group">
@@ -156,16 +83,7 @@
             <br />
         </div>
     </div>
-
-    @*<div class="form-group">
-        @Html.LabelFor(m => m.MSHUsed, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.MSHUsed, new { @class = "form-control" })
-            <br />
-        </div>
-    </div>*@
-
-    <p> Acknowledgement?</p>
+    
     <div class="form-group">
         @Html.LabelFor(m => m.AttendedByStaffName, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
@@ -173,59 +91,6 @@
             <br />
         </div>
     </div>
-
-    @*<div class="form-group">
-        @Html.LabelFor(m => m.AttendedOnDate, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.EditorFor(m => m.AttendedOnDate, new { @class = "form-control" })
-            <br />
-        </div>
-    </div>*@
-
-    <p> Billing</p>
-    @*
-        <div class="form-group">
-            @Html.LabelFor(m => m.Labour, new { @class = "col-md-2 control-label" })
-            <div class="col-md-10">
-                @Html.TextBoxFor(m => m.Labour, new { @class = "form-control" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(m => m.Transport, new { @class = "col-md-2 control-label" })
-            <div class="col-md-10">
-                @Html.TextBoxFor(m => m.Transport, new { @class = "form-control" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(m => m.Parts, new { @class = "col-md-2 control-label" })
-            <div class="col-md-10">
-                @Html.TextBoxFor(m => m.Parts, new { @class = "form-control" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(m => m.Others, new { @class = "col-md-2 control-label" })
-            <div class="col-md-10">
-                @Html.TextBoxFor(m => m.Others, new { @class = "form-control" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(m => m.InvoiceNo, new { @class = "col-md-2 control-label" })
-            <div class="col-md-10">
-                @Html.TextBoxFor(m => m.InvoiceNo, new { @class = "form-control" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(m => m.InvoiceDate, new { @class = "col-md-2 control-label" })
-            <div class="col-md-10">
-                @Html.TextBoxFor(m => m.InvoiceDate, new { @class = "form-control" })
-            </div>
-        </div>
-    *@
 
     <div class="form-group">
         @Html.LabelFor(m => m.JobStatus, new { @class = "col-md-2 control-label" })
@@ -236,30 +101,8 @@
         </div>
     </div>
 
-    @*wait for controller wtf
-        <div class="form-group">
-            @Html.LabelFor(m => m.ServiceRating, new { @class = "col-md-2 control-label" })
-            <div class="col-md-10">
-                @Html.ListBoxFor(m => m.ServiceRating,
-               MultiSelectList(List<SelectListItem>)
-               new { @class = "form-control" })
-            </div>
-        </div>
-    *@
     <input type="submit" value="Confirm" />
     <input type="reset" value="Cancel" />
-    @*
-        <p> top bottom of form confirm</p>
-        <p> reset button need confirm?</p>
-        <p> word count?</p>
-        <p>missing service rating due to client side? not needed on this form</p>
-        <p>confirm some listboxfor? design?</p>
-        <p>date time not done and need confirmation</p>
-        <p>model requires cleaning</p>
-        <p>Acknowledgement is missing details</p>
-        <p>convert pdf?</p>
-        <p>restyle this</p>
-    *@
 }
 <!-- replacing text area-->
 <script>
