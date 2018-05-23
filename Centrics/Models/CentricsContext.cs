@@ -1,5 +1,4 @@
 ﻿using MySql.Data.MySqlClient;
-using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -375,7 +374,7 @@ namespace Centrics.Models
             
             SmtpClient client = new SmtpClient("outlook.centricsnetworks.com.sg");
             client.UseDefaultCredentials = false;
-            client.Credentials = new NetworkCredential("crm@centricnetworks.com.sg", "Password123");
+            client.Credentials = new NetworkCredential("crm@centricsnetworks.com.sg", "Password123");
 
 
             
@@ -2712,7 +2711,9 @@ namespace Centrics.Models
                             "<p>Ignore this email if you did not request to reset your password.</p>",
                             From = new MailAddress("crm@centricsnetworks.com.sg")
                         };
-                        mailMessage.To.Add("wenjie_lee@centricsnetworks.com.sg"); //Should be replaced with the user's email who wants to reset their password.
+
+                       //mailMessage.To.Add("wenjie_lee@centricsnetworks.com.sg"); Used for testing
+                        mailMessage.To.Add(r["email"].ToString()); //Actual line to send reset link
 
                         //if (cA.EmailList != null)
                         //{
