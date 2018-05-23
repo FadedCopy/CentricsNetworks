@@ -41,7 +41,7 @@
         <div class="form-group">
             @Html.LabelFor(m => m.UserRole, new { @class = "col-md-2 control-label" })
             <div class="col-md-10">
-                @if (ViewData["Privilege"].ToString() == "Super Admin")
+                @if (ViewData["Privilege"].ToString() != "Super Admin")
                 {
                     @Html.DropDownListFor(m => m.UserRole, (List<SelectListItem>)ViewData["RolesNoSuperAdmin"])
                 } else
