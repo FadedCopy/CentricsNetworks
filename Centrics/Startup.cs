@@ -6,14 +6,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Centrics.Models;
 using Hangfire;
+using Hangfire.Common;
 using Hangfire.MySql;
 using Hangfire.MySql.Core;
+using Hangfire.Storage;
 using jsreport.AspNetCore;
 using jsreport.Binary;
 using jsreport.Local;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -56,7 +58,7 @@ namespace Centrics
         }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+    public void Configure(IApplicationBuilder app, IHostingEnvironment env,IRecurringJobManager recurringJobs)
         {
             if (env.IsDevelopment())
             {
@@ -69,6 +71,8 @@ namespace Centrics
             }
 
             app.UseHangfireServer();
+
+            //remove the dashboard before production
             app.UseHangfireDashboard();
             app.UseStaticFiles();
             app.UseSession();
@@ -78,6 +82,26 @@ namespace Centrics
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+
+            //To clear scheduler on startup.
+            using (var connection = JobStorage.Current.GetConnection())
+            {
+                foreach (var recurringjob in connection.GetRecurringJobs())
+                {
+                    recurringJobs.RemoveIfExists(recurringjob.Id);
+                }
+            }
+
+
+            //actual uncomment it later
+            //recurringJobs.AddOrUpdate("EmailStartup", Job.FromExpression<CentricsContext>(x => x.Emailcaller()), Cron.Daily());
+            
+            //testing purpose print 878smh every 2 mins
+            recurringJobs.AddOrUpdate("EmailStartup",Job.FromExpression<CentricsContext>(x => x.callmemaybe()),Cron.MinuteInterval(2));
+
+
+
         }
     }
 }

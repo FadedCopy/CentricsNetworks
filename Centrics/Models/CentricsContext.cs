@@ -353,7 +353,7 @@ namespace Centrics.Models
 
         public void callmemaybe()
         {
-            Emailsender(7, getContract(1));
+            //Emailsender(7, getContract(1));
             Debug.WriteLine(500 + 500 - 122 + "smh");
         }
 
@@ -375,7 +375,7 @@ namespace Centrics.Models
             
             SmtpClient client = new SmtpClient("outlook.centricsnetworks.com.sg");
             client.UseDefaultCredentials = false;
-            client.Credentials = new NetworkCredential("crm@centricnetworks.com.sg", "Password123");
+            client.Credentials = new NetworkCredential("crm@centricsnetworks.com.sg", "Password123");
 
 
             
@@ -385,7 +385,12 @@ namespace Centrics.Models
             mailMessage.IsBodyHtml = true;
             
             mailMessage.From = new MailAddress("crm@centricsnetworks.com.sg");
-            mailMessage.To.Add("wenjie_lee@centricsnetworks.com.sg");
+            //mailMessage.To.Add("James_Ng@centricsnetworks.com.sg");
+            //mailMessage.To.Add(contract.Email);
+
+            //mailMessage.To.Add("wenjie_lee@centricsnetworks.com.sg");
+            mailMessage.To.Add("crm@centricsnetworks. .sg");
+            
             //release ME
             ClientAddress cA = GetClientAddressList(contract.ClientCompany);
             
@@ -394,11 +399,11 @@ namespace Centrics.Models
             //    mailMessage.To.Add(cA.EmailList[0]);
             //}
 
-            //mailMessage.To.Add(contract.Email);
+            
             //mailMessage.Body = "nobody has no body there nobody is nobody cuz nobody can see him <br /> thanks, from centrics";
             mailMessage.Subject = "Contract Expiry from Centrics Networks";
             client.Send(mailMessage);
-
+            //Mailbox unavailable. The server response was: 5.7.54 SMTP; Unable to relay recipient in non-accepted domain. Need to fix
         }
 
         private MailMessage getMailWithImg(MailMessage mail, Contract contract, string lol)
@@ -424,7 +429,7 @@ namespace Centrics.Models
                 + "<br/> <br/> " + "This email is auto-generated. Please do not reply to this email."
                 + "<br> <br/>" + " Warm Regards, <br/> Centrics <br /> <b>Centrics Networks Pte. Ltd.</b>"
                 + "<br/>"+@"<img src='cid:" + res.ContentId + @"'/>"
-                + "<br/>" + "26 Sin Ming Lane, #08-115 Midview City, Singapore (573971)"
+                + "<br/>" + "26 Sin Ming Lane, #06-120 Midview City, Singapore (573971)"
                 + "<br/>" + "Main: 6833 7898 | Fax: 6833 7897 " +
                 "<br/>" + "Web: www.centricsnetworks.com.sg"
                 ;
@@ -486,7 +491,7 @@ namespace Centrics.Models
                 + "<br/> <br/> " + "This email is auto-generated. Please do not reply to this email."
                 + "<br> <br/>" + " Warm Regards, <br/> Centrics <br /> <b>Centrics Networks Pte. Ltd.</b>"
                 + "<br/>" + @"<img src='cid:" + res.ContentId + @"'/>"
-                + "<br/>" + "26 Sin Ming Lane, #08-115 Midview City, Singapore (573971)"
+                + "<br/>" + "26 Sin Ming Lane, #06-120 Midview City, Singapore (573971)"
                 + "<br/>" + "Main: 6833 7898 | Fax: 6833 7897 " +
                 "<br/>" + "Web: www.centricsnetworks.com.sg"
                 ;
@@ -1893,6 +1898,37 @@ namespace Centrics.Models
 
             }
 
+            //current (delete) -- when deleting exisiting contract, there can exist a data in the contract but not in the client.
+            //do a truncate -- excel as the true source, all old data deleted. causes more of a reliance issue with contract
+            //do a ignore -- does not cause a error in contract but does contain error if excel changes that row huge margin(old code have this)
+
+            //For ignore, go to the importexport controller, uncomment 2 sections of the code of onPostImport 
+            //namely the line //if (context.GetClientAddressList(row.GetCell(0).ToString()).ClientCompany != "") continue;
+            //and the section starting with //for (int k = 0; k<ListCA.Count; k++)
+
+            //To comment in visual studio do a ctrl+k+c combo keys and uncomment ctrl + k + u combo keys
+
+
+            //try
+            //{
+            //    conn.Open();
+            //    string truncate = "Truncate TABLE centrics.clientaddress";
+
+            //    MySqlCommand c = new MySqlCommand(truncate, conn);
+            //    c.Parameters.AddWithValue("@customerid", cA.CustomerID);
+
+            //    c.ExecuteNonQuery();
+            //}catch(MySqlException e)
+            //{
+            //    Debug.WriteLine(e);
+            //}
+            //finally
+            //{
+            //    conn.Close();
+            //}
+
+
+
             //wtf? so what?
             List<ClientAddress> cList = getAllClientAddress();
             for(int i = 0;i < cList.Count; i++)
@@ -1918,7 +1954,7 @@ namespace Centrics.Models
                 {
                     conn.Close();
                     
-                    }
+                }
 
             }
             }
@@ -2697,7 +2733,7 @@ namespace Centrics.Models
 
                         SmtpClient client = new SmtpClient("outlook.centricsnetworks.com.sg");
                         client.UseDefaultCredentials = false;
-                        client.Credentials = new NetworkCredential("crm@centricnetworks.com.sg", "Password123");
+                        client.Credentials = new NetworkCredential("crm@centricsnetworks.com.sg", "Password123");
                         string ResetID = RandomString(20);
                         int UserID = Convert.ToInt32(r["userID"]);
                         SaveResetIDToDB(ResetID, UserID, DateTime.Now);

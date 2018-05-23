@@ -9,6 +9,8 @@ using Centrics.Models;
 using MySql.Data.MySqlClient;
 using Microsoft.AspNetCore.Server.Kestrel.Internal.System.Collections.Sequences;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Hangfire;
+using Hangfire.Storage;
 
 namespace Centrics.Controllers
 {
@@ -20,7 +22,6 @@ namespace Centrics.Controllers
             {
                 return RedirectToAction("Login", "Users");
             }
-
             CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
             ViewData["viewer"] = context.getAllClientAddress();
             List < ClientAddress > listca = context.getAllClientAddress();
