@@ -24,7 +24,15 @@ namespace Centrics.Controllers
             {
                 return RedirectToAction("Login", "Users");
             }
-
+            if ((HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
+            {
+                ViewData["SuperiorOP"] = "Superior";
+            }
+            else
+            {
+                ViewData["SuperiorOP"] = "WEAKLING";
+            }
+            
             return View();
         }
 
@@ -573,6 +581,47 @@ namespace Centrics.Controllers
             }
             ModelState.AddModelError("","Error have occured");
             return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult SRCalculation()
+        {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return RedirectToAction("Login", "Users");
+            }
+            if (!(HttpContext.Session.GetString("AdminValidity") == "Super Admin"))
+            {
+                return RedirectToAction("Login", "Users");
+            }
+           
+            CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
+            SRCalculation model = context.GetMSHMultiplier();
+
+            return View(model);
+
+        }
+
+        [HttpPost]
+        public IActionResult SRCalculation(SRCalculation values )
+        {
+            if (HttpContext.Session.GetString("LoginID") == null)
+            {
+                return RedirectToAction("Login", "Users");
+            }
+            if (!(HttpContext.Session.GetString("AdminValidity") == "Super Admin" ))
+            {
+                return RedirectToAction("Login", "Users");
+            }
+            if (ModelState.IsValid)
+            {
+                CentricsContext context = HttpContext.RequestServices.GetService(typeof(Centrics.Models.CentricsContext)) as CentricsContext;
+                context.UpdateMSHMultiplier(values);
+                TempData["PassFail"] = "Successful edit";
+                return View(values);
+            }
+            TempData["PassFail"] = "Unsucessful edit";
+            return RedirectToAction("SRCalculation");
         }
     }
 }

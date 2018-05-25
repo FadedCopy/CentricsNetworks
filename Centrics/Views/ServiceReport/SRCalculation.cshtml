@@ -1,0 +1,48 @@
+﻿@model Centrics.Models.SRCalculation
+
+@{
+    ViewData["Title"] = "SRCalculation";
+}
+
+<h2>SRCalculation</h2>
+
+<h4>SRCalculation</h4>
+
+<hr />
+
+@if (TempData.ContainsKey("PassFail"))
+{
+    <p>@TempData["PassFail"]</p>
+
+}
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="SRCalculation">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="From12amto9am" class="control-label"></label>
+                <input asp-for="From12amto9am" class="form-control" />
+                <span asp-validation-for="From12amto9am" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="After6pmto12am" class="control-label"></label>
+                <input asp-for="After6pmto12am" class="form-control" />
+                <span asp-validation-for="After6pmto12am" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SaturdayMultiplier" class="control-label"></label>
+                <input asp-for="SaturdayMultiplier" class="form-control" />
+                <span asp-validation-for="SaturdayMultiplier" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SundayMultiplier" class="control-label"></label>
+                <input asp-for="SundayMultiplier" class="form-control" />
+                <span asp-validation-for="SundayMultiplier" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+

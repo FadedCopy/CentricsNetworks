@@ -5,5 +5,9 @@
 
 <h2>Service Report</h2>
 
-@Html.ActionLink("View Report", "ViewReports", "ServiceReport") <br/>
-@Html.ActionLink("Add Report", "AddNewReport", "ServiceReport")
+@Html.ActionLink("View Report", "ViewReports", "ServiceReport") <br/> 
+@Html.ActionLink("Add Report", "AddNewReport", "ServiceReport") <br/> 
+@if((String)ViewData["SuperiorOP"] == "Superior")
+{
+    @Html.ActionLink("Modify Multipliers", "SRCalculation","ServiceReport")
+}

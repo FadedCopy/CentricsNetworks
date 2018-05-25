@@ -86,18 +86,24 @@ namespace Centrics.Models
 
                 c.Parameters.AddWithValue("@clientcompanyname", model.ClientCompanyName);
                 c.Parameters.AddWithValue("@clientaddress", model.ClientAddress);
-                if (cA.ContactNoList != null || cA.ContactNoList != new List<string>())
+                if (cA.ContactNoList != null)
                 {
                     int number;
-                    if (Int32.TryParse(cA.ContactNoList[0], out number ))
+                    
+                    if (cA.ContactNoList[0] != null)
                     {
-                        c.Parameters.AddWithValue("@clienttel", number);
+                        bool result = (Int32.TryParse(cA.ContactNoList[0], out number));
+                        if (result)
+                        {
+                            c.Parameters.AddWithValue("@clienttel", number);
 
+                        }
+                        else
+                        {
+                            c.Parameters.AddWithValue("@clienttel", DBNull.Value);
+                        }
                     }
-                    else
-                    {
-                        c.Parameters.AddWithValue("@clienttel", DBNull.Value);
-                    }
+                    
                     
                 }
                 else
@@ -160,6 +166,72 @@ namespace Centrics.Models
                 conn.Close();
             }
         }
+
+        public SRCalculation GetMSHMultiplier()
+        {
+            SRCalculation rCalculation = new SRCalculation();
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                string Query = "select * from centrics.mshmultipliers where row = 1";
+                MySqlCommand c = new MySqlCommand(Query, conn);
+                
+                using (MySqlDataReader r = c.ExecuteReader())
+                {
+                    while (r.Read())
+                    {
+                        rCalculation = new SRCalculation
+                        {
+                            After6pmto12am = Convert.ToDouble(r["after6"].ToString()),
+                            From12amto9am = Convert.ToDouble(r["before9"].ToString()),
+                            SaturdayMultiplier = Convert.ToDouble(r["sat"].ToString()),
+                            SundayMultiplier = Convert.ToDouble(r["sun"].ToString())
+                        };
+
+                    }
+                }
+                return rCalculation;
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return null;
+        }
+
+        //msh multiplier settings
+        public void UpdateMSHMultiplier(SRCalculation values)
+        {
+
+            MySqlConnection conn = GetConnection();
+            try
+            {
+                conn.Open();
+                string UpdateQuery = "update centrics.mshmultipliers set before9 = @before9, after6 = @after6,sat = @sat,sun = @sun where row = 1";
+                MySqlCommand c = new MySqlCommand(UpdateQuery, conn);
+
+                c.Parameters.AddWithValue("@before9", values.From12amto9am);
+                c.Parameters.AddWithValue("@after6", values.After6pmto12am);
+                c.Parameters.AddWithValue("@sat", values.SaturdayMultiplier);
+                c.Parameters.AddWithValue("@sun", values.SundayMultiplier);
+                
+                c.ExecuteNonQuery();
+            }
+            catch (MySqlException e)
+            {
+                Debug.WriteLine(e);
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
 
         //get totalmsh of company
         public double GetRemainingMSHByCompany(ServiceReport model)
@@ -723,7 +795,7 @@ namespace Centrics.Models
         //probably working time counter
         public double CalculateMSH(DateTime jobstart, DateTime jobend)
         {
-
+            SRCalculation multipliers = GetMSHMultiplier();
             Debug.WriteLine("jobstart" + jobstart);
             Debug.WriteLine("jobend" + jobend);
             if(jobstart > jobend)
@@ -790,20 +862,20 @@ namespace Centrics.Models
                     if (jobstart <= startdate9am && jobend <= startdate9am)
                     {
                         // start and end before 9
-                        workingcounter += (jobend - jobstart).TotalHours * 1.5;
+                        workingcounter += (jobend - jobstart).TotalHours * multipliers.From12amto9am;
                         Debug.WriteLine((startdate9am - jobstart).TotalHours);
                         pathtraverse = pathtraverse + "1";
                     }
                     else if (jobstart <= startdate9am && jobend <= startdate6pm)
                     {
                         // start before 9, end before 6
-                        workingcounter += ((startdate9am - jobstart).TotalHours * 1.5) + ((jobend - startdate9am).TotalHours);
+                        workingcounter += ((startdate9am - jobstart).TotalHours * multipliers.From12amto9am) + ((jobend - startdate9am).TotalHours);
                         pathtraverse = pathtraverse + "2";
                     }
                     else if (jobstart <= startdate9am && jobend >= startdate6pm)
                     {
                         //start before 9, end after 6
-                        workingcounter += ((startdate9am - jobstart).TotalHours * 1.5) + ((startdate6pm - startdate9am).TotalHours) + ((jobend - startdate6pm).TotalHours * 1.5);
+                        workingcounter += ((startdate9am - jobstart).TotalHours * multipliers.From12amto9am) + ((startdate6pm - startdate9am).TotalHours) + ((jobend - startdate6pm).TotalHours * multipliers.After6pmto12am);
                         pathtraverse = pathtraverse + "3";
                     }
                     else if (jobstart >= startdate9am && jobend <= startdate6pm)
@@ -817,22 +889,22 @@ namespace Centrics.Models
                     {
                         //start and end after 6
                         Debug.WriteLine("I came after 6");
-                        workingcounter += (jobend - jobstart).TotalHours * 1.5;
+                        workingcounter += (jobend - jobstart).TotalHours * multipliers.After6pmto12am;
                         pathtraverse = pathtraverse + "5";
                     }else if (jobstart >= startdate9am && jobend >= startdate6pm)
                     {
                         //start after 9, end after 6
-                        workingcounter += ((startdate6pm - jobstart).TotalHours) + ((jobend - startdate6pm).TotalHours * 1.5);
+                        workingcounter += ((startdate6pm - jobstart).TotalHours) + ((jobend - startdate6pm).TotalHours * multipliers.After6pmto12am);
                         pathtraverse = pathtraverse + "6";
                     }
                 }else if(jobstart.DayOfWeek == DayOfWeek.Saturday)
                 {
-                    workingcounter += (jobend - jobstart).TotalHours * 1.5;
+                    workingcounter += (jobend - jobstart).TotalHours * multipliers.SaturdayMultiplier;
                     pathtraverse = pathtraverse + "7";
                 }
                 else if(jobstart.DayOfWeek == DayOfWeek.Sunday)
                 {
-                    workingcounter += (jobend - jobstart).TotalHours * 2;
+                    workingcounter += (jobend - jobstart).TotalHours * multipliers.SundayMultiplier;
                     pathtraverse = pathtraverse + "8";
                 }
             }else if (jobstart.Date != jobend.Date) //start and end on different dates
@@ -850,32 +922,32 @@ namespace Centrics.Models
                         if (jobstart >= startdate6pm)
                         {
                             //DateTime nextday = datecounter.AddDays(1);
-                            workingcounter += (nextday - jobstart).TotalHours * 1.5;
+                            workingcounter += (nextday - jobstart).TotalHours * multipliers.After6pmto12am;
                             pathtraverse = pathtraverse + "9";
                         }
                         else if (jobstart >= startdate9am && jobstart <= startdate6pm)
                         {
                            // DateTime nextday = datecounter.AddDays(1);
-                            workingcounter += (startdate6pm - jobstart).TotalHours + ((nextday - startdate6pm).TotalHours * 1.5);
+                            workingcounter += (startdate6pm - jobstart).TotalHours + ((nextday - startdate6pm).TotalHours * multipliers.After6pmto12am);
                             pathtraverse = pathtraverse + "10";
                         }
                         else if (jobstart <= startdate9am)
                         {
                             //DateTime nextday = datecounter.AddDays(1);
-                            workingcounter += ((startdate9am - jobstart).TotalHours * 1.5) + ((startdate6pm - startdate9am).TotalHours)
-                                + ((nextday - startdate6pm).TotalHours * 1.5);
+                            workingcounter += ((startdate9am - jobstart).TotalHours * multipliers.From12amto9am) + ((startdate6pm - startdate9am).TotalHours)
+                                + ((nextday - startdate6pm).TotalHours * multipliers.After6pmto12am);
                             pathtraverse = pathtraverse + "11";
                         }
                     }else if(datecounter.DayOfWeek == DayOfWeek.Saturday)
                     {
                         //DateTime nextday = datecounter.AddDays(1);
-                        workingcounter += (nextday - jobstart).TotalHours * 1.5;
+                        workingcounter += (nextday - jobstart).TotalHours * multipliers.SaturdayMultiplier;
                         pathtraverse = pathtraverse + "12";
                     }
                     else if(datecounter.DayOfWeek == DayOfWeek.Sunday)
                     {
                        // DateTime nextday = datecounter.AddDays(1);
-                        workingcounter += (nextday - jobstart).TotalHours * 2;
+                        workingcounter += (nextday - jobstart).TotalHours * multipliers.SundayMultiplier;
                         pathtraverse = pathtraverse + "13";
                     }
                     startdate6pm = startdate6pm.AddDays(1);
@@ -891,28 +963,28 @@ namespace Centrics.Models
                 {
                     if (jobend <= startdate9am)
                     {
-                        workingcounter += (jobend - datecounter).TotalHours * 1.5;
+                        workingcounter += (jobend - datecounter).TotalHours * multipliers.From12amto9am;
                         pathtraverse = pathtraverse + "14";
                     }
                     else if (jobend >= startdate9am && jobend <= startdate6pm)
                     {
-                        workingcounter += ((jobend - startdate9am).TotalHours) + ((startdate9am - datecounter).TotalHours * 1.5);
+                        workingcounter += ((jobend - startdate9am).TotalHours) + ((startdate9am - datecounter).TotalHours * multipliers.From12amto9am);
                         pathtraverse = pathtraverse + "15";
                     }
                     else if (jobend >= startdate6pm)
                     {
-                        workingcounter += (startdate6pm - startdate9am).TotalHours + ((jobend - startdate6pm).TotalHours * 1.5) +
-                            ((startdate9am - datecounter).TotalHours * 1.5);
+                        workingcounter += (startdate6pm - startdate9am).TotalHours + ((jobend - startdate6pm).TotalHours * multipliers.After6pmto12am) +
+                            ((startdate9am - datecounter).TotalHours * multipliers.From12amto9am);
                         pathtraverse = pathtraverse + "16";
                     }
                 }else if(jobend.DayOfWeek == DayOfWeek.Saturday)
                 {
-                    workingcounter += (jobend - datecounter).TotalHours * 1.5;
+                    workingcounter += (jobend - datecounter).TotalHours * multipliers.SaturdayMultiplier;
                     pathtraverse = pathtraverse + "18";
                 }
                 else if (jobend.DayOfWeek == DayOfWeek.Sunday)
                 {
-                    workingcounter += (jobend - datecounter).TotalHours * 2;
+                    workingcounter += (jobend - datecounter).TotalHours * multipliers.SundayMultiplier;
                     pathtraverse = pathtraverse + "19";
                 }
 
@@ -1690,7 +1762,13 @@ namespace Centrics.Models
                             {
                                 addresslist.Add(spliter[i]);
                             }
+                            cA.Addresslist = addresslist;
                         }
+                        else
+                        {
+                            cA.Addresslist = null;
+                        }
+
                         if (!DBNull.Value.Equals(r["contact"].ToString()))
                         {
                             string[] spliter = r["contact"].ToString().Split("centricsnetworks");
@@ -1698,6 +1776,11 @@ namespace Centrics.Models
                             {
                                 ContactList.Add(spliter[i]);
                             }
+                            cA.ContactList = ContactList;
+                        }
+                        else
+                        {
+                            cA.ContactList = null;
                         }
                         if (!DBNull.Value.Equals(r["contactno"].ToString()))
                         {
@@ -1706,6 +1789,11 @@ namespace Centrics.Models
                             {
                                 ContactNoList.Add(spliter[i]);
                             }
+                            cA.ContactNoList = ContactNoList;
+                        }
+                        else
+                        {
+                            cA.ContactNoList = null;
                         }
                         if (!DBNull.Value.Equals(r["emailaddress"].ToString()))
                         {
@@ -1714,12 +1802,17 @@ namespace Centrics.Models
                             {
                                 EmailList.Add(spliter[i]);
                             }
+                            cA.EmailList = EmailList;
+                        }
+                        else
+                        {
+                            cA.EmailList = null;
                         }
 
-                        cA.EmailList = EmailList;
-                        cA.ContactNoList = ContactNoList;
-                        cA.ContactList = ContactList;
-                        cA.Addresslist = addresslist;
+                        //cA.EmailList = EmailList;
+                        //cA.ContactNoList = ContactNoList;
+                        //cA.ContactList = ContactList;
+                        //cA.Addresslist = addresslist;
 
                         return cA;
                     }

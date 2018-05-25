@@ -103,6 +103,26 @@ namespace Centrics.Models
         [Display(Name = "Address Searcher")]
         public string PostalCode { get; set; }
     }
+
+
+    public class SRCalculation
+    {
+        [Display(Name = "Before 9 Multiplier")]
+        [Required(ErrorMessage ="Please fill in Before 9 Multiplier")]
+        public double From12amto9am { get; set; }
+
+        [Display(Name ="After 6 Multiplier")]
+        [Required(ErrorMessage = "Please fill in After 6 Multilier ")]
+        public double After6pmto12am { get; set; }
+
+        [Display(Name = "Saturday Multiplier")]
+        [Required(ErrorMessage = "Please fill in Saturday Multiplier")]
+        public double SaturdayMultiplier { get; set; }
+
+        [Display(Name = "Sunday Multiplier")]
+        [Required(ErrorMessage = "Please fill in SundayMultiplier")]
+        public double SundayMultiplier { get; set; }
+    }
 }
 
 //public class Billing{
